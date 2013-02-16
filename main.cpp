@@ -16,44 +16,14 @@
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-#include <gtkmm.h>
-#include <gtkglmm.h>
+#include "Gui.h"
 
-#include "SimpleScene.h"
+const char* const _ui_file = "scarter_engine.glade";
 
 int main (int argc, char** argv)
 {
-	/* Init GTK */
-	Gtk::Main kit(argc, argv);
-
-	/* Init GtkGlExtmm */
-	Gtk::GL::init(argc, argv);
-
-	/* Query OpenGL extension version. */
-	int major, minor;
-	Gdk::GL::query_version(major, minor);
-	std::cout << "OpenGL extension version - "
-			  << major << "." << minor << std::endl;
-
-	/* Instantiate and run the application. */
-	Glib::RefPtr<Gtk::Builder> builder;
-	try {
-		builder = Gtk::Builder::create_from_file("scarter_engine.glade");
-	} catch (const Glib::FileError &ex) {
-		std::cerr << ex.what() << std::endl;
-	}
-
-	Gtk::Window* main_win = NULL;
-	builder->get_widget("main_window", main_win);
-
-	SimpleGLScene* draw = new SimpleGLScene();
-	draw->show();
-	if (main_win)
-	{
-		main_win->add(*draw);
-		kit.run(*main_win);
-	}
+	Gui gui(argc, argv, _ui_file);
+	gui.Draw();
 
 	return 0;
 }
