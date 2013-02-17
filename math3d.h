@@ -19,7 +19,6 @@
 #ifndef MATH_3D_H
 #define	MATH_3D_H
 
-
 struct Vector3f
 {
     float x;
@@ -37,6 +36,11 @@ struct Vector3f
         z = _z;
     }
 };
+
+inline Vector3f between(Vector3f lhs, Vector3f rhs, int subs=2)
+{
+	return Vector3f(lhs.x + (rhs.x - lhs.x)/subs, lhs.y + (rhs.y - lhs.y)/subs, lhs.z + (rhs.z - lhs.z)/subs);
+}
 
 struct Quad3f
 {
@@ -61,6 +65,16 @@ struct Quad3f
 		v[1] = v1;
 		v[2] = v2;
 		v[3] = v3;
+	}
+
+	Quad3f(Vector3f v0, Vector3f v1, Vector3f v2, Vector3f v3, Vector3f root, Vector3f offset, int subs=3)
+	{
+		v[0] = between(root, v0, subs);
+		v[1] = between(root, v1, subs);
+		v[2] = between(root, v2, subs);
+		v[3] = between(root, v3, subs);
+		for (int i=0; i < 4; ++i)
+			v[i] = Vector3f(v[i].x + offset.x, v[i].y + offset.y, v[i].z + offset.z);
 	}
 };
 

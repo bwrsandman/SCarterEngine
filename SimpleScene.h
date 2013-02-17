@@ -26,7 +26,7 @@ protected:
 private:
     Matrix4f *World = NULL;
 
-	const GLenum draw_type = GL_QUADS;
+	const GLenum draw_type = GL_LINES;// GL_POINTS;//GL_QUADS;
 	/* Colors */
 	const float         CLEAR_R     = 1.0f;
 	const float         CLEAR_G     = 1.0f;
@@ -43,17 +43,32 @@ private:
 	GLuint gWorldLocation;
 
 	const char* VERTEX_SHADER =
+/* morph.vert - interpolates between the model and the unit sphere */
 		"#version 330\n"
-		"layout (location = 0) in vec3 Position;\n"
-
-		"uniform mat4 gWorld;\n"
-
-		"out vec3 ex_Color;\n"
-
-		"void main()\n"
-		"{\n"
-		"	gl_Position = gWorld * vec4(Position, 1.0);\n"
-		"	ex_Color = clamp(Position, 0.0, 1.0);\n"
+		"layout (location = 0) in vec3 gl_Vertex;"
+		"uniform mat4 gWorld;"
+		"out vec3 ex_Color;"
+		"uniform float alpha;"	// 0 - 1 float that transitions the morph
+		"void main( void ) {"
+		"	vec3 p = gl_Vertex.xyz;" 			 // original position
+		"	float d = sqrt( gl_Vertex.x * gl_Vertex.x + "
+		"					gl_Vertex.y * gl_Vertex.y + "
+		"					gl_Vertex.z * gl_Vertex.z);"
+		"	float theta = acos(gl_Vertex.z/d);"
+		"	float fi    = atan(gl_Vertex.y,gl_Vertex.x);"
+		"	float r     = 1.0;"
+		"	vec3 n      = vec3( r * sin(theta) * cos(fi), "
+		"						r * sin(theta) * sin(fi), "
+		"						r * cos(theta));"
+			// do linear interpolation
+		"	vec3 v = n * alpha + p * ( 1.0 - alpha );"
+			// in case normalize fails...
+		"	if( p == vec3( 0.0, 0.0, 0.0 ) ) {"
+		"		v = vec3( 0.0, 1.0, 0.0 );"
+		"	}"
+			// continue the transformation.
+		"	gl_Position = gWorld * vec4(v, 1.0);"
+		"	ex_Color = clamp(gl_Vertex, 0.0, 1.0);"
 		"}";
 
 	const char* FRAGMENT_SHADER =

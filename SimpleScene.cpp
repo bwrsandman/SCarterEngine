@@ -223,7 +223,7 @@ bool SimpleGLScene::create_shaders (void)
 void SimpleGLScene::create_vao (void)
 {
 	/************************
-	 *            
+	 *
 	 *      v2------------v1
 	 *     /|            /|
 	 *    / |           / |
@@ -236,55 +236,72 @@ void SimpleGLScene::create_vao (void)
 	 *  | /           | /
 	 *  |/            |/
 	 *  v4------------v7
-	 *      
+	 *
 	 ************************/
-	const float si = 0.5f;
-	const Vector3f v[] =
-	{
-		Vector3f( si, -si, -si),		// v0
-		Vector3f( si,  si, -si),		// v1
-		Vector3f(-si,  si, -si),		// v2
-		Vector3f(-si, -si, -si),		// v3
-		Vector3f(-si, -si,  si),		// v4
-		Vector3f(-si,  si,  si),		// v5
-		Vector3f( si,  si,  si),		// v6
-		Vector3f( si, -si,  si),		// v7
-	};
 
-    Quad3f Quad[] =
-	{
-    	Quad3f(v[0], v[1], v[2], v[3]),	// Back
-    	Quad3f(v[4], v[5], v[6], v[7]),	// Front
-    	Quad3f(v[3], v[2], v[5], v[4]),	// Left
-    	Quad3f(v[7], v[6], v[1], v[0]),	// Right
-    	Quad3f(v[3], v[4], v[7], v[0]),	// Bottom
-    	Quad3f(v[5], v[2], v[1], v[6]),	// Top
-	};
-
-	/* Generate ID for VAO and bind it as the active VAO */
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-
-	/* Generate a VBO to store our vertex list */
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(Quad), Quad, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-	glEnableVertexAttribArray(0);
 }
 
 /* Draw Scene */
 void SimpleGLScene::render (GLenum draw_type)
 {
 
+	const float si = 0.5f;
+	const int subs = 4;
+	GLfloat vertices[12 * subs * subs] = {0};
+	for (int j=0; j < subs; ++j)
+		for (int i=0; i < subs; ++i)
+		{
+			// v0+4i
+			vertices[j * subs * 12 + i * 12 +  0] = -si + 0.5f * si * i;		// X
+			vertices[j * subs * 12 + i * 12 +  1] = -si + 0.5f * si * j;		// Y
+			vertices[j * subs * 12 + i * 12 +  2] = -si + 0.0f * si;			// Z
+			// v1+4i
+			vertices[j * subs * 12 + i * 12 +  3] = -si + 0.5f * si * i;		// X
+			vertices[j * subs * 12 + i * 12 +  4] = -si + 0.5f * si * (j + 1);	// Y
+			vertices[j * subs * 12 + i * 12 +  5] = -si + 0.0f * si;			// Z
+			// v2+4i
+			vertices[j * subs * 12 + i * 12 +  6] = -si + 0.5f * si * (i + 1);	// X
+			vertices[j * subs * 12 + i * 12 +  7] = -si + 0.5f * si * j;		// Y
+			vertices[j * subs * 12 + i * 12 +  8] = -si + 0.0f * si;			// Z
+			// v3+4i
+			vertices[j * subs * 12 + i * 12 +  9] = -si + 0.5f * si * (i + 1);	// X
+			vertices[j * subs * 12 + i * 12 + 10] = -si + 0.5f * si * (j + 1);	// Y
+			vertices[j * subs * 12 + i * 12 + 11] = -si + 0.0f * si;			// Z
+		}
+
+	GLubyte indices[6 * subs * subs] = { 0 };
+	for (int j=0; j < subs; ++j)
+		for (int i=0; i < subs; ++i)	
+		{
+			indices[j * subs * 6 + i * 6 + 0] = j * subs * subs + i * subs + 0;
+			indices[j * subs * 6 + i * 6 + 1] = j * subs * subs + i * subs + 1;
+			indices[j * subs * 6 + i * 6 + 2] = j * subs * subs + i * subs + 2;
+
+			indices[j * subs * 6 + i * 6 + 3] = j * subs * subs + i * subs + 2;
+			indices[j * subs * 6 + i * 6 + 4] = j * subs * subs + i * subs + 3;
+			indices[j * subs * 6 + i * 6 + 5] = j * subs * subs + i * subs + 1;
+		}
+
+
 	/* Uniform update */
     glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
 
-	/* Draw as triangles, from 0 to 4 */
-	glBindVertexArray(VBO);
-	glDrawArrays(draw_type, 0, 48);
+	// activate and specify pointer to vertex array
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, vertices);
 
-	glBindVertexArray(0);
+	// activate and specify pointer to vertex array
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, 0, vertices);
+
+	// draw first half, range is 6 - 0 + 1 = 7 vertices used
+	glDrawRangeElements(GL_TRIANGLES, 0, 4 * subs * subs - 1, 6 * subs * subs, GL_UNSIGNED_BYTE, indices);
+
+	// draw second half, range is 7 - 1 + 1 = 7 vertices used
+	//glDrawRangeElements(draw_type, 1, 7, 18, GL_UNSIGNED_BYTE, indices+18);
+
+	// deactivate vertex arrays after drawing
+	glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 /* Releases the context */
