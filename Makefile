@@ -1,7 +1,13 @@
 APP=scarter_engine
 CC=g++
-CFLAGS=-Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2`
-LDFLAGS=`pkg-config --libs gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2`
+
+LIBS= gtkmm-2.4       \
+	  glibmm-2.4      \
+	  gtkglextmm-1.2  \
+	  glew
+
+CFLAGS=-g -Wall -std=c++11 `pkg-config --cflags $(LIBS)`
+LDFLAGS=`pkg-config --libs $(LIBS)`
 
 DEPS= GLConfigUtil.h  \
 	  Gui.h           \
