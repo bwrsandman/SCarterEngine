@@ -11,8 +11,8 @@ SimpleGLScene::SimpleGLScene (void)
 
 	/* Try double-buffered visual */
 	glconfig = Gdk::GL::Config::create(Gdk::GL::MODE_RGB    |
-		                             Gdk::GL::MODE_DEPTH  |
-		                             Gdk::GL::MODE_DOUBLE);
+		                               Gdk::GL::MODE_DEPTH  |
+		                               Gdk::GL::MODE_DOUBLE);
 	if (!glconfig)
 	{
 	  std::cerr << "*** Cannot find the double-buffered visual.\n"
@@ -38,6 +38,8 @@ SimpleGLScene::SimpleGLScene (void)
 SimpleGLScene::~SimpleGLScene (void)
 { }
 
+/* Signal to take any necessary actions when the widget is instantiated on a
+ * particular display. */
 void SimpleGLScene::on_realize (void)
 {
 	/* We need to call the base on_realize() */
@@ -48,42 +50,16 @@ void SimpleGLScene::on_realize (void)
 
 	/*** OpenGL BEGIN ***/
 	if (!glwindow->gl_begin(get_gl_context()))
-	return;
+		return;
 
-	GLUquadricObj* qobj = gluNewQuadric();
-	gluQuadricDrawStyle(qobj, GLU_FILL);
-	glNewList(1, GL_COMPILE);
-	gluSphere(qobj, 1.0, 20, 20);
-	glEndList();
-
-	static GLfloat light_diffuse[] = {1.0, 0.0, 0.0, 1.0};
-	static GLfloat light_position[] = {1.0, 1.0, 1.0, 0.0};
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-	glLightfv(GL_LIGHT0, GL_POSITION, light_position);
-	glEnable(GL_LIGHTING);
-	glEnable(GL_LIGHT0);
-	glEnable(GL_DEPTH_TEST);
-
-	glClearColor(1.0, 1.0, 1.0, 1.0);
-	glClearDepth(1.0);
-
-	glViewport(0, 0, get_width(), get_height());
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(40.0, 1.0, 1.0, 10.0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	gluLookAt(0.0, 0.0, 3.0,
-		    0.0, 0.0, 0.0,
-		    0.0, 1.0, 0.0);
-	glTranslatef(0.0, 0.0, -3.0);
+	// TODO: use the bool from this function
+	init_opengl();
 
 	glwindow->gl_end();
 	/*** OpenGL END ***/
 }
 
+/* Signal to take any necessary actions when the widget changes size. */
 bool SimpleGLScene::on_configure_event (GdkEventConfigure* event)
 {
 	/* Get GL::Window. */
@@ -91,7 +67,7 @@ bool SimpleGLScene::on_configure_event (GdkEventConfigure* event)
 
 	/*** OpenGL BEGIN ***/
 	if (!glwindow->gl_begin(get_gl_context()))
-	return false;
+		return false;
 
 	glViewport(0, 0, get_width(), get_height());
 
@@ -101,6 +77,7 @@ bool SimpleGLScene::on_configure_event (GdkEventConfigure* event)
 	return true;
 }
 
+/* Signal to handle redrawing the contents of the widget. */
 bool SimpleGLScene::on_expose_event (GdkEventExpose* event)
 {
 	/* Get GL::Window. */
@@ -108,17 +85,17 @@ bool SimpleGLScene::on_expose_event (GdkEventExpose* event)
 
 	/*** OpenGL BEGIN ***/
 	if (!glwindow->gl_begin(get_gl_context()))
-	return false;
+		return false;
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glCallList(1);
+	/* Draw here */
 
 	/* Swap buffers. */
 	if (glwindow->is_double_buffered())
-	glwindow->swap_buffers();
+		glwindow->swap_buffers();
 	else
-	glFlush();
+		glFlush();
 
 	glwindow->gl_end();
 	/*** OpenGL END ***/
@@ -126,3 +103,23 @@ bool SimpleGLScene::on_expose_event (GdkEventExpose* event)
 	return true;
 }
 
+
+/* OpenGL specific functions */
+
+/* Initialize OpenGL */
+bool SimpleGLScene::init_opengl (void)
+{
+	// TODO
+	/*if(!create_shaders())
+		return false;
+	create_vao();*/
+
+	/* Clear Frame Buffers */
+	glClearColor(CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A);
+	glClearDepth(1.0f);
+
+	/* Configure Viewport to take up the whole window */
+	glViewport(0, 0, get_width(), get_height());
+
+	return true;
+}
