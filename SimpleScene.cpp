@@ -4,8 +4,13 @@
 
 #include "GLConfigUtil.h"
 #include "SimpleScene.h"
+#include "math3d.h"
 
 SimpleGLScene::SimpleGLScene (void)
+	: World(new Matrix4f(1.0f, 0.0f, 0.0f, 0.0f,
+                         0.0f, 1.0f, 0.0f, 0.0f,
+                         0.0f, 0.0f, 1.0f, 0.0f,
+                         0.0f, 0.0f, 0.0f, 1.0f))
 {
 	/* Configure OpenGL-capable visual. */
 	Glib::RefPtr<Gdk::GL::Config> glconfig;
@@ -39,6 +44,7 @@ SimpleGLScene::SimpleGLScene (void)
 SimpleGLScene::~SimpleGLScene (void)
 { 
 	release();
+	delete(World); World = NULL;
 }
 
 /* Signal to take any necessary actions when the widget is instantiated on a
@@ -93,7 +99,7 @@ bool SimpleGLScene::on_expose_event (GdkEventExpose* event)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	/* Draw here */
-	render();
+	render(draw_type);
 
 	/* Swap buffers. */
 	if (glwindow->is_double_buffered())
@@ -205,18 +211,54 @@ bool SimpleGLScene::create_shaders (void)
 
 	glUseProgram(SHPROG);
 
+	/* Get Uniforms */
+    gWorldLocation = glGetUniformLocation(SHPROG, "gWorld");
+    if (gWorldLocation == 0xFFFFFFFF)
+		return false;
+
 	return true;
 }
 
 /* Vertex array objects */
 void SimpleGLScene::create_vao (void)
 {
-	const float quad[8] =
+	/************************
+	 *            
+	 *      v2------------v1
+	 *     /|            /|
+	 *    / |           / |
+	 *   /  |          /  |
+	 *  v5------------v6  |
+	 *  |   |    |_   |   |
+	 *  |   |    /    |   |
+	 *  |   v3--------|---v0
+	 *  |  /          |  /
+	 *  | /           | /
+	 *  |/            |/
+	 *  v4------------v7
+	 *      
+	 ************************/
+	const float si = 0.5f;
+	const Vector3f v[] =
 	{
-		-0.5f,  0.5f,
-		-0.5f, -0.5f,
-		 0.5f,  0.5f,
-		 0.5f, -0.5f,
+		Vector3f( si, -si, -si),		// v0
+		Vector3f( si,  si, -si),		// v1
+		Vector3f(-si,  si, -si),		// v2
+		Vector3f(-si, -si, -si),		// v3
+		Vector3f(-si, -si,  si),		// v4
+		Vector3f(-si,  si,  si),		// v5
+		Vector3f( si,  si,  si),		// v6
+		Vector3f( si, -si,  si),		// v7
+	};
+
+    Quad3f Quad[] =
+	{
+    	Quad3f(v[0], v[1], v[2], v[3]),	// Back
+    	Quad3f(v[4], v[5], v[6], v[7]),	// Front
+    	Quad3f(v[3], v[2], v[5], v[4]),	// Left
+    	Quad3f(v[7], v[6], v[1], v[0]),	// Right
+    	Quad3f(v[3], v[4], v[7], v[0]),	// Bottom
+    	Quad3f(v[5], v[2], v[1], v[6]),	// Top
 	};
 
 	/* Generate ID for VAO and bind it as the active VAO */
@@ -226,17 +268,21 @@ void SimpleGLScene::create_vao (void)
 	/* Generate a VBO to store our vertex list */
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 8, quad, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Quad), Quad, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);
 }
 
 /* Draw Scene */
-void SimpleGLScene::render (void)
+void SimpleGLScene::render (GLenum draw_type)
 {
+
+	/* Uniform update */
+    glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
+
 	/* Draw as triangles, from 0 to 4 */
 	glBindVertexArray(VBO);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glDrawArrays(draw_type, 0, 48);
 
 	glBindVertexArray(0);
 }
