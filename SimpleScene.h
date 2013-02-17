@@ -6,6 +6,9 @@
 
 class Matrix4f;
 
+const float si = 0.5f;
+const int subs = 4;
+
 class SimpleGLScene : public Gtk::DrawingArea
                     , public Gtk::GL::Widget<SimpleGLScene>
 {
@@ -25,6 +28,7 @@ protected:
 
 private:
     Matrix4f *World = NULL;
+	float alpha = 1.0f;
 
 	const GLenum draw_type = GL_LINES;// GL_POINTS;//GL_QUADS;
 	/* Colors */
@@ -32,41 +36,49 @@ private:
 	const float         CLEAR_G     = 1.0f;
 	const float         CLEAR_B     = 1.0f;
 	const float         CLEAR_A     = 1.0f;
+
 	/* Vertex arrays */
-	GLfloat vertices[12 * subs * subs] = {0};
-	uint              	VBO;
+	GLfloat vertices[12 * subs * subs * 2] = { 0 };
+	GLubyte indices [ 6 * subs * subs * 2] = { 0 };
 	/* Shaders */
 	uint				SHVERT;
 	uint				SHFRAG;
 	uint				SHPROG;
 	/* Uniforms */
 	GLuint gWorldLocation;
+	GLuint gAlpha;
 
 	const char* VERTEX_SHADER =
-/* morph.vert - interpolates between the model and the unit sphere */
+		/* morph.vert - interpolates between the model and the unit sphere */
 		"#version 330\n"
 		"layout (location = 0) in vec3 gl_Vertex;"
 		"uniform mat4 gWorld;"
 		"out vec3 ex_Color;"
-		"uniform float alpha;"	// 0 - 1 float that transitions the morph
-		"void main( void ) {"
-		"	vec3 p = gl_Vertex.xyz;" 			 // original position
+		"uniform float alpha;"	/* 0 - 1 float that transitions the morph */
+		"const float r     = 0.5;"
+
+		"vec3 norm( vec3 p) {"
 		"	float d = sqrt( gl_Vertex.x * gl_Vertex.x + "
 		"					gl_Vertex.y * gl_Vertex.y + "
 		"					gl_Vertex.z * gl_Vertex.z);"
 		"	float theta = acos(gl_Vertex.z/d);"
 		"	float fi    = atan(gl_Vertex.y,gl_Vertex.x);"
-		"	float r     = 0.5;"
-		"	vec3 n      = vec3( r * sin(theta) * cos(fi), "
-		"						r * sin(theta) * sin(fi), "
-		"						r * cos(theta));"
-			// do linear interpolation
-		"	vec3 v = n * alpha + p * ( 1.0 - alpha );"
-			// in case normalize fails...
-		"	if( p == vec3( 0.0, 0.0, 0.0 ) ) {"
-		"		v = vec3( 0.0, 1.0, 0.0 );"
-		"	}"
-			// continue the transformation.
+		"	return        r * vec3( sin(theta) * cos(fi)," 
+		"						    sin(theta) * sin(fi), "
+		"						    cos(theta));"
+		"}"
+
+		"void main( void ) {"
+			/* original position */
+		"	vec3 p = gl_Vertex.xyz;"
+		"	vec3 v;"
+			/* in case normalize fails... */
+		"	if( p == vec3( 0.0, 0.0, 0.0 ) )"
+		"		v = vec3( 0.0, 0.0, r );"
+			/* do linear interpolation */
+		"	else"
+		"		v = normalize(p) * alpha + p * ( 1.0 - alpha );"
+			/* continue the transformation. */
 		"	gl_Position = gWorld * vec4(v, 1.0);"
 		"	ex_Color = clamp(gl_Vertex, 0.0, 1.0);"
 		"}";

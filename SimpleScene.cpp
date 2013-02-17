@@ -144,7 +144,10 @@ bool SimpleGLScene::init_opengl (void)
 
 	/* Create Shader and vertex buffer */
 	if(!create_shaders())
+	{
+		std::cerr << "*** Error Creating shaders.\n";
 		return false;
+	}
 	create_vao();
 
 	/* Clear Frame Buffers */
@@ -215,6 +218,9 @@ bool SimpleGLScene::create_shaders (void)
     gWorldLocation = glGetUniformLocation(SHPROG, "gWorld");
     if (gWorldLocation == 0xFFFFFFFF)
 		return false;
+    gAlpha = glGetUniformLocation(SHPROG, "alpha");
+    if (gAlpha == 0xFFFFFFFF)
+		return false;
 
 	return true;
 }
@@ -224,67 +230,106 @@ void SimpleGLScene::create_vao (void)
 {
 	/************************
 	 *
-	 *      v2------------v1
+	 *      x-------------x
 	 *     /|            /|
 	 *    / |           / |
 	 *   /  |          /  |
-	 *  v5------------v6  |
+	 *  x-------------x   |
 	 *  |   |    |_   |   |
 	 *  |   |    /    |   |
-	 *  |   v3--------|---v0
+	 *  |   x---------|---x
 	 *  |  /          |  /
 	 *  | /           | /
 	 *  |/            |/
-	 *  v4------------v7
+	 *  x-------------x
 	 *
 	 ************************/
 
-}
-
-/* Draw Scene */
-void SimpleGLScene::render (GLenum draw_type)
-{
-
-	const float si = 0.5f;
-	const int subs = 4;
+	// Back
+	float *v = vertices;
+	GLubyte *in = indices;
 
 	for (int j=0; j < subs; ++j)
 		for (int i=0; i < subs; ++i)
 		{
 			// v0+4i
-			vertices[j * subs * 12 + i * 12 +  0] = -si + 0.5f * si * i;		// X
-			vertices[j * subs * 12 + i * 12 +  1] = -si + 0.5f * si * j;		// Y
-			vertices[j * subs * 12 + i * 12 +  2] = -si + 0.0f * si;			// Z
+			v[j * subs * 12 + i * 12 +  0] = -si + 2.0f / subs * si * i;		// X
+			v[j * subs * 12 + i * 12 +  1] = -si + 2.0f / subs * si * j;		// Y
+			v[j * subs * 12 + i * 12 +  2] = -si + 0.0f * si;					// Z
 			// v1+4i
-			vertices[j * subs * 12 + i * 12 +  3] = -si + 0.5f * si * i;		// X
-			vertices[j * subs * 12 + i * 12 +  4] = -si + 0.5f * si * (j + 1);	// Y
-			vertices[j * subs * 12 + i * 12 +  5] = -si + 0.0f * si;			// Z
+			v[j * subs * 12 + i * 12 +  3] = -si + 2.0f / subs * si * i;		// X
+			v[j * subs * 12 + i * 12 +  4] = -si + 2.0f / subs * si * (j + 1);	// Y
+			v[j * subs * 12 + i * 12 +  5] = -si + 0.0f * si;					// Z
 			// v2+4i
-			vertices[j * subs * 12 + i * 12 +  6] = -si + 0.5f * si * (i + 1);	// X
-			vertices[j * subs * 12 + i * 12 +  7] = -si + 0.5f * si * j;		// Y
-			vertices[j * subs * 12 + i * 12 +  8] = -si + 0.0f * si;			// Z
+			v[j * subs * 12 + i * 12 +  6] = -si + 2.0f / subs * si * (i + 1);	// X
+			v[j * subs * 12 + i * 12 +  7] = -si + 2.0f / subs * si * j;		// Y
+			v[j * subs * 12 + i * 12 +  8] = -si + 0.0f * si;					// Z
 			// v3+4i
-			vertices[j * subs * 12 + i * 12 +  9] = -si + 0.5f * si * (i + 1);	// X
-			vertices[j * subs * 12 + i * 12 + 10] = -si + 0.5f * si * (j + 1);	// Y
-			vertices[j * subs * 12 + i * 12 + 11] = -si + 0.0f * si;			// Z
+			v[j * subs * 12 + i * 12 +  9] = -si + 2.0f / subs * si * (i + 1);	// X
+			v[j * subs * 12 + i * 12 + 10] = -si + 2.0f / subs * si * (j + 1);	// Y
+			v[j * subs * 12 + i * 12 + 11] = -si + 0.0f * si;					// Z
 		}
 
-	GLubyte indices[6 * subs * subs] = { 0 };
 	for (int j=0; j < subs; ++j)
 		for (int i=0; i < subs; ++i)	
 		{
-			indices[j * subs * 6 + i * 6 + 0] = j * subs * subs + i * subs + 0;
-			indices[j * subs * 6 + i * 6 + 1] = j * subs * subs + i * subs + 1;
-			indices[j * subs * 6 + i * 6 + 2] = j * subs * subs + i * subs + 2;
+			in[j * subs * 6 + i * 6 + 0] = j * subs * subs + i * subs + 0;
+			in[j * subs * 6 + i * 6 + 1] = j * subs * subs + i * subs + 1;
+			in[j * subs * 6 + i * 6 + 2] = j * subs * subs + i * subs + 2;
 
-			indices[j * subs * 6 + i * 6 + 3] = j * subs * subs + i * subs + 2;
-			indices[j * subs * 6 + i * 6 + 4] = j * subs * subs + i * subs + 3;
-			indices[j * subs * 6 + i * 6 + 5] = j * subs * subs + i * subs + 1;
+			in[j * subs * 6 + i * 6 + 3] = j * subs * subs + i * subs + 2;
+			in[j * subs * 6 + i * 6 + 4] = j * subs * subs + i * subs + 3;
+			in[j * subs * 6 + i * 6 + 5] = j * subs * subs + i * subs + 1;
 		}
 
+	// Front
+	v  += subs * subs * 12;
+	in += subs * subs * 6;
 
+	for (int j=0; j < subs; ++j)
+		for (int i=0; i < subs; ++i)
+		{
+			// v0+4i
+			v[j * subs * 12 + i * 12 +  0] = -si + 2.0f / subs * si * i;		// X
+			v[j * subs * 12 + i * 12 +  1] = -si + 2.0f / subs * si * j;		// Y
+			v[j * subs * 12 + i * 12 +  2] = si;								// Z
+			// v1+4i
+			v[j * subs * 12 + i * 12 +  3] = -si + 2.0f / subs * si * i;		// X
+			v[j * subs * 12 + i * 12 +  4] = -si + 2.0f / subs * si * (j + 1);	// Y
+			v[j * subs * 12 + i * 12 +  5] = si;								// Z
+			// v2+4i
+			v[j * subs * 12 + i * 12 +  6] = -si + 2.0f / subs * si * (i + 1);	// X
+			v[j * subs * 12 + i * 12 +  7] = -si + 2.0f / subs * si * j;		// Y
+			v[j * subs * 12 + i * 12 +  8] = si;								// Z
+			// v3+4i
+			v[j * subs * 12 + i * 12 +  9] = -si + 2.0f / subs * si * (i + 1);	// X
+			v[j * subs * 12 + i * 12 + 10] = -si + 2.0f / subs * si * (j + 1);	// Y
+			v[j * subs * 12 + i * 12 + 11] = si;								// Z
+		}
+
+	for (int j=0; j < subs; ++j)
+		for (int i=0; i < subs; ++i)	
+		{
+			in[j * subs * 6 + i * 6 + 0] = j * subs * subs + i * subs + 0;
+			in[j * subs * 6 + i * 6 + 1] = j * subs * subs + i * subs + 1;
+			in[j * subs * 6 + i * 6 + 2] = j * subs * subs + i * subs + 2;
+
+			in[j * subs * 6 + i * 6 + 3] = j * subs * subs + i * subs + 2;
+			in[j * subs * 6 + i * 6 + 4] = j * subs * subs + i * subs + 3;
+			in[j * subs * 6 + i * 6 + 5] = j * subs * subs + i * subs + 1;
+		}
+
+	// Left
+	v  += subs * subs * 12;
+	in += subs * subs * 6;
+}
+
+/* Draw Scene */
+void SimpleGLScene::render (GLenum draw_type)
+{
 	/* Uniform update */
     glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
+    glUniform1f(gAlpha, alpha);
 
 	// activate and specify pointer to vertex array
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -307,6 +352,4 @@ void SimpleGLScene::render (GLenum draw_type)
 /* Releases the context */
 void SimpleGLScene::release (void)
 {
-	glDeleteBuffers(1, &VBO);
-	glDeleteVertexArrays(1, &VAO);
 }
