@@ -247,7 +247,7 @@ void SimpleGLScene::render (GLenum draw_type)
 
 	const float si = 0.5f;
 	const int subs = 4;
-	GLfloat vertices[12 * subs * subs] = {0};
+
 	for (int j=0; j < subs; ++j)
 		for (int i=0; i < subs; ++i)
 		{

@@ -33,7 +33,7 @@ private:
 	const float         CLEAR_B     = 1.0f;
 	const float         CLEAR_A     = 1.0f;
 	/* Vertex arrays */
-	uint              	VAO;
+	GLfloat vertices[12 * subs * subs] = {0};
 	uint              	VBO;
 	/* Shaders */
 	uint				SHVERT;
@@ -56,7 +56,7 @@ private:
 		"					gl_Vertex.z * gl_Vertex.z);"
 		"	float theta = acos(gl_Vertex.z/d);"
 		"	float fi    = atan(gl_Vertex.y,gl_Vertex.x);"
-		"	float r     = 1.0;"
+		"	float r     = 0.5;"
 		"	vec3 n      = vec3( r * sin(theta) * cos(fi), "
 		"						r * sin(theta) * sin(fi), "
 		"						r * cos(theta));"
