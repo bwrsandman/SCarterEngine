@@ -52,6 +52,8 @@ private:
 	uint				SHFRAG;
 	uint				SHPROG;
 
+	const char* vsh;
+
 	const char* VERTEX_SHADER =
 		/* morph.vert - interpolates between the model and the unit sphere */
 		"#version 330\n"
