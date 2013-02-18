@@ -61,6 +61,15 @@ Gui::Gui (int argc, char** argv, const char* const ui_filename)
 	else
 		std::cerr << "WARNING: Could not grab frame for OpenGL." << std::endl;
 
+	builder->get_widget("sclNorm", scl_norm);
+	if (scl_norm)
+	{
+		scl_norm->set_range (0.0, 1.0);
+		scl_norm->signal_value_changed().connect(sigc::mem_fun(*this, &Gui::on_set_norm_alpha));
+	} else {
+		std::cerr << "WARNING: Could not grab normal slider." << std::endl;
+	}
+
 	scene->show();
 }
 
@@ -69,6 +78,12 @@ Gui::~Gui (void)
 	delete(scene); scene = NULL;
 	delete(main_win); main_win = NULL;
 	delete(kit); kit = NULL;
+}
+
+void Gui::on_set_norm_alpha(void)
+{
+	if (scl_norm && scene)
+		scene->set_alpha(scl_norm->get_value());
 }
 
 void Gui::Draw (void)

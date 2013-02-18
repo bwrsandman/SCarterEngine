@@ -12,6 +12,9 @@ SimpleGLScene::SimpleGLScene (void)
                          0.0f, 0.0f, 1.0f, 0.0f,
                          0.0f, 0.0f, 0.0f, 1.0f))
 {
+	/* Connect timeout */
+	Glib::signal_timeout().connect( sigc::mem_fun(*this, &SimpleGLScene::on_timeout), 17 );
+
 	/* Configure OpenGL-capable visual. */
 	Glib::RefPtr<Gdk::GL::Config> glconfig;
 
@@ -113,6 +116,31 @@ bool SimpleGLScene::on_expose_event (GdkEventExpose* event)
 	return true;
 }
 
+bool SimpleGLScene::on_timeout()
+{
+	/* Get GL::Window. */
+	Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
+
+	/*** OpenGL BEGIN ***/
+	if (!glwindow->gl_begin(get_gl_context()))
+		return false;
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	/* Draw here */
+	render(draw_type);
+
+	/* Swap buffers. */
+	if (glwindow->is_double_buffered())
+		glwindow->swap_buffers();
+	else
+		glFlush();
+
+	glwindow->gl_end();
+	/*** OpenGL END ***/
+
+	return true;
+}
 
 /* OpenGL specific functions */
 

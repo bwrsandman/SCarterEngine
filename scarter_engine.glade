@@ -53,16 +53,16 @@
             </child>
             <child>
               <object class="GtkBox" id="box2">
+                <property name="width_request">100</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkScale" id="scale1">
+                  <object class="GtkScale" id="sclNorm">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="lower_stepper_sensitivity">on</property>
                     <property name="round_digits">1</property>
-                    <property name="digits">0</property>
+                    <property name="digits">2</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -89,6 +89,7 @@
             <property name="label">gtk-close</property>
             <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="has_focus">True</property>
             <property name="receives_default">True</property>
             <property name="use_stock">True</property>
           </object>

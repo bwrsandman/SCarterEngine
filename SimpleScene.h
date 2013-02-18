@@ -15,11 +15,13 @@ class SimpleGLScene : public Gtk::DrawingArea
 public:
 	SimpleGLScene (void);
 	virtual ~SimpleGLScene (void);
+	inline void set_alpha(float a) { alpha = a; }
 
 protected:
 	virtual void on_realize (void);
 	virtual bool on_configure_event (GdkEventConfigure* event);
 	virtual bool on_expose_event (GdkEventExpose* event);
+	virtual bool on_timeout();
 	virtual bool init_opengl (void);
 	virtual bool create_shaders (void);
 	virtual void create_vao (void);
