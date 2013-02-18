@@ -73,8 +73,8 @@ void SceneBase::on_realize (void)
     if (!glwindow->gl_begin(get_gl_context()))
         return;
 
-    // TODO: use the bool from this function
-    init_opengl();
+    if (!init_opengl())
+        exit(1);
 
     glwindow->gl_end();
     /*** OpenGL END ***/
@@ -230,9 +230,6 @@ bool SceneBase::create_shaders (void)
     /* Get Uniforms */
     gWorldLocation = glGetUniformLocation(SHPROG, "gWorld");
     if (gWorldLocation == 0xFFFFFFFF)
-        return false;
-    gAlpha = glGetUniformLocation(SHPROG, "alpha");
-    if (gAlpha == 0xFFFFFFFF)
         return false;
 
     return true;
