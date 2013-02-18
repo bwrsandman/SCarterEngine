@@ -24,9 +24,9 @@ public:
     inline void set_alpha(float a) { alpha = a; }
     
 protected:
-	virtual void create_vao (void);
-        virtual bool create_shaders (const char*);
-	virtual void render (void);
+    virtual void create_vao (void);
+    virtual bool create_shaders (const char*);
+    virtual void render (void);
 
 private:
     float alpha = 0.0f;

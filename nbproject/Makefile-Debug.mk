@@ -38,6 +38,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/Gui.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/Scenes/SceneMorph.o \
+	${OBJECTDIR}/IKLine.o \
 	${OBJECTDIR}/Scenes/SceneBase.o \
 	${OBJECTDIR}/Scenes/SceneIK.o
 
@@ -80,6 +81,11 @@ ${OBJECTDIR}/Scenes/SceneMorph.o: Scenes/SceneMorph.cpp
 	${MKDIR} -p ${OBJECTDIR}/Scenes
 	${RM} $@.d
 	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneMorph.o Scenes/SceneMorph.cpp
+
+${OBJECTDIR}/IKLine.o: IKLine.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/IKLine.o IKLine.cpp
 
 ${OBJECTDIR}/Scenes/SceneBase.o: Scenes/SceneBase.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Scenes

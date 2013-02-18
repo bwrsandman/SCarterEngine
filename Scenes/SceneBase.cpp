@@ -225,8 +225,6 @@ bool SceneBase::create_shaders (const char* vsh)
     if (res == GL_FALSE)
         std::cerr << "Failed to link shader program" << std::endl;
 
-    glUseProgram(SHPROG);
-
     /* Get Uniforms */
     gWorldLocation = glGetUniformLocation(SHPROG, "gWorld");
     if (gWorldLocation == 0xFFFFFFFF)
@@ -245,6 +243,9 @@ void SceneBase::render ()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    /* Set current rendering shader */
+    glUseProgram(SHPROG);
+    
     /* Uniform update */
     glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
 

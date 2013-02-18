@@ -1,3 +1,7 @@
 *.o
 *~
+*.kate-swp
+.dep.inc
+build/
+dist/
 scarter_engine

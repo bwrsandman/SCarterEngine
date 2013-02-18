@@ -54,8 +54,8 @@ void SceneMorph::create_vao (void)
      *
      ************************/
 
-    vertices = new GLfloat[12 * subs * subs * 2];// = { 0 };
-    indices = new GLubyte[ 6 * subs * subs * 2];
+    vertices = new GLfloat[12 * subs * subs * 2];
+    indices  = new GLubyte[ 6 * subs * subs * 2];
 
     // Back
     GLfloat *v = vertices;
@@ -65,21 +65,21 @@ void SceneMorph::create_vao (void)
         for (int i=0; i < subs; ++i)
         {
             // v0+4i
-            v[j * subs * 12 + i * 12 +  0] = -si + 2.0f / subs * si * i;        // X
-            v[j * subs * 12 + i * 12 +  1] = -si + 2.0f / subs * si * j;        // Y
-            v[j * subs * 12 + i * 12 +  2] = -si + 0.0f * si;                   // Z
+            v[j*subs * 12 + i*12 +  0] = -si + 2.0f/subs * si *  i;       // X
+            v[j*subs * 12 + i*12 +  1] = -si + 2.0f/subs * si *  j;       // Y
+            v[j*subs * 12 + i*12 +  2] = -si + 0.0f * si;                 // Z
             // v1+4i
-            v[j * subs * 12 + i * 12 +  3] = -si + 2.0f / subs * si * i;        // X
-            v[j * subs * 12 + i * 12 +  4] = -si + 2.0f / subs * si * (j + 1);  // Y
-            v[j * subs * 12 + i * 12 +  5] = -si + 0.0f * si;                   // Z
+            v[j*subs * 12 + i*12 +  3] = -si + 2.0f/subs * si *  i;       // X
+            v[j*subs * 12 + i*12 +  4] = -si + 2.0f/subs * si * (j + 1);  // Y
+            v[j*subs * 12 + i*12 +  5] = -si + 0.0f * si;                 // Z
             // v2+4i
-            v[j * subs * 12 + i * 12 +  6] = -si + 2.0f / subs * si * (i + 1);  // X
-            v[j * subs * 12 + i * 12 +  7] = -si + 2.0f / subs * si * j;        // Y
-            v[j * subs * 12 + i * 12 +  8] = -si + 0.0f * si;                   // Z
+            v[j*subs * 12 + i*12 +  6] = -si + 2.0f/subs * si * (i + 1);  // X
+            v[j*subs * 12 + i*12 +  7] = -si + 2.0f/subs * si *  j;       // Y
+            v[j*subs * 12 + i*12 +  8] = -si + 0.0f * si;                 // Z
             // v3+4i
-            v[j * subs * 12 + i * 12 +  9] = -si + 2.0f / subs * si * (i + 1);  // X
-            v[j * subs * 12 + i * 12 + 10] = -si + 2.0f / subs * si * (j + 1);  // Y
-            v[j * subs * 12 + i * 12 + 11] = -si + 0.0f * si;                   // Z
+            v[j*subs * 12 + i*12 +  9] = -si + 2.0f/subs * si * (i + 1);  // X
+            v[j*subs * 12 + i*12 + 10] = -si + 2.0f/subs * si * (j + 1);  // Y
+            v[j*subs * 12 + i*12 + 11] = -si + 0.0f * si;                 // Z
         }
 
     for (int j=0; j < subs; ++j)
@@ -102,21 +102,21 @@ void SceneMorph::create_vao (void)
         for (int i=0; i < subs; ++i)
         {
             // v0+4i
-            v[j * subs * 12 + i * 12 +  0] = -si + 2.0f / subs * si * i;        // X
-            v[j * subs * 12 + i * 12 +  1] = -si + 2.0f / subs * si * j;        // Y
-            v[j * subs * 12 + i * 12 +  2] = si;                                // Z
+            v[j*subs*12 + i*12 +  0] = -si + 2.0f/subs * si * i;        // X
+            v[j*subs*12 + i*12 +  1] = -si + 2.0f/subs * si * j;        // Y
+            v[j*subs*12 + i*12 +  2] = si;                              // Z
             // v1+4i
-            v[j * subs * 12 + i * 12 +  3] = -si + 2.0f / subs * si * i;        // X
-            v[j * subs * 12 + i * 12 +  4] = -si + 2.0f / subs * si * (j + 1);  // Y
-            v[j * subs * 12 + i * 12 +  5] = si;                                // Z
+            v[j*subs*12 + i*12 +  3] = -si + 2.0f/subs * si * i;        // X
+            v[j*subs*12 + i*12 +  4] = -si + 2.0f/subs * si * (j + 1);  // Y
+            v[j*subs*12 + i*12 +  5] = si;                              // Z
             // v2+4i
-            v[j * subs * 12 + i * 12 +  6] = -si + 2.0f / subs * si * (i + 1);  // X
-            v[j * subs * 12 + i * 12 +  7] = -si + 2.0f / subs * si * j;        // Y
-            v[j * subs * 12 + i * 12 +  8] = si;                                // Z
+            v[j*subs*12 + i*12 +  6] = -si + 2.0f/subs * si * (i + 1);  // X
+            v[j*subs*12 + i*12 +  7] = -si + 2.0f/subs * si * j;        // Y
+            v[j*subs*12 + i*12 +  8] = si;                              // Z
             // v3+4i
-            v[j * subs * 12 + i * 12 +  9] = -si + 2.0f / subs * si * (i + 1);  // X
-            v[j * subs * 12 + i * 12 + 10] = -si + 2.0f / subs * si * (j + 1);  // Y
-            v[j * subs * 12 + i * 12 + 11] = si;                                // Z
+            v[j*subs*12 + i*12 +  9] = -si + 2.0f/subs * si * (i + 1);  // X
+            v[j*subs*12 + i*12 + 10] = -si + 2.0f/subs * si * (j + 1);  // Y
+            v[j*subs*12 + i*12 + 11] = si;                              // Z
         }
 
     for (int j=0; j < subs; ++j)
