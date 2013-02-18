@@ -1,6 +1,6 @@
-/*
- * main.cpp
- * Copyright (C) 2013 Unknown <mr.sandy.carter@gmail.com>
+/* 
+ * File:   main.cpp
+ * Author: Sandy Carter
  *
  * SCarter_Engine is free software: you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -14,9 +14,15 @@
  *
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * Created on February 17, 2013, 11:35 PM
  */
 
-#include "Gui.h"
+/*
+ * 
+ */
+
+#include "Gui.hpp"
 
 const char* const _ui_file = "scarter_engine.glade";
 
@@ -27,3 +33,4 @@ int main (int argc, char** argv)
 
 	return 0;
 }
+

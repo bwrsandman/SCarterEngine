@@ -96,4 +96,3 @@ struct Matrix4f
 
 
 #endif	/* MATH_3D_H */
-
