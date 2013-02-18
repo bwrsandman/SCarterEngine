@@ -40,7 +40,7 @@ protected:
     virtual bool init_opengl (void);
     virtual bool create_shaders (const char*);
     virtual void create_vao (void);
-    virtual void render (GLenum);
+    virtual void render (void);
     virtual void release (void);
     
     /* Shaders */
@@ -57,8 +57,6 @@ protected:
     "       out_Color = vec4(ex_Color, 1.0);}";
 
 private:
-
-    const GLenum draw_type = GL_LINES;// GL_POINTS;//GL_QUADS;
     /* Colors */
     const float         CLEAR_R     = 1.0f;
     const float         CLEAR_G     = 1.0f;

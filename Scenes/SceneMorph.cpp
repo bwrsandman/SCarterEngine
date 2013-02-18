@@ -137,12 +137,11 @@ void SceneMorph::create_vao (void)
 }
 
 /* Draw Scene */
-void SceneMorph::render (GLenum draw_type)
+void SceneMorph::render ()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    SceneBase::render();
 
     /* Uniform update */
-    glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
     glUniform1f(gAlpha, alpha);
 
     // activate and specify pointer to vertex array
@@ -151,9 +150,6 @@ void SceneMorph::render (GLenum draw_type)
 
     // draw first half, range is 6 - 0 + 1 = 7 vertices used
     glDrawRangeElements(GL_TRIANGLES, 0, 4 * subs * subs - 1, 6 * subs * subs, GL_UNSIGNED_BYTE, indices);
-
-    // draw second half, range is 7 - 1 + 1 = 7 vertices used
-    //glDrawRangeElements(draw_type, 1, 7, 18, GL_UNSIGNED_BYTE, indices+18);
 
     // deactivate vertex arrays after drawing
     glDisableClientState(GL_VERTEX_ARRAY);

@@ -26,7 +26,7 @@ public:
 protected:
 	virtual void create_vao (void);
         virtual bool create_shaders (const char*);
-	virtual void render (GLenum);
+	virtual void render (void);
 
 private:
     float alpha = 0.0f;

@@ -114,7 +114,7 @@ bool SceneBase::on_timeout()
         return false;
 
     /* Draw here */
-    render(draw_type);
+    render();
 
     /* Swap buffers. */
     if (glwindow->is_double_buffered())
@@ -241,17 +241,13 @@ void SceneBase::create_vao (void)
 }
 
 /* Draw Scene */
-void SceneBase::render (GLenum draw_type)
+void SceneBase::render ()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /* Uniform update */
     glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
 
-    // deactivate vertex arrays after drawing
-    glDisableClientState(GL_VERTEX_ARRAY);
-
-    /*** OpenGL END ***/
 }
 
 /* Releases the context */
