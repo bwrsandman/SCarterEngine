@@ -30,7 +30,7 @@ protected:
 
 private:
     Matrix4f *World = NULL;
-	float alpha = 1.0f;
+	float alpha = 0.0f;
 
 	const GLenum draw_type = GL_LINES;// GL_POINTS;//GL_QUADS;
 	/* Colors */

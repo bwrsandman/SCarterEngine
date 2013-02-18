@@ -107,6 +107,14 @@ bool SimpleGLScene::on_timeout()
 	/* Draw here */
 	render(draw_type);
 
+	/* Swap buffers. */
+	if (glwindow->is_double_buffered())
+		glwindow->swap_buffers();
+	else
+		glFlush();
+
+	glwindow->gl_end();
+
 	return true;
 }
 
@@ -346,13 +354,6 @@ void SimpleGLScene::render (GLenum draw_type)
 	// deactivate vertex arrays after drawing
 	glDisableClientState(GL_VERTEX_ARRAY);
 
-	/* Swap buffers. */
-	if (glwindow->is_double_buffered())
-		glwindow->swap_buffers();
-	else
-		glFlush();
-
-	glwindow->gl_end();
 	/*** OpenGL END ***/
 }
 
