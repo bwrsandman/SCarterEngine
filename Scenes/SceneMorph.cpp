@@ -25,60 +25,7 @@ SceneMorph::~SceneMorph() {
 /* Shaders */
 bool SceneMorph::create_shaders (void)
 {
-    char shader_error[1024];
-    int error_length = 0;
-    GLint res;
-
-    /* Generate some IDs for our shader programs */
-    SHVERT = glCreateShader(GL_VERTEX_SHADER);
-    SHFRAG = glCreateShader(GL_FRAGMENT_SHADER);
-    SHPROG = glCreateProgram();
-
-    /* Assign shader source code to these IDs */
-    glShaderSource(SHVERT, 1, &VERTEX_SHADER, NULL);
-    glShaderSource(SHFRAG, 1, &FRAGMENT_SHADER, NULL);
-
-    /* Compile the code */
-    glCompileShader(SHVERT);
-    glCompileShader(SHFRAG);
-
-    /* Check if compilation was successful */
-    glGetShaderiv(SHVERT, GL_COMPILE_STATUS, &res);
-    if (res == GL_FALSE)
-    {
-        std::cerr << "Compilation of vertex shader failed" << std::endl;
-        glGetShaderInfoLog(SHVERT, 1024, &error_length, shader_error);
-        std::cerr << shader_error << std::endl;
-        return false;
-    }
-    glGetShaderiv(SHFRAG, GL_COMPILE_STATUS, &res);
-    if (res == GL_FALSE)
-    {
-        std::cerr << "Compilation of fragment shader failed" << std::endl;
-        glGetShaderInfoLog(SHFRAG, 1024, &error_length, shader_error);
-        std::cerr << shader_error << std::endl;
-        return false;
-    }
-
-    /* Attach these shaders to the shader program */
-    glAttachShader(SHPROG, SHVERT);
-    glAttachShader(SHPROG, SHFRAG);
-
-    /* Flag the shaders to be deleted when the shader program is deleted */
-    glDeleteShader(SHVERT);
-    glDeleteShader(SHFRAG);
-
-    /* Link the shaders */
-    glLinkProgram(SHPROG);
-    glGetProgramiv(SHPROG, GL_LINK_STATUS, &res);
-    if (res == GL_FALSE)
-        std::cerr << "Failed to link shader program" << std::endl;
-
-    glUseProgram(SHPROG);
-
-    /* Get Uniforms */
-    gWorldLocation = glGetUniformLocation(SHPROG, "gWorld");
-    if (gWorldLocation == 0xFFFFFFFF)
+    if (!SceneBase::create_shaders())
         return false;
     gAlpha = glGetUniformLocation(SHPROG, "alpha");
     if (gAlpha == 0xFFFFFFFF)
