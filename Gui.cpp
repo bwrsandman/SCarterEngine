@@ -21,7 +21,7 @@
 #include <gtkglmm.h>
 
 #include "Gui.h"
-#include "SimpleScene.h"
+#include "Scenes/SceneMorph.hpp"
 
 Gui::Gui (int argc, char** argv, const char* const ui_filename)
 {
@@ -55,7 +55,7 @@ Gui::Gui (int argc, char** argv, const char* const ui_filename)
 	else
 		std::cerr << "WARNING: Could not grab close button." << std::endl;
 
-	scene = new SimpleGLScene();
+	scene = new SceneMorph();
 	if (gl_container)
 		gl_container->add(*scene);
 	else

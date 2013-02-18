@@ -2,18 +2,18 @@
 #include <GL/glew.h>
 #include <GL/glu.h>
 
-#include "GLConfigUtil.h"
-#include "SimpleScene.h"
-#include "math3d.h"
+#include "../GLConfigUtil.h"
+#include "../math3d.h"
+#include "SceneBase.hpp"
 
-SimpleGLScene::SimpleGLScene (void)
+SceneBase::SceneBase (void)
 	: World(new Matrix4f(1.0f, 0.0f, 0.0f, 0.0f,
                          0.0f, 1.0f, 0.0f, 0.0f,
                          0.0f, 0.0f, 1.0f, 0.0f,
                          0.0f, 0.0f, 0.0f, 1.0f))
 {
 	/* Connect timeout */
-	Glib::signal_timeout().connect( sigc::mem_fun(*this, &SimpleGLScene::on_timeout), 17 );
+	Glib::signal_timeout().connect( sigc::mem_fun(*this, &SceneBase::on_timeout), 17 );
 
 	/* Configure OpenGL-capable visual. */
 	Glib::RefPtr<Gdk::GL::Config> glconfig;
@@ -44,15 +44,16 @@ SimpleGLScene::SimpleGLScene (void)
 	set_gl_capability(glconfig);
 }
 
-SimpleGLScene::~SimpleGLScene (void)
+SceneBase::~SceneBase (void)
 { 
 	release();
 	delete(World); World = NULL;
+	delete(vertices); vertices = NULL;
 }
 
 /* Signal to take any necessary actions when the widget is instantiated on a
  * particular display. */
-void SimpleGLScene::on_realize (void)
+void SceneBase::on_realize (void)
 {
 	/* We need to call the base on_realize() */
 	Gtk::DrawingArea::on_realize();
@@ -72,7 +73,7 @@ void SimpleGLScene::on_realize (void)
 }
 
 /* Signal to take any necessary actions when the widget changes size. */
-bool SimpleGLScene::on_configure_event (GdkEventConfigure* event)
+bool SceneBase::on_configure_event (GdkEventConfigure* event)
 {
 	/* Get GL::Window. */
 	Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
@@ -90,12 +91,12 @@ bool SimpleGLScene::on_configure_event (GdkEventConfigure* event)
 }
 
 /* Signal to handle redrawing the contents of the widget. */
-bool SimpleGLScene::on_expose_event (GdkEventExpose* event)
+bool SceneBase::on_expose_event (GdkEventExpose* event)
 {
 	return on_timeout();
 }
 
-bool SimpleGLScene::on_timeout()
+bool SceneBase::on_timeout()
 {
 	/* Get GL::Window. */
 	Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
@@ -121,7 +122,7 @@ bool SimpleGLScene::on_timeout()
 /* OpenGL specific functions */
 
 /* Initialize OpenGL */
-bool SimpleGLScene::init_opengl (void)
+bool SceneBase::init_opengl (void)
 {
 	std::cout << "OpenGL version - " 
               << glGetString(GL_VERSION) << std::endl;
@@ -165,7 +166,7 @@ bool SimpleGLScene::init_opengl (void)
 }
 
 /* Shaders */
-bool SimpleGLScene::create_shaders (void)
+bool SceneBase::create_shaders (void)
 {
 	char shader_error[1024];
 	int error_length = 0;
@@ -230,7 +231,7 @@ bool SimpleGLScene::create_shaders (void)
 }
 
 /* Vertex array objects */
-void SimpleGLScene::create_vao (void)
+void SceneBase::create_vao (void)
 {
 	/************************
 	 *
@@ -249,8 +250,11 @@ void SimpleGLScene::create_vao (void)
 	 *
 	 ************************/
 
+	vertices = new GLfloat[12 * subs * subs * 2];// = { 0 };
+	indices = new GLubyte[ 6 * subs * subs * 2];
+
 	// Back
-	float *v = vertices;
+	GLfloat *v = vertices;
 	GLubyte *in = indices;
 
 	for (int j=0; j < subs; ++j)
@@ -329,17 +333,13 @@ void SimpleGLScene::create_vao (void)
 }
 
 /* Draw Scene */
-void SimpleGLScene::render (GLenum draw_type)
+void SceneBase::render (GLenum draw_type)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	/* Uniform update */
     glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
     glUniform1f(gAlpha, alpha);
-
-	// activate and specify pointer to vertex array
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, vertices);
 
 	// activate and specify pointer to vertex array
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -358,6 +358,6 @@ void SimpleGLScene::render (GLenum draw_type)
 }
 
 /* Releases the context */
-void SimpleGLScene::release (void)
+void SceneBase::release (void)
 {
 }

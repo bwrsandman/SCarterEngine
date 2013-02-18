@@ -1,20 +1,19 @@
-#ifndef SIMPLESCENE_H
-#define SIMPLESCENE_H
+#ifndef SCENEBASE_H
+#define SCENEBASE_H
 
 #include <gtkmm.h>
 #include <gtkglmm.h>
 
 class Matrix4f;
-
-const float si = 0.5f;
+const float si = 0.75f;
 const int subs = 4;
 
-class SimpleGLScene : public Gtk::DrawingArea
-                    , public Gtk::GL::Widget<SimpleGLScene>
+class SceneBase : public Gtk::DrawingArea
+                , public Gtk::GL::Widget<SceneBase>
 {
 public:
-	SimpleGLScene (void);
-	virtual ~SimpleGLScene (void);
+	SceneBase (void);
+	virtual ~SceneBase (void);
 	inline void set_alpha(float a) { alpha = a; }
 
 protected:
@@ -40,8 +39,8 @@ private:
 	const float         CLEAR_A     = 1.0f;
 
 	/* Vertex arrays */
-	GLfloat vertices[12 * subs * subs * 2] = { 0 };
-	GLubyte indices [ 6 * subs * subs * 2] = { 0 };
+	GLfloat *vertices;
+	GLubyte *indices;
 	/* Shaders */
 	uint				SHVERT;
 	uint				SHFRAG;
@@ -57,7 +56,7 @@ private:
 		"uniform mat4 gWorld;"
 		"out vec3 ex_Color;"
 		"uniform float alpha;"	/* 0 - 1 float that transitions the morph */
-		"const float r     = 0.5;"
+		"const float r     = 0.75;"
 
 		"vec3 norm( vec3 p) {"
 		"	float d = sqrt( gl_Vertex.x * gl_Vertex.x + "
@@ -78,8 +77,8 @@ private:
 		"	if( p == vec3( 0.0, 0.0, 0.0 ) )"
 		"		v = vec3( 0.0, 0.0, r );"
 			/* do linear interpolation */
-		"	else"
-		"		v = normalize(p) * alpha + p * ( 1.0 - alpha );"
+		"	else {"
+		"		v = r * normalize(gl_Vertex.xyz) * alpha + p * ( 1.0 - alpha );}"
 			/* continue the transformation. */
 		"	gl_Position = gWorld * vec4(v, 1.0);"
 		"	ex_Color = clamp(gl_Vertex, 0.0, 1.0);"
