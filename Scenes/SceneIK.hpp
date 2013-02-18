@@ -12,6 +12,8 @@
 #include <gtkglmm.h>
 #include "SceneBase.hpp"
 
+class Vector2f;
+
 class IKLine;
 
 class SceneIK : public SceneBase 
@@ -31,6 +33,8 @@ private:
     /* Uniforms */
     GLuint gOrient;
     GLuint gPos;
+    
+    Vector2f* target_pos = NULL;
     
     const char* VERTEX_SHADER =
         "#version 330\n"

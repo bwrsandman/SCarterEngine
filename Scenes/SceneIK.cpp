@@ -11,6 +11,7 @@
 #include "../math3d.hpp"
 
 SceneIK::SceneIK()
+    : target_pos(new Vector2f(0.0f, 0.5f))
 {
 }
 
@@ -20,7 +21,7 @@ SceneIK::SceneIK(const SceneIK& orig)
 
 SceneIK::~SceneIK() 
 {
-    //delete lines; lines = NULL;
+    delete target_pos; target_pos = NULL;
 }
 
 /* Shaders */
@@ -83,6 +84,8 @@ void SceneIK::render()
         /* Draw indices 0-1 which are 2 elements */
         glDrawRangeElements(GL_LINES, 0, 1, 2, GL_UNSIGNED_BYTE, 
                                                lines[i].indices);
+        glDrawRangeElements(GL_POINTS, 0, 1, 2, GL_UNSIGNED_BYTE, 
+                                       lines[i].indices);
 
         // deactivate vertex arrays after drawing
         glDisableClientState(GL_VERTEX_ARRAY);
@@ -90,4 +93,28 @@ void SceneIK::render()
         /* disable program */
 	glUseProgram(0);
     }
+    
+    /* Set current rendering shader */
+    glUseProgram(SHPROG);
+
+    /* Uniform update */
+    glUniform1f(gOrient, 0.0f);
+    
+    glUniform2fv(gPos, 1, (GLfloat*) target_pos);
+
+    // activate and specify pointer to vertex array
+    glEnableClientState(GL_VERTEX_ARRAY);
+    Vector2f point_vertex[] = {Vector2f()};
+    glVertexPointer(2, GL_FLOAT, 0, &point_vertex);
+
+    /* Draw index 0 which is 1 elements */
+    GLubyte point_index = 0;
+    glDrawRangeElements(GL_POINTS, 0, 0, 1, GL_UNSIGNED_BYTE, 
+                                            &point_index);
+
+    // deactivate vertex arrays after drawing
+    glDisableClientState(GL_VERTEX_ARRAY);
+
+    /* disable program */
+    glUseProgram(0);
 }

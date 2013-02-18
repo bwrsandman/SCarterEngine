@@ -170,6 +170,8 @@ bool SceneBase::init_opengl (void)
     /* Configure Viewport to take up the whole window */
     glViewport(0, 0, get_width(), get_height());
 
+    glPointSize(5.0f);
+            
     return true;
 }
 
