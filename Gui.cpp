@@ -84,6 +84,8 @@ void Gui::on_set_norm_alpha(void)
 {
 	if (scl_norm && scene)
 		scene->set_alpha(scl_norm->get_value());
+	else
+		std::cerr << "Scene or slider seems to be missing" << std::endl;
 }
 
 void Gui::Draw (void)

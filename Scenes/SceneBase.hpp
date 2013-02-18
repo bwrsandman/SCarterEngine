@@ -17,6 +17,17 @@ public:
 	inline void set_alpha(float a) { alpha = a; }
 
 protected:
+    Matrix4f *World = NULL;
+	float alpha = 0.0f;
+
+	/* Uniforms */
+	GLuint gWorldLocation;
+	GLuint gAlpha;
+
+	/* Vertex arrays */
+	GLfloat *vertices = NULL;
+	GLubyte *indices = NULL;
+
 	virtual void on_realize (void);
 	virtual bool on_configure_event (GdkEventConfigure* event);
 	virtual bool on_expose_event (GdkEventExpose* event);
@@ -28,8 +39,6 @@ protected:
 	virtual void release (void);
 
 private:
-    Matrix4f *World = NULL;
-	float alpha = 0.0f;
 
 	const GLenum draw_type = GL_LINES;// GL_POINTS;//GL_QUADS;
 	/* Colors */
@@ -38,16 +47,10 @@ private:
 	const float         CLEAR_B     = 1.0f;
 	const float         CLEAR_A     = 1.0f;
 
-	/* Vertex arrays */
-	GLfloat *vertices;
-	GLubyte *indices;
 	/* Shaders */
 	uint				SHVERT;
 	uint				SHFRAG;
 	uint				SHPROG;
-	/* Uniforms */
-	GLuint gWorldLocation;
-	GLuint gAlpha;
 
 	const char* VERTEX_SHADER =
 		/* morph.vert - interpolates between the model and the unit sphere */

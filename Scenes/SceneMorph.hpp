@@ -10,7 +10,11 @@ class Matrix4f;
 class SceneMorph : public SceneBase 
                  , public Gtk::GL::Widget<SceneMorph>
 {
-
+public: 
+	SceneMorph(void);
+	~SceneMorph(void);
+protected:
+	virtual void create_vao (void);
+	virtual void render (GLenum);
 };
-
 #endif

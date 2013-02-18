@@ -2,7 +2,7 @@
 #define GUI_H
 
 #include <gtkmm.h>
-class SceneBase;
+class SceneMorph;
 
 class Gui
 {
@@ -14,7 +14,7 @@ private:
 	Gtk::Window* main_win = NULL;
 	Gtk::Alignment* gl_container = NULL;
 	Gtk::Scale* scl_norm = NULL;
-	SceneBase* scene = NULL;
+	SceneMorph* scene = NULL;
 
 	void on_set_norm_alpha(void);
 
