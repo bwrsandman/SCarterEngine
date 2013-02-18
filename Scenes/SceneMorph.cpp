@@ -23,9 +23,9 @@ SceneMorph::~SceneMorph() {
 }
 
 /* Shaders */
-bool SceneMorph::create_shaders (void)
+bool SceneMorph::create_shaders (const char* vsh)
 {
-    if (!SceneBase::create_shaders())
+    if (!SceneBase::create_shaders(VERTEX_SHADER))
         return false;
     gAlpha = glGetUniformLocation(SHPROG, "alpha");
     if (gAlpha == 0xFFFFFFFF)
