@@ -5,14 +5,20 @@
  * Created on February 18, 2013, 7:33 AM
  */
 #include <GL/glew.h>
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
 
 #include "SceneIK.hpp"
+#include "../IKArm.hpp"
 #include "../IKLine.hpp"
 #include "../math3d.hpp"
 
 SceneIK::SceneIK()
-    : target_pos(new Vector2f(0.0f, 0.5f))
 {
+    /* initialize random seed: */
+    srand (time(NULL));
+    
+    target_pos = random_spot();
 }
 
 SceneIK::SceneIK(const SceneIK& orig) 
@@ -21,7 +27,14 @@ SceneIK::SceneIK(const SceneIK& orig)
 
 SceneIK::~SceneIK() 
 {
-    delete target_pos; target_pos = NULL;
+    delete target_pos; target_pos= NULL; 
+    delete arm; arm = NULL;
+}
+
+Vector2f *SceneIK::random_spot()
+{
+    return new Vector2f(2.0f * (float)rand()/(float)RAND_MAX - 1.0f,
+                        2.0f * (float)rand()/(float)RAND_MAX - 1.0f);
 }
 
 /* Shaders */
@@ -57,13 +70,23 @@ void SceneIK::create_vao()
      *    x
      * 
      *************************/
-    lines = new IKLine[3];// {IKLine(), IKLine(), IKLine(),};
-    for (int i = 1; i < 3; ++i)
-        lines[i].set_parent(&lines[i-1]);
+    arm = new IKArm();
 }
 
 void SceneIK::render()
 {   
+    // TODO use proper update(t) function
+    arm->move_to(*target_pos, 0.017f);
+    timer += 0.017f;
+    
+    if (timer > 5.0f)
+    {
+        timer -= 5.0f;
+        delete target_pos;
+        target_pos = random_spot();
+    }
+    
+    
     SceneBase::render();
     
     for (int i = 0; i < 3; ++i)
@@ -72,20 +95,20 @@ void SceneIK::render()
         glUseProgram(SHPROG);
         
         /* Uniform update */
-        glUniform1f(gOrient, lines[i].cum_orient());
+        glUniform1f(gOrient, arm->lines[i].cum_orient());
 
-        Vector2f base_pos = lines[i].cum_base();
+        Vector2f base_pos = arm->lines[i].cum_base();
         glUniform2fv(gPos, 1, (GLfloat*) &base_pos);
 
         // activate and specify pointer to vertex array
         glEnableClientState(GL_VERTEX_ARRAY);
-        glVertexPointer(2, GL_FLOAT, 0, lines[i].vertices);
+        glVertexPointer(2, GL_FLOAT, 0, arm->lines[i].vertices);
 
         /* Draw indices 0-1 which are 2 elements */
-        glDrawRangeElements(GL_LINES, 0, 1, 2, GL_UNSIGNED_BYTE, 
-                                               lines[i].indices);
+        glDrawRangeElements(GL_LINES,  0, 1, 2, GL_UNSIGNED_BYTE, 
+                                                arm->lines[i].indices);
         glDrawRangeElements(GL_POINTS, 0, 1, 2, GL_UNSIGNED_BYTE, 
-                                       lines[i].indices);
+                                                arm->lines[i].indices);
 
         // deactivate vertex arrays after drawing
         glDisableClientState(GL_VERTEX_ARRAY);

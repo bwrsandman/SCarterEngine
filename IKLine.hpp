@@ -25,9 +25,16 @@ public:
     /* Vertex arrays */
     const GLfloat vertices[4];
     const GLubyte indices[2];
+    inline float loc_orient() const { return  loc_orientation; }
+    inline float length() const { return len; }
     float cum_orient() const;
     Vector2f cum_base() const;
     Vector2f cum_tip() const;
+    
+    // TODO keep under 360 and over 0
+    inline void add_orient(float o) { loc_orientation += o; }
+    
+    
     
 private:
     float len = LEN;

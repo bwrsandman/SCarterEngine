@@ -66,10 +66,10 @@ Gui::Gui(int argc, char** argv, const char* ui_filename)
 
     scene = new SceneMorph();
     if (gl_container)
-            gl_container->add(*scene);
+        gl_container->add(*scene);
     else
             std::cerr << "WARNING: Could not grab frame for OpenGL." << std::endl;
-
+    
     builder->get_widget("sclNorm", scl_norm);
     if (scl_norm)
     {
@@ -99,6 +99,7 @@ Gui::~Gui()
     delete(main_win); main_win = NULL;
     delete(kit); kit = NULL;
 }
+
 
 void Gui::on_set_norm_alpha(void)
 {

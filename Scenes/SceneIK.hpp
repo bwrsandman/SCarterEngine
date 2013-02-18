@@ -14,7 +14,7 @@
 
 class Vector2f;
 
-class IKLine;
+class IKArm;
 
 class SceneIK : public SceneBase 
               , public Gtk::GL::Widget<SceneIK>
@@ -27,14 +27,16 @@ private:
     virtual bool create_shaders (const char*);
     virtual void create_vao (void);
     virtual void render (void);
+    Vector2f *random_spot(void);
     
-    IKLine* lines = NULL;
+    IKArm *arm = NULL;
+    float timer = 0.0f;
     
     /* Uniforms */
     GLuint gOrient;
     GLuint gPos;
     
-    Vector2f* target_pos = NULL;
+    Vector2f *target_pos;
     
     const char* VERTEX_SHADER =
         "#version 330\n"
