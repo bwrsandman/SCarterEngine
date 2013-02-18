@@ -92,28 +92,7 @@ bool SimpleGLScene::on_configure_event (GdkEventConfigure* event)
 /* Signal to handle redrawing the contents of the widget. */
 bool SimpleGLScene::on_expose_event (GdkEventExpose* event)
 {
-	/* Get GL::Window. */
-	Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
-
-	/*** OpenGL BEGIN ***/
-	if (!glwindow->gl_begin(get_gl_context()))
-		return false;
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	/* Draw here */
-	render(draw_type);
-
-	/* Swap buffers. */
-	if (glwindow->is_double_buffered())
-		glwindow->swap_buffers();
-	else
-		glFlush();
-
-	glwindow->gl_end();
-	/*** OpenGL END ***/
-
-	return true;
+	return on_timeout();
 }
 
 bool SimpleGLScene::on_timeout()
@@ -125,19 +104,8 @@ bool SimpleGLScene::on_timeout()
 	if (!glwindow->gl_begin(get_gl_context()))
 		return false;
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
 	/* Draw here */
 	render(draw_type);
-
-	/* Swap buffers. */
-	if (glwindow->is_double_buffered())
-		glwindow->swap_buffers();
-	else
-		glFlush();
-
-	glwindow->gl_end();
-	/*** OpenGL END ***/
 
 	return true;
 }
@@ -355,6 +323,8 @@ void SimpleGLScene::create_vao (void)
 /* Draw Scene */
 void SimpleGLScene::render (GLenum draw_type)
 {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	/* Uniform update */
     glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
     glUniform1f(gAlpha, alpha);
@@ -375,6 +345,15 @@ void SimpleGLScene::render (GLenum draw_type)
 
 	// deactivate vertex arrays after drawing
 	glDisableClientState(GL_VERTEX_ARRAY);
+
+	/* Swap buffers. */
+	if (glwindow->is_double_buffered())
+		glwindow->swap_buffers();
+	else
+		glFlush();
+
+	glwindow->gl_end();
+	/*** OpenGL END ***/
 }
 
 /* Releases the context */
