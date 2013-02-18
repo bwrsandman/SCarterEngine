@@ -6,6 +6,7 @@
                    projectFiles="true">
       <itemPath>GLConfigUtil.hpp</itemPath>
       <itemPath>Gui.hpp</itemPath>
+      <itemPath>IKArm.hpp</itemPath>
       <itemPath>IKLine.hpp</itemPath>
       <itemPath>Scenes/SceneBase.hpp</itemPath>
       <itemPath>Scenes/SceneIK.hpp</itemPath>
@@ -21,6 +22,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>Gui.cpp</itemPath>
+      <itemPath>IKArm.cpp</itemPath>
       <itemPath>IKLine.cpp</itemPath>
       <itemPath>Scenes/SceneBase.cpp</itemPath>
       <itemPath>Scenes/SceneIK.cpp</itemPath>
