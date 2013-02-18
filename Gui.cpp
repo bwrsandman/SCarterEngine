@@ -26,6 +26,7 @@
 
 #include "Gui.hpp"
 #include "Scenes/SceneMorph.hpp"
+#include "Scenes/SceneIK.hpp"
 
 Gui::Gui() 
 {
@@ -77,6 +78,13 @@ Gui::Gui(int argc, char** argv, const char* ui_filename)
     } else {
             std::cerr << "WARNING: Could not grab normal slider." << std::endl;
     }
+    
+    Gtk::Notebook* ntb_Scenes = NULL;
+    builder->get_widget("ntbScenes", ntb_Scenes);
+    if (ntb_Scenes)
+        ntb_Scenes->signal_switch_page().connect(sigc::mem_fun(*this, &Gui::on_switch_scene_page));
+    else
+        ;
 
     scene->show();
 }
@@ -94,10 +102,30 @@ Gui::~Gui()
 
 void Gui::on_set_norm_alpha(void)
 {
-	if (scl_norm && scene)
-		scene->set_alpha(scl_norm->get_value());
-	else
-		std::cerr << "Scene or slider seems to be missing" << std::endl;
+    if (scl_norm && scene && dynamic_cast<SceneMorph*>(scene))
+            dynamic_cast<SceneMorph*>(scene)->set_alpha(scl_norm->get_value());
+    else
+            std::cerr << "Scene or slider seems to be missing" << std::endl;
+}
+
+void Gui::on_switch_scene_page(GtkNotebookPage* page, guint page_num)
+{
+    
+    if (!gl_container)
+        return;
+    gl_container->remove();
+    delete scene;
+    switch(page_num)
+    {
+    case 0:
+        scene = new SceneMorph();
+        break;
+    case 1:
+        scene = new SceneIK();
+        break;
+    }
+    gl_container->add(*scene);
+    scene->show();
 }
 
 void Gui::Draw (void)

@@ -24,7 +24,7 @@
 #define	GUI_HPP
 
 #include <gtkmm.h>
-class SceneMorph;
+class SceneBase;
 
 class Gui 
 {
@@ -42,9 +42,10 @@ private:
     Gtk::Window* main_win = NULL;
     Gtk::Alignment* gl_container = NULL;
     Gtk::Scale* scl_norm = NULL;
-    SceneMorph* scene = NULL;
+    SceneBase* scene = NULL;
 
     void on_set_norm_alpha(void);
+    void on_switch_scene_page(GtkNotebookPage*, guint);
 };
 
 #endif	/* GUI_HPP */

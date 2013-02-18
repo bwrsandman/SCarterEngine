@@ -7,6 +7,7 @@
       <itemPath>GLConfigUtil.hpp</itemPath>
       <itemPath>Gui.hpp</itemPath>
       <itemPath>Scenes/SceneBase.hpp</itemPath>
+      <itemPath>Scenes/SceneIK.hpp</itemPath>
       <itemPath>Scenes/SceneMorph.hpp</itemPath>
       <itemPath>math3d.hpp</itemPath>
     </logicalFolder>
@@ -20,6 +21,7 @@
                    projectFiles="true">
       <itemPath>Gui.cpp</itemPath>
       <itemPath>Scenes/SceneBase.cpp</itemPath>
+      <itemPath>Scenes/SceneIK.cpp</itemPath>
       <itemPath>Scenes/SceneMorph.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>

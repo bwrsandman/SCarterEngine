@@ -38,7 +38,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/Gui.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/Scenes/SceneMorph.o \
-	${OBJECTDIR}/Scenes/SceneBase.o
+	${OBJECTDIR}/Scenes/SceneBase.o \
+	${OBJECTDIR}/Scenes/SceneIK.o
 
 
 # C Compiler Flags
@@ -84,6 +85,11 @@ ${OBJECTDIR}/Scenes/SceneBase.o: Scenes/SceneBase.cpp
 	${MKDIR} -p ${OBJECTDIR}/Scenes
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneBase.o Scenes/SceneBase.cpp
+
+${OBJECTDIR}/Scenes/SceneIK.o: Scenes/SceneIK.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Scenes
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneIK.o Scenes/SceneIK.cpp
 
 # Subprojects
 .build-subprojects:
