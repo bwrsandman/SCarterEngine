@@ -32,6 +32,11 @@ public:
     {
         return Vector2f(this->X + rhs.X, this->Y + rhs.Y);
     }
+    
+    Vector2f operator-(const Vector2f& rhs) const
+    {
+        return Vector2f(this->X - rhs.X, this->Y - rhs.Y);
+    }
 
     Vector2f operator*(float rhs) const
     {

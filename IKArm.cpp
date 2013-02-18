@@ -115,5 +115,5 @@ void IKArm::move_by(Vector2f delta)
 
 void IKArm::move_to(Vector2f dest, float t)
 {
-    move_by(max_vel * dest.normalized() * t);
+    move_by(max_vel * (dest - lines[2]).normalized() * t);
 }

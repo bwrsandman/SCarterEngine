@@ -22,7 +22,7 @@ public:
     IKLine *lines;
     void move_to(Vector2f, float);
 private:
-    const float max_vel = 1.5f;
+    const float max_vel = 0.5f;
     float dXdAlpha() const;
     float dYdAlpha() const;
     float dXdBeta() const;
