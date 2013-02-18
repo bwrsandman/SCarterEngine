@@ -33,4 +33,4 @@ $(APP):	$(OBJS) $(DEPS)
 	$(CC) $(OBJS) $(LDFLAGS) -o $(APP)
 
 clean:
-	rm -f *.o  *~ $(APP)
+	rm -f */*.o  */*~ $(APP)
