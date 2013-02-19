@@ -27,6 +27,7 @@
 #include "Gui.hpp"
 #include "Scenes/SceneMorph.hpp"
 #include "Scenes/SceneIK.hpp"
+#include "SceneGears.hpp"
 
 Gui::Gui() 
 {
@@ -64,11 +65,20 @@ Gui::Gui(int argc, char** argv, const char* ui_filename)
     else
             std::cerr << "WARNING: Could not grab close button." << std::endl;
 
+    // TODO: TEMP
+    /*
     scene = new SceneMorph();
     if (gl_container)
         gl_container->add(*scene);
     else
             std::cerr << "WARNING: Could not grab frame for OpenGL." << std::endl;
+    */
+
+    gears = new SceneGears();
+    if (gl_container)
+        gl_container->add(*gears);
+    else
+        std::cerr << "WARNING: Could not grab frame for OpenGL." << std::endl;
     
     builder->get_widget("sclNorm", scl_norm);
     if (scl_norm)
@@ -86,7 +96,8 @@ Gui::Gui(int argc, char** argv, const char* ui_filename)
     else
         ;
 
-    scene->show();
+    //scene->show();
+    gears->show();
 }
 
 Gui::Gui(const Gui& orig) 
@@ -95,6 +106,7 @@ Gui::Gui(const Gui& orig)
 
 Gui::~Gui() 
 {
+    delete(gears); gears = NULL;
     delete(scene); scene = NULL;
     delete(main_win); main_win = NULL;
     delete(kit); kit = NULL;
@@ -115,13 +127,13 @@ void Gui::on_switch_scene_page(GtkNotebookPage* page, guint page_num)
     if (!gl_container)
         return;
     gl_container->remove();
-    delete scene;
+    delete scene; scene = NULL;
     switch(page_num)
     {
-    case 0:
+    case 1:
         scene = new SceneMorph();
         break;
-    case 1:
+    case 2:
         scene = new SceneIK();
         break;
     }
@@ -136,3 +148,45 @@ void Gui::Draw (void)
 		kit->run(*main_win);
 	}
 }
+
+/* TODO: INPUT HANDLING
+ * Source: http://gtkglextmm.sourcearchive.com/downloads/1.2.0-4ubuntu1/
+bool Gears::on_key_press_event(GdkEventKey* event)
+{
+  GLfloat x, y, z;
+
+  m_GearsScene.get_view_rot(x, y, z);
+
+  switch (event->keyval)
+    {
+    case GDK_z:
+      z += 5.0;
+      break;
+    case GDK_Z:
+      z -= 5.0;
+      break;
+    case GDK_Up:
+      x += 5.0;
+      break;
+    case GDK_Down:
+      x -= 5.0;
+      break;
+    case GDK_Left:
+      y += 5.0;
+      break;
+    case GDK_Right:
+      y -= 5.0;
+      break;
+    case GDK_Escape:
+      Gtk::Main::quit();
+      break;
+    default:
+      return true;
+    }
+
+  m_GearsScene.set_view_rot(x, y, z);
+
+  m_GearsScene.invalidate();
+
+  return true;
+}*/
