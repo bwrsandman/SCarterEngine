@@ -39,6 +39,7 @@ OBJECTFILES= \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/Scenes/SceneMorph.o \
 	${OBJECTDIR}/IKArm.o \
+	${OBJECTDIR}/SceneGears.o \
 	${OBJECTDIR}/IKLine.o \
 	${OBJECTDIR}/Scenes/SceneBase.o \
 	${OBJECTDIR}/Scenes/SceneIK.o
@@ -62,11 +63,11 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/a2
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/a2: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/a2 ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/Gui.o: Gui.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -87,6 +88,11 @@ ${OBJECTDIR}/IKArm.o: IKArm.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/IKArm.o IKArm.cpp
+
+${OBJECTDIR}/SceneGears.o: SceneGears.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/SceneGears.o SceneGears.cpp
 
 ${OBJECTDIR}/IKLine.o: IKLine.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -109,7 +115,7 @@ ${OBJECTDIR}/Scenes/SceneIK.o: Scenes/SceneIK.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/a2
 
 # Subprojects
 .clean-subprojects:

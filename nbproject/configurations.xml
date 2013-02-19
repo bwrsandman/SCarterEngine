@@ -9,6 +9,7 @@
       <itemPath>IKArm.hpp</itemPath>
       <itemPath>IKLine.hpp</itemPath>
       <itemPath>Scenes/SceneBase.hpp</itemPath>
+      <itemPath>SceneGears.hpp</itemPath>
       <itemPath>Scenes/SceneIK.hpp</itemPath>
       <itemPath>Scenes/SceneMorph.hpp</itemPath>
       <itemPath>math3d.hpp</itemPath>
@@ -25,6 +26,7 @@
       <itemPath>IKArm.cpp</itemPath>
       <itemPath>IKLine.cpp</itemPath>
       <itemPath>Scenes/SceneBase.cpp</itemPath>
+      <itemPath>SceneGears.cpp</itemPath>
       <itemPath>Scenes/SceneIK.cpp</itemPath>
       <itemPath>Scenes/SceneMorph.cpp</itemPath>
       <itemPath>main.cpp</itemPath>

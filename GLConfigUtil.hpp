@@ -1,7 +1,6 @@
-#ifndef GLCONFIGUTIL_H
-#define GLCONFIGUTIL_H
+#ifndef GLCONFIGUTIL_HPP
+#define GLCONFIGUTIL_HPP
 
-#include <gtkglmm.h>
 #include <gtkglmm.h>
 
 /*****************************************************************************
