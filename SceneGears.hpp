@@ -38,6 +38,9 @@ protected:
     virtual void set_perspective();
     virtual bool create_shaders (const char*) { return true; } //TODO remove
     char* VERTEX_SHADER = NULL; //TODO remove
+    virtual void render();
+    virtual void print_framerate();
+    virtual bool on_expose_event2(GdkEventExpose* event); //TODO remove
 
 public:
     // Invalidate whole window.

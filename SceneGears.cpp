@@ -352,79 +352,94 @@ void SceneGears::set_perspective()
     glLoadIdentity();
     glTranslatef(0.0, 0.0, -40.0);
 }
+// TODO: Function done in base
+bool SceneGears::on_expose_event2(GdkEventExpose* event)
+{
+    //
+    // Get GL::Drawable.
+    //
+
+    Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
+
+    //
+    // GL calls.
+    //
+
+    // *** OpenGL BEGIN ***
+    if (!gldrawable->gl_begin(get_gl_context()))
+      return false;
+
+    render();
+
+    // Swap buffers.
+    if (gldrawable->is_double_buffered())
+      gldrawable->swap_buffers();
+    else
+      glFlush();
+
+    gldrawable->gl_end();
+    // *** OpenGL END ***
+    
+    return true;
+}
 
 bool SceneGears::on_expose_event(GdkEventExpose* event)
 {
-  //
-  // Get GL::Drawable.
-  //
+    bool ret = on_expose_event2(event); // TODO change to base
+    print_framerate();                  // TODO put somewhere better than stdout
+    return ret;
+}
 
-  Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
+void SceneGears::print_framerate()
+{
+    //
+    // Print frame rate.
+    //
 
-  //
-  // GL calls.
-  //
+    ++m_Frames;
 
-  // *** OpenGL BEGIN ***
-  if (!gldrawable->gl_begin(get_gl_context()))
-    return false;
+    double seconds = m_Timer.elapsed();
+    if (seconds >= 5.0)
+      {
+        // std::cout.setf(std::ios_base::fixed, std::ios_base::floatfield);
+        std::cout.setf(std::ios::fixed, std::ios::floatfield);
+        std::cout.precision(3);
+        std::cout << m_Frames << " frames in "
+                  << seconds << " seconds = "
+                  << (m_Frames / seconds) << " FPS\n";
+        m_Timer.reset();
+        m_Frames = 0;
+      }
+}
 
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glPushMatrix();
-    glRotatef(m_ViewRotX, 1.0, 0.0, 0.0);
-    glRotatef(m_ViewRotY, 0.0, 1.0, 0.0);
-    glRotatef(m_ViewRotZ, 0.0, 0.0, 1.0);
-
-    glPushMatrix();
-      glTranslatef(-3.0, -2.0, 0.0);
-      glRotatef(m_Angle, 0.0, 0.0, 1.0);
-      glCallList(m_Gear1);
-    glPopMatrix();
-
-    glPushMatrix();
-      glTranslatef(3.1, -2.0, 0.0);
-      glRotatef(-2.0 * m_Angle - 9.0, 0.0, 0.0, 1.0);
-      glCallList(m_Gear2);
-    glPopMatrix();
+void SceneGears::render()
+{
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glPushMatrix();
-      glTranslatef(-3.1, 4.2, 0.0);
-      glRotatef(-2.0 * m_Angle - 25.0, 0.0, 0.0, 1.0);
-      glCallList(m_Gear3);
+        glRotatef(m_ViewRotX, 1.0, 0.0, 0.0);
+        glRotatef(m_ViewRotY, 0.0, 1.0, 0.0);
+        glRotatef(m_ViewRotZ, 0.0, 0.0, 1.0);
+
+        glPushMatrix();
+            glTranslatef(-3.0, -2.0, 0.0);
+            glRotatef(m_Angle, 0.0, 0.0, 1.0);
+            glCallList(m_Gear1);
+        glPopMatrix();
+
+        glPushMatrix();
+            glTranslatef(3.1, -2.0, 0.0);
+            glRotatef(-2.0 * m_Angle - 9.0, 0.0, 0.0, 1.0);
+            glCallList(m_Gear2);
+        glPopMatrix();
+
+        glPushMatrix();
+            glTranslatef(-3.1, 4.2, 0.0);
+            glRotatef(-2.0 * m_Angle - 25.0, 0.0, 0.0, 1.0);
+            glCallList(m_Gear3);
+        glPopMatrix();
+
     glPopMatrix();
-
-  glPopMatrix();
-
-  // Swap buffers.
-  if (gldrawable->is_double_buffered())
-    gldrawable->swap_buffers();
-  else
-    glFlush();
-
-  gldrawable->gl_end();
-  // *** OpenGL END ***
-
-  //
-  // Print frame rate.
-  //
-
-  ++m_Frames;
-
-  double seconds = m_Timer.elapsed();
-  if (seconds >= 5.0)
-    {
-      // std::cout.setf(std::ios_base::fixed, std::ios_base::floatfield);
-      std::cout.setf(std::ios::fixed, std::ios::floatfield);
-      std::cout.precision(3);
-      std::cout << m_Frames << " frames in "
-                << seconds << " seconds = "
-                << (m_Frames / seconds) << " FPS\n";
-      m_Timer.reset();
-      m_Frames = 0;
-    }
-
-  return true;
 }
 
 bool SceneGears::on_map_event(GdkEventAny* event)

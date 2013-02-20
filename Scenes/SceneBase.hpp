@@ -33,7 +33,6 @@ protected:
     virtual void on_realize (void);
     virtual bool on_configure_event (GdkEventConfigure* event);
     virtual bool on_expose_event (GdkEventExpose* event);
-    virtual bool on_timeout();
     virtual bool init_opengl (void);
     virtual bool create_shaders (const char*);
     virtual void create_geom (void);

@@ -24,7 +24,7 @@ SceneBase::SceneBase (void)
                          0.0f, 0.0f, 0.0f, 1.0f))
 {
     /* Connect timeout */
-    Glib::signal_timeout().connect( sigc::mem_fun(*this, &SceneBase::on_timeout), 17 );
+    //Glib::signal_timeout().connect( sigc::mem_fun(*this, &SceneBase::on_timeout), 17 );
 
     /* Configure OpenGL-capable visual. */
     Glib::RefPtr<Gdk::GL::Config> glconfig;
@@ -114,28 +114,23 @@ void SceneBase::set_perspective()
 /* Signal to handle redrawing the contents of the widget. */
 bool SceneBase::on_expose_event (GdkEventExpose* event)
 {
-    return on_timeout();
-}
-
-bool SceneBase::on_timeout()
-{
     /* Get GL::Window. */
-    Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
+    Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
 
     /*** OpenGL BEGIN ***/
-    if (!glwindow->gl_begin(get_gl_context()))
+    if (!gldrawable->gl_begin(get_gl_context()))
         return false;
 
     /* Draw here */
     render();
 
     /* Swap buffers. */
-    if (glwindow->is_double_buffered())
-        glwindow->swap_buffers();
+    if (gldrawable->is_double_buffered())
+        gldrawable->swap_buffers();
     else
         glFlush();
 
-    glwindow->gl_end();
+    gldrawable->gl_end();
 
     return true;
 }
