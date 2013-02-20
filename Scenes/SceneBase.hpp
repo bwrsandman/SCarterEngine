@@ -30,9 +30,18 @@ protected:
     GLfloat *vertices = NULL;
     GLubyte *indices = NULL;
 
+    /* Idle signal connection */
+    sigc::connection m_ConnectionIdle;
+    
+    /* Signal handlers */
     virtual void on_realize (void);
     virtual bool on_configure_event (GdkEventConfigure* event);
     virtual bool on_expose_event (GdkEventExpose* event);
+    virtual bool on_map_event(GdkEventAny* event);
+    virtual bool on_unmap_event(GdkEventAny* event);
+    virtual bool on_visibility_notify_event(GdkEventVisibility* event);
+    virtual bool on_idle (void);
+    
     virtual bool init_opengl (void);
     virtual bool create_shaders (const char*);
     virtual void create_geom (void);
@@ -40,6 +49,12 @@ protected:
     virtual void set_perspective(void);
     virtual void render (void);
     virtual void release (void);
+    
+    /* Invalidate whole window. */
+    void invalidate() { get_window()->invalidate_rect(get_allocation(), false); }
+
+    /* Update window synchronously (fast). */
+    void update()    { get_window()->process_updates(false); }
     
     /* Shaders */
     uint                SHVERT;

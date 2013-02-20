@@ -135,6 +135,37 @@ bool SceneBase::on_expose_event (GdkEventExpose* event)
     return true;
 }
 
+bool SceneBase::on_map_event(GdkEventAny* event)
+{
+    if (!m_ConnectionIdle.connected())
+        m_ConnectionIdle = Glib::signal_idle().connect(
+        sigc::mem_fun(*this, &SceneBase::on_idle), GDK_PRIORITY_REDRAW);
+
+    return true;
+}
+
+bool SceneBase::on_unmap_event(GdkEventAny* event)
+{
+    if (m_ConnectionIdle.connected())
+        m_ConnectionIdle.disconnect();
+
+    return true;
+}
+
+bool SceneBase::on_visibility_notify_event(GdkEventVisibility* event)
+{
+    if (event->state == GDK_VISIBILITY_FULLY_OBSCURED) {
+        if (m_ConnectionIdle.connected())
+            m_ConnectionIdle.disconnect();
+    } else {
+        if (!m_ConnectionIdle.connected())
+            m_ConnectionIdle = Glib::signal_idle().connect(
+            sigc::mem_fun(*this, &SceneBase::on_idle), GDK_PRIORITY_REDRAW);
+    }
+
+    return true;
+}
+
 /* OpenGL specific functions */
 
 /* Initialize OpenGL */
@@ -268,6 +299,19 @@ void SceneBase::render ()
     /* Uniform update */
     glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
 
+}
+
+
+
+bool SceneBase::on_idle()
+{
+    // Invalidate the whole window.
+    invalidate();
+
+    // Update window synchronously (fast).
+    update();
+
+    return true;
 }
 
 /* Releases the context */
