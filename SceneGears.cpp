@@ -10,7 +10,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
-
+#include <GL/glew.h>
 #include <gtkmm.h>
 #include <gtkglmm.h>
 
@@ -234,47 +234,85 @@ void SceneGears::on_realize()
   m_Timer.start();
 }
 
+// TODO: Function done in base
 bool SceneGears::init_opengl()
 {
-  static GLfloat pos[4] = {5.0, 5.0, 10.0, 0.0};
-  static GLfloat red[4] = {0.8, 0.1, 0.0, 1.0};
-  static GLfloat green[4] = {0.0, 0.8, 0.2, 1.0};
-  static GLfloat blue[4] = {0.2, 0.2, 1.0, 1.0};
+    std::cout << "GL_RENDERER   = " << glGetString(GL_RENDERER)   << std::endl;
+    std::cout << "GL_VERSION    = " << glGetString(GL_VERSION)    << std::endl;
+    std::cout << "GL_VENDOR     = " << glGetString(GL_VENDOR)     << std::endl;
+    std::cout << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS) << std::endl;
+    std::cout << std::endl;
 
-  glLightfv(GL_LIGHT0, GL_POSITION, pos);
-  glEnable(GL_CULL_FACE);
-  glEnable(GL_LIGHTING);
-  glEnable(GL_LIGHT0);
-  glEnable(GL_DEPTH_TEST);
+    /* Initialize GLEW */
+    GLenum err = glewInit();
+    if (err != GLEW_OK)
+    {
+      std::cerr << "*** Error Initializing GLEW: "
+                << glewGetErrorString(err) << std::endl;
+      std::exit(1);
+    }
 
-  // Make the gears.
-  m_Gear1 = glGenLists(1);
-  glNewList(m_Gear1, GL_COMPILE);
-  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, red);
-  gear(1.0, 4.0, 1.0, 20, 0.7);
-  glEndList();
+    /* Check that the machine supports the 2.1 API. */
+    if (!GLEW_VERSION_3_0)
+    {
+      std::cerr << "*** Machine does not support GLEW 3.0 API.\n";
+      std::exit(1);
+    }
 
-  m_Gear2 = glGenLists(1);
-  glNewList(m_Gear2, GL_COMPILE);
-  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, green);
-  gear(0.5, 2.0, 2.0, 10, 0.7);
-  glEndList();
+    /* Check that the machine supports the 2.1 API. */
+    if (!GLEW_VERSION_4_3)
+      std::cout << "*** WARN: Machine does not support GLEW 4.3 API.\n";
 
-  m_Gear3 = glGenLists(1);
-  glNewList(m_Gear3, GL_COMPILE);
-  glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, blue);
-  gear(1.3, 2.0, 0.5, 10, 0.7);
-  glEndList();
+    /* Create Shader and vertex buffer */
+    if(!create_shaders(VERTEX_SHADER))
+    {
+        std::cerr << "*** Error Creating shaders.\n";
+        return false;
+    }
+    
+    create_light();
+    create_geom();
 
-  glEnable(GL_NORMALIZE);
-
-  std::cout << "GL_RENDERER   = " << glGetString(GL_RENDERER)   << std::endl;
-  std::cout << "GL_VERSION    = " << glGetString(GL_VERSION)    << std::endl;
-  std::cout << "GL_VENDOR     = " << glGetString(GL_VENDOR)     << std::endl;
-  std::cout << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS) << std::endl;
-  std::cout << std::endl;
+    glEnable(GL_NORMALIZE);
   
   return true;
+}
+
+void SceneGears::create_light()
+{
+    /* Create lighting */
+    static GLfloat pos[4] = {5.0, 5.0, 10.0, 0.0};
+    glLightfv(GL_LIGHT0, GL_POSITION, pos);
+    glEnable(GL_CULL_FACE);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
+}
+
+void SceneGears::create_geom()
+{
+    static GLfloat red[4] = {0.8, 0.1, 0.0, 1.0};
+    static GLfloat green[4] = {0.0, 0.8, 0.2, 1.0};
+    static GLfloat blue[4] = {0.2, 0.2, 1.0, 1.0};
+    
+    // Make the gears.
+    m_Gear1 = glGenLists(1);
+    glNewList(m_Gear1, GL_COMPILE);
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, red);
+    gear(1.0, 4.0, 1.0, 20, 0.7);
+    glEndList();
+
+    m_Gear2 = glGenLists(1);
+    glNewList(m_Gear2, GL_COMPILE);
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, green);
+    gear(0.5, 2.0, 2.0, 10, 0.7);
+    glEndList();
+
+    m_Gear3 = glGenLists(1);
+    glNewList(m_Gear3, GL_COMPILE);
+    glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, blue);
+    gear(1.3, 2.0, 0.5, 10, 0.7);
+    glEndList();
 }
 
 bool SceneGears::on_configure_event(GdkEventConfigure* event)

@@ -21,7 +21,7 @@ public:
     inline void set_alpha(float a) { alpha = a; }
     
 protected:
-    virtual void create_vao (void);
+    virtual void create_geom (void);
     virtual bool create_shaders (const char*);
     virtual void render (void);
 

@@ -38,7 +38,7 @@ bool SceneMorph::create_shaders (const char* vsh)
 }
 
 /* Vertex array objects */
-void SceneMorph::create_vao (void)
+void SceneMorph::create_geom (void)
 {
     /************************
      *

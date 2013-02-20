@@ -170,7 +170,9 @@ bool SceneBase::init_opengl (void)
         std::cerr << "*** Error Creating shaders.\n";
         return false;
     }
-    create_vao();
+    
+    create_light();
+    create_geom();
 
     /* Clear Frame Buffers */
     glClearColor(CLEAR_R, CLEAR_G, CLEAR_B, CLEAR_A);
@@ -245,7 +247,11 @@ bool SceneBase::create_shaders (const char* vsh)
 }
 
 /* Vertex array objects */
-void SceneBase::create_vao (void)
+void SceneBase::create_geom (void)
+{
+}
+/* Create lights in the scene */
+void SceneBase::create_light(void)
 {
 }
 

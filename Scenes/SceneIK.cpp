@@ -54,7 +54,7 @@ bool SceneIK::create_shaders (const char* vsh)
 }
 
 /* Vertex array objects */
-void SceneIK::create_vao()
+void SceneIK::create_geom()
 {
     /*************************
      * 

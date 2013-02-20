@@ -24,7 +24,7 @@ public:
     virtual ~SceneIK();
 private:
     virtual bool create_shaders (const char*);
-    virtual void create_vao (void);
+    virtual void create_geom (void);
     virtual void render (void);
     Vector2f *random_spot(void);
     

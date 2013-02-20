@@ -36,7 +36,8 @@ protected:
     virtual bool on_timeout();
     virtual bool init_opengl (void);
     virtual bool create_shaders (const char*);
-    virtual void create_vao (void);
+    virtual void create_geom (void);
+    virtual void create_light(void);
     virtual void render (void);
     virtual void release (void);
     
