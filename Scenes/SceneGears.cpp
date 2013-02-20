@@ -214,13 +214,6 @@ void SceneGears::set_perspective()
     glTranslatef(0.0, 0.0, -40.0);
 }
 
-bool SceneGears::on_expose_event(GdkEventExpose* event)
-{
-    bool ret = SceneBase::on_expose_event(event);
-    print_framerate();                  // TODO put somewhere better than stdout
-    return ret;
-}
-
 void SceneGears::print_framerate()
 {
     //
@@ -271,11 +264,12 @@ void SceneGears::render()
         glPopMatrix();
 
     glPopMatrix();
+    
+    print_framerate();
 }
 
-bool SceneGears::on_idle()
+void SceneGears::update()
 {
-  m_Angle += 2.0;
-
-  return SceneBase::on_idle();
+    SceneBase::update();
+    m_Angle += 2.0;
 }

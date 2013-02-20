@@ -3,6 +3,9 @@
  * Author: sandy
  *
  * Created on February 19, 2013, 1:28 AM
+ * 
+ * Based on gtkglextmm example gears by Brian Paul from the public domain
+ * 
  */
 
 #ifndef SCENEGEARS_HPP
@@ -14,6 +17,13 @@ public:
     explicit SceneGears(bool is_sync = true);
     virtual ~SceneGears();
 
+    // get & set view rotation values.
+    void get_view_rot(GLfloat& x, GLfloat& y, GLfloat& z)
+    { x = m_ViewRotX; y = m_ViewRotY; z = m_ViewRotZ; }
+
+    void set_view_rot(GLfloat x, GLfloat y, GLfloat z)
+    { m_ViewRotX = x; m_ViewRotY = y; m_ViewRotZ = z; }
+    
 protected:
     void gear(GLfloat inner_radius,
               GLfloat outer_radius,
@@ -21,27 +31,13 @@ protected:
               GLint   teeth,
               GLfloat tooth_depth);
 
-protected:
-    // signal handlers:
-    virtual bool on_expose_event(GdkEventExpose* event);
-    virtual bool on_idle();
-    
-    // Added
     virtual void create_geom();
     virtual void create_light();
     virtual void set_perspective();
     virtual void render();
+    virtual void update();
     virtual void print_framerate();
 
-public:
-    // get & set view rotation values.
-    void get_view_rot(GLfloat& x, GLfloat& y, GLfloat& z)
-    { x = m_ViewRotX; y = m_ViewRotY; z = m_ViewRotZ; }
-
-    void set_view_rot(GLfloat x, GLfloat y, GLfloat z)
-    { m_ViewRotX = x; m_ViewRotY = y; m_ViewRotZ = z; }
-
-protected:
     // OpenGL scene related variables:
     GLint m_Gear1;
     GLint m_Gear2;
@@ -55,7 +51,6 @@ protected:
 
     bool m_IsSync;
 
-protected:
     // frame rate evaluation stuff:
     int m_Frames;
 };

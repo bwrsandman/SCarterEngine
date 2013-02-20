@@ -48,13 +48,8 @@ protected:
     virtual void create_light(void);
     virtual void set_perspective(void);
     virtual void render (void);
+    virtual void update (void);
     virtual void release (void);
-    
-    /* Invalidate whole window. */
-    void invalidate() { get_window()->invalidate_rect(get_allocation(), false); }
-
-    /* Update window synchronously (fast). */
-    void update()    { get_window()->process_updates(false); }
     
     /* Shaders */
     uint                SHVERT;
@@ -70,6 +65,12 @@ protected:
     "       out_Color = vec4(ex_Color, 1.0);}";
 
 private:
+    /* Invalidate whole window. */
+    void _invalidate() { get_window()->invalidate_rect(get_allocation(), false); }
+
+    /* Update window synchronously (fast). */
+    void _update_sync()    { get_window()->process_updates(false); }
+    
     /* Colors */
     const float         CLEAR_R     = 1.0f;
     const float         CLEAR_G     = 1.0f;

@@ -65,110 +65,6 @@ SceneBase::~SceneBase (void)
     delete(vertices); vertices = NULL;
 }
 
-/* Signal to take any necessary actions when the widget is instantiated on a
- * particular display. */
-void SceneBase::on_realize (void)
-{
-    /* We need to call the base on_realize() */
-    Gtk::DrawingArea::on_realize();
-
-    /* Get GL::Drawable. */
-    Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
-
-    /*** OpenGL BEGIN ***/
-    if (!gldrawable->gl_begin(get_gl_context()))
-        return;
-
-    if (!init_opengl())
-        return;
-
-    gldrawable->gl_end();
-    /*** OpenGL END ***/
-    
-    /* Start timer. */
-    m_Timer.start();
-}
-
-/* Signal to take any necessary actions when the widget changes size. */
-bool SceneBase::on_configure_event (GdkEventConfigure* event)
-{
-    /* Get GL::Drawable. */
-    Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
-
-    /*** OpenGL BEGIN ***/
-    if (!gldrawable->gl_begin(get_gl_context()))
-        return false;
-    
-    glViewport(0, 0, get_width(), get_height());
-    
-    set_perspective();
-
-    gldrawable->gl_end();
-    /*** OpenGL END ***/
-
-    return true;
-}
-
-void SceneBase::set_perspective()
-{
-    // TODO: set persepctive based on get_height() and get_width()
-}
-
-/* Signal to handle redrawing the contents of the widget. */
-bool SceneBase::on_expose_event (GdkEventExpose* event)
-{
-    /* Get GL::Window. */
-    Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
-
-    /*** OpenGL BEGIN ***/
-    if (!gldrawable->gl_begin(get_gl_context()))
-        return false;
-
-    /* Draw here */
-    render();
-
-    /* Swap buffers. */
-    if (gldrawable->is_double_buffered())
-        gldrawable->swap_buffers();
-    else
-        glFlush();
-
-    gldrawable->gl_end();
-
-    return true;
-}
-
-bool SceneBase::on_map_event(GdkEventAny* event)
-{
-    if (!m_ConnectionIdle.connected())
-        m_ConnectionIdle = Glib::signal_idle().connect(
-        sigc::mem_fun(*this, &SceneBase::on_idle), GDK_PRIORITY_REDRAW);
-
-    return true;
-}
-
-bool SceneBase::on_unmap_event(GdkEventAny* event)
-{
-    if (m_ConnectionIdle.connected())
-        m_ConnectionIdle.disconnect();
-
-    return true;
-}
-
-bool SceneBase::on_visibility_notify_event(GdkEventVisibility* event)
-{
-    if (event->state == GDK_VISIBILITY_FULLY_OBSCURED) {
-        if (m_ConnectionIdle.connected())
-            m_ConnectionIdle.disconnect();
-    } else {
-        if (!m_ConnectionIdle.connected())
-            m_ConnectionIdle = Glib::signal_idle().connect(
-            sigc::mem_fun(*this, &SceneBase::on_idle), GDK_PRIORITY_REDRAW);
-    }
-
-    return true;
-}
-
 /* OpenGL specific functions */
 
 /* Initialize OpenGL */
@@ -220,6 +116,12 @@ bool SceneBase::init_opengl (void)
     glPointSize(5.0f);
             
     return true;
+}
+
+
+void SceneBase::set_perspective()
+{
+    // TODO: set persepctive based on get_height() and get_width()
 }
 
 /* Shaders */
@@ -304,20 +206,128 @@ void SceneBase::render ()
 
 }
 
-
-
-bool SceneBase::on_idle()
+void SceneBase::update()
 {
-    // Invalidate the whole window.
-    invalidate();
-
-    // Update window synchronously (fast).
-    update();
-
-    return true;
+    
 }
 
 /* Releases the context */
 void SceneBase::release (void)
 {
+}
+
+
+/*** EVENTS ***/
+
+/* Signal to take any necessary actions when the widget is instantiated on a
+ * particular display. */
+void SceneBase::on_realize (void)
+{
+    /* We need to call the base on_realize() */
+    Gtk::DrawingArea::on_realize();
+
+    /* Get GL::Drawable. */
+    Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
+
+    /*** OpenGL BEGIN ***/
+    if (!gldrawable->gl_begin(get_gl_context()))
+        return;
+
+    if (!init_opengl())
+        return;
+
+    gldrawable->gl_end();
+    /*** OpenGL END ***/
+    
+    /* Start timer. */
+    m_Timer.start();
+}
+
+/* Signal to take any necessary actions when the widget changes size. */
+bool SceneBase::on_configure_event (GdkEventConfigure* event)
+{
+    /* Get GL::Drawable. */
+    Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
+
+    /*** OpenGL BEGIN ***/
+    if (!gldrawable->gl_begin(get_gl_context()))
+        return false;
+    
+    glViewport(0, 0, get_width(), get_height());
+    
+    set_perspective();
+
+    gldrawable->gl_end();
+    /*** OpenGL END ***/
+
+    return true;
+}
+
+/* Signal to handle redrawing the contents of the widget. */
+bool SceneBase::on_expose_event (GdkEventExpose* event)
+{
+    /* Get GL::Window. */
+    Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
+
+    /*** OpenGL BEGIN ***/
+    if (!gldrawable->gl_begin(get_gl_context()))
+        return false;
+
+    /* Draw here */
+    render();
+
+    /* Swap buffers. */
+    if (gldrawable->is_double_buffered())
+        gldrawable->swap_buffers();
+    else
+        glFlush();
+
+    gldrawable->gl_end();
+
+    return true;
+}
+
+bool SceneBase::on_map_event(GdkEventAny* event)
+{
+    if (!m_ConnectionIdle.connected())
+        m_ConnectionIdle = Glib::signal_idle().connect(
+        sigc::mem_fun(*this, &SceneBase::on_idle), GDK_PRIORITY_REDRAW);
+
+    return true;
+}
+
+bool SceneBase::on_unmap_event(GdkEventAny* event)
+{
+    if (m_ConnectionIdle.connected())
+        m_ConnectionIdle.disconnect();
+
+    return true;
+}
+
+bool SceneBase::on_visibility_notify_event(GdkEventVisibility* event)
+{
+    if (event->state == GDK_VISIBILITY_FULLY_OBSCURED) {
+        if (m_ConnectionIdle.connected())
+            m_ConnectionIdle.disconnect();
+    } else {
+        if (!m_ConnectionIdle.connected())
+            m_ConnectionIdle = Glib::signal_idle().connect(
+            sigc::mem_fun(*this, &SceneBase::on_idle), GDK_PRIORITY_REDRAW);
+    }
+
+    return true;
+}
+
+bool SceneBase::on_idle()
+{
+    /* Scene related updates */
+    update();
+    
+    // Invalidate the whole window.
+    _invalidate();
+
+    // Update window synchronously (fast).
+    _update_sync();
+
+    return true;
 }
