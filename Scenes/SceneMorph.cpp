@@ -9,9 +9,12 @@
 #include <GL/glew.h>
 #include <GL/glu.h>
 
+#include <gtkmm.h>
+#include <gtkglmm.h>
+
+#include "../math3d.hpp"
 #include "SceneBase.hpp"
 #include "SceneMorph.hpp"
-#include "../math3d.hpp"
 
 SceneMorph::SceneMorph() {
 }

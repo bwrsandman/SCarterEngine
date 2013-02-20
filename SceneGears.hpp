@@ -30,6 +30,9 @@ protected:
     virtual bool on_unmap_event(GdkEventAny* event);
     virtual bool on_visibility_notify_event(GdkEventVisibility* event);
     virtual bool on_idle();
+    
+    // Added
+    virtual bool init_opengl();
 
 public:
     // Invalidate whole window.

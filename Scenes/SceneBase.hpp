@@ -8,15 +8,11 @@
 #ifndef SCENEBASE_H
 #define SCENEBASE_H
 
-#include <gtkmm.h>
-#include <gtkglmm.h>
-
 class Matrix4f;
 const float si = 0.75f;
 const int subs = 4;
 
-class SceneBase : public Gtk::DrawingArea
-                , public Gtk::GL::Widget<SceneBase>
+class SceneBase : public Gtk::GL::DrawingArea
 {
 public:
     SceneBase();
@@ -25,7 +21,8 @@ public:
 
 protected:
     Matrix4f *World = NULL;
-
+    Glib::Timer m_Timer;
+   
     /* Uniforms */
     GLuint gWorldLocation;
 

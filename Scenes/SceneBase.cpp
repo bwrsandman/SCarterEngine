@@ -9,6 +9,9 @@
 #include <GL/glew.h>
 #include <GL/glu.h>
 
+#include <gtkmm.h>
+#include <gtkglmm.h>
+
 #include "../GLConfigUtil.hpp"
 #include "../math3d.hpp"
 #include "SceneBase.hpp"
@@ -66,18 +69,21 @@ void SceneBase::on_realize (void)
     /* We need to call the base on_realize() */
     Gtk::DrawingArea::on_realize();
 
-    /* Get GL::Window. */
-    Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
+    /* Get GL::Drawable. */
+    Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
 
     /*** OpenGL BEGIN ***/
-    if (!glwindow->gl_begin(get_gl_context()))
+    if (!gldrawable->gl_begin(get_gl_context()))
         return;
 
     if (!init_opengl())
-        exit(1);
+        return;
 
-    glwindow->gl_end();
+    gldrawable->gl_end();
     /*** OpenGL END ***/
+    
+    /* Start timer. */
+    m_Timer.start();
 }
 
 /* Signal to take any necessary actions when the widget changes size. */
@@ -132,8 +138,11 @@ bool SceneBase::on_timeout()
 /* Initialize OpenGL */
 bool SceneBase::init_opengl (void)
 {
-    std::cout << "OpenGL version - " 
-              << glGetString(GL_VERSION) << std::endl;
+    std::cout << "GL_RENDERER   = " << glGetString(GL_RENDERER)   << std::endl;
+    std::cout << "GL_VERSION    = " << glGetString(GL_VERSION)    << std::endl;
+    std::cout << "GL_VENDOR     = " << glGetString(GL_VENDOR)     << std::endl;
+    std::cout << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS) << std::endl;
+    std::cout << std::endl;
 
     /* Initialize GLEW */
     GLenum err = glewInit();

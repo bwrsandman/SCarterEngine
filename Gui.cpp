@@ -128,6 +128,7 @@ void Gui::on_switch_scene_page(GtkNotebookPage* page, guint page_num)
         return;
     gl_container->remove();
     delete scene; scene = NULL;
+    delete gears; gears = NULL;
     switch(page_num)
     {
     case 1:

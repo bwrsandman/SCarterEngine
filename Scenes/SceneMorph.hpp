@@ -8,14 +8,11 @@
 #ifndef SCENEMORPH_HPP
 #define	SCENEMORPH_HPP
 
-#include <gtkmm.h>
-#include <gtkglmm.h>
 #include "SceneBase.hpp"
 
 class Matrix4f;
 
 class SceneMorph : public SceneBase 
-                 , public Gtk::GL::Widget<SceneMorph>
 {
 public:
     SceneMorph();

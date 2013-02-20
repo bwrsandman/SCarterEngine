@@ -17,7 +17,6 @@ class Vector2f;
 class IKArm;
 
 class SceneIK : public SceneBase 
-              , public Gtk::GL::Widget<SceneIK>
 {
 public:
     SceneIK();

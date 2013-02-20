@@ -204,6 +204,7 @@ void SceneGears::gear(GLfloat inner_radius,
 
 }
 
+// TODO: Function done in base
 void SceneGears::on_realize()
 {
   // We need to call the base on_realize()
@@ -223,6 +224,18 @@ void SceneGears::on_realize()
   if (!gldrawable->gl_begin(get_gl_context()))
     return;
 
+    if (!init_opengl())
+       return;
+
+  gldrawable->gl_end();
+  // *** OpenGL END ***
+
+  // Start timer.
+  m_Timer.start();
+}
+
+bool SceneGears::init_opengl()
+{
   static GLfloat pos[4] = {5.0, 5.0, 10.0, 0.0};
   static GLfloat red[4] = {0.8, 0.1, 0.0, 1.0};
   static GLfloat green[4] = {0.0, 0.8, 0.2, 1.0};
@@ -260,12 +273,8 @@ void SceneGears::on_realize()
   std::cout << "GL_VENDOR     = " << glGetString(GL_VENDOR)     << std::endl;
   std::cout << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS) << std::endl;
   std::cout << std::endl;
-
-  gldrawable->gl_end();
-  // *** OpenGL END ***
-
-  // Start timer.
-  m_Timer.start();
+  
+  return true;
 }
 
 bool SceneGears::on_configure_event(GdkEventConfigure* event)
