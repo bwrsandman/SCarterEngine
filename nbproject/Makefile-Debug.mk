@@ -63,11 +63,11 @@ LDLIBSOPTIONS=
 
 # Build Targets
 .build-conf: ${BUILD_SUBPROJECTS}
-	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/a2
+	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine
 
-${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/a2: ${OBJECTFILES}
+${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} `pkg-config --libs gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/a2  ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} `pkg-config --libs gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine  ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
 ${OBJECTDIR}/Gui.o: Gui.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -115,7 +115,7 @@ ${OBJECTDIR}/Scenes/SceneIK.o: Scenes/SceneIK.cpp
 # Clean Targets
 .clean-conf: ${CLEAN_SUBPROJECTS}
 	${RM} -r ${CND_BUILDDIR}/${CND_CONF}
-	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/a2
+	${RM} ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine
 
 # Subprojects
 .clean-subprojects:

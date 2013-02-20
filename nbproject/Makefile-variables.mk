@@ -9,19 +9,19 @@ CND_DISTDIR=dist
 # Debug configuration
 CND_PLATFORM_Debug=GNU-Linux-x86
 CND_ARTIFACT_DIR_Debug=dist/Debug/GNU-Linux-x86
-CND_ARTIFACT_NAME_Debug=a2
-CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux-x86/a2
+CND_ARTIFACT_NAME_Debug=scarter_engine
+CND_ARTIFACT_PATH_Debug=dist/Debug/GNU-Linux-x86/scarter_engine
 CND_PACKAGE_DIR_Debug=dist/Debug/GNU-Linux-x86/package
-CND_PACKAGE_NAME_Debug=a2.tar
-CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/a2.tar
+CND_PACKAGE_NAME_Debug=scarterengine.tar
+CND_PACKAGE_PATH_Debug=dist/Debug/GNU-Linux-x86/package/scarterengine.tar
 # Release configuration
 CND_PLATFORM_Release=GNU-Linux-x86
 CND_ARTIFACT_DIR_Release=dist/Release/GNU-Linux-x86
-CND_ARTIFACT_NAME_Release=a2
-CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/a2
+CND_ARTIFACT_NAME_Release=scarter_engine
+CND_ARTIFACT_PATH_Release=dist/Release/GNU-Linux-x86/scarter_engine
 CND_PACKAGE_DIR_Release=dist/Release/GNU-Linux-x86/package
-CND_PACKAGE_NAME_Release=a2.tar
-CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/a2.tar
+CND_PACKAGE_NAME_Release=scarterengine.tar
+CND_PACKAGE_PATH_Release=dist/Release/GNU-Linux-x86/package/scarterengine.tar
 #
 # include compiler specific variables
 #
