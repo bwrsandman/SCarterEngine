@@ -25,7 +25,6 @@
 
 #include <gtkmm.h>
 class SceneBase;
-class SceneGears; // TODO: TEMP
 
 class Gui 
 {
@@ -44,7 +43,6 @@ private:
     Gtk::Alignment* gl_container = NULL;
     Gtk::Scale* scl_norm = NULL;
     SceneBase* scene = NULL;
-    SceneGears* gears = NULL;
 
     void on_set_norm_alpha(void);
     void on_switch_scene_page(GtkNotebookPage*, guint);
