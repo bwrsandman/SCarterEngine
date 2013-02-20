@@ -27,7 +27,7 @@
 #include "Gui.hpp"
 #include "Scenes/SceneMorph.hpp"
 #include "Scenes/SceneIK.hpp"
-#include "SceneGears.hpp"
+#include "Scenes/SceneGears.hpp"
 
 Gui::Gui() 
 {

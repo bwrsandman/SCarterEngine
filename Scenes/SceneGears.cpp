@@ -8,15 +8,13 @@
 /* Conversion to gtkglextmm by Naofumi Yasufuku */
 
 #include <iostream>
-#include <cstdlib>
-#include <cmath>
 #include <GL/glew.h>
+#include <GL/glu.h>
+
 #include <gtkmm.h>
 #include <gtkglmm.h>
 
-#include <GL/gl.h>
-#include <GL/glu.h>
-//#include "GLConfigUtil.hpp"
+#include "SceneBase.hpp"
 #include "SceneGears.hpp"
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -31,42 +29,6 @@ SceneGears::SceneGears(bool is_sync)
     m_Angle(0.0), m_IsSync(is_sync),
     m_Frames(0)
 {
-  //
-  // Configure OpenGL-capable visual.
-  //
-
-  Glib::RefPtr<Gdk::GL::Config> glconfig;
-
-  // Try double-buffered visual
-  glconfig = Gdk::GL::Config::create(Gdk::GL::MODE_RGB    |
-                                     Gdk::GL::MODE_DEPTH  |
-                                     Gdk::GL::MODE_DOUBLE);
-  if (!glconfig)
-    {
-      std::cerr << "*** Cannot find the double-buffered visual.\n"
-                << "*** Trying single-buffered visual.\n";
-
-      // Try single-buffered visual
-      glconfig = Gdk::GL::Config::create(Gdk::GL::MODE_RGB   |
-                                         Gdk::GL::MODE_DEPTH);
-      if (!glconfig)
-        {
-          std::cerr << "*** Cannot find any OpenGL-capable visual.\n";
-          std::exit(1);
-        }
-    }
-
-  // print frame buffer attributes.
-  //GLConfigUtil::examine_gl_attrib(glconfig);
-
-  //
-  // Set OpenGL-capability to the widget.
-  //
-
-  set_gl_capability(glconfig);
-
-  // Add events.
-  add_events(Gdk::VISIBILITY_NOTIFY_MASK);
 }
 
 SceneGears::~SceneGears()
@@ -204,80 +166,6 @@ void SceneGears::gear(GLfloat inner_radius,
 
 }
 
-// TODO: Function done in base
-void SceneGears::on_realize()
-{
-  // We need to call the base on_realize()
-  Gtk::DrawingArea::on_realize();
-
-  //
-  // Get GL::Drawable.
-  //
-
-  Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
-
-  //
-  // GL calls.
-  //
-
-  // *** OpenGL BEGIN ***
-  if (!gldrawable->gl_begin(get_gl_context()))
-    return;
-
-    if (!init_opengl())
-       return;
-
-  gldrawable->gl_end();
-  // *** OpenGL END ***
-
-  // Start timer.
-  m_Timer.start();
-}
-
-// TODO: Function done in base
-bool SceneGears::init_opengl()
-{
-    std::cout << "GL_RENDERER   = " << glGetString(GL_RENDERER)   << std::endl;
-    std::cout << "GL_VERSION    = " << glGetString(GL_VERSION)    << std::endl;
-    std::cout << "GL_VENDOR     = " << glGetString(GL_VENDOR)     << std::endl;
-    std::cout << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS) << std::endl;
-    std::cout << std::endl;
-
-    /* Initialize GLEW */
-    GLenum err = glewInit();
-    if (err != GLEW_OK)
-    {
-      std::cerr << "*** Error Initializing GLEW: "
-                << glewGetErrorString(err) << std::endl;
-      std::exit(1);
-    }
-
-    /* Check that the machine supports the 2.1 API. */
-    if (!GLEW_VERSION_3_0)
-    {
-      std::cerr << "*** Machine does not support GLEW 3.0 API.\n";
-      std::exit(1);
-    }
-
-    /* Check that the machine supports the 2.1 API. */
-    if (!GLEW_VERSION_4_3)
-      std::cout << "*** WARN: Machine does not support GLEW 4.3 API.\n";
-
-    /* Create Shader and vertex buffer */
-    if(!create_shaders(VERTEX_SHADER))
-    {
-        std::cerr << "*** Error Creating shaders.\n";
-        return false;
-    }
-    
-    create_light();
-    create_geom();
-
-    glEnable(GL_NORMALIZE);
-  
-  return true;
-}
-
 void SceneGears::create_light()
 {
     /* Create lighting */
@@ -315,33 +203,6 @@ void SceneGears::create_geom()
     glEndList();
 }
 
-// TODO: Function done in base
-bool SceneGears::on_configure_event(GdkEventConfigure* event)
-{
-  //
-  // Get GL::Drawable.
-  //
-
-  Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
-
-  //
-  // GL calls.
-  //
-
-  // *** OpenGL BEGIN ***
-  if (!gldrawable->gl_begin(get_gl_context()))
-    return false;
-
-  glViewport(0, 0, get_width(), get_height());
-
-  set_perspective();
-  
-  gldrawable->gl_end();
-  // *** OpenGL END ***
-
-  return true;
-}
-
 void SceneGears::set_perspective()
 {
     GLfloat h = (GLfloat)(get_height()) / (GLfloat)(get_width());
@@ -352,40 +213,10 @@ void SceneGears::set_perspective()
     glLoadIdentity();
     glTranslatef(0.0, 0.0, -40.0);
 }
-// TODO: Function done in base
-bool SceneGears::on_expose_event2(GdkEventExpose* event)
-{
-    //
-    // Get GL::Drawable.
-    //
-
-    Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
-
-    //
-    // GL calls.
-    //
-
-    // *** OpenGL BEGIN ***
-    if (!gldrawable->gl_begin(get_gl_context()))
-      return false;
-
-    render();
-
-    // Swap buffers.
-    if (gldrawable->is_double_buffered())
-      gldrawable->swap_buffers();
-    else
-      glFlush();
-
-    gldrawable->gl_end();
-    // *** OpenGL END ***
-    
-    return true;
-}
 
 bool SceneGears::on_expose_event(GdkEventExpose* event)
 {
-    bool ret = on_expose_event2(event); // TODO change to base
+    bool ret = SceneBase::on_expose_event(event);
     print_framerate();                  // TODO put somewhere better than stdout
     return ret;
 }
@@ -442,50 +273,9 @@ void SceneGears::render()
     glPopMatrix();
 }
 
-bool SceneGears::on_map_event(GdkEventAny* event)
-{
-  if (!m_ConnectionIdle.connected())
-    m_ConnectionIdle = Glib::signal_idle().connect(
-      sigc::mem_fun(*this, &SceneGears::on_idle), GDK_PRIORITY_REDRAW);
-
-  return true;
-}
-
-bool SceneGears::on_unmap_event(GdkEventAny* event)
-{
-  if (m_ConnectionIdle.connected())
-    m_ConnectionIdle.disconnect();
-
-  return true;
-}
-
-bool SceneGears::on_visibility_notify_event(GdkEventVisibility* event)
-{
-  if (event->state == GDK_VISIBILITY_FULLY_OBSCURED)
-    {
-      if (m_ConnectionIdle.connected())
-        m_ConnectionIdle.disconnect();
-    }
-  else
-    {
-      if (!m_ConnectionIdle.connected())
-        m_ConnectionIdle = Glib::signal_idle().connect(
-          sigc::mem_fun(*this, &SceneGears::on_idle), GDK_PRIORITY_REDRAW);
-    }
-
-  return true;
-}
-
 bool SceneGears::on_idle()
 {
   m_Angle += 2.0;
 
-  // Invalidate the whole window.
-  invalidate();
-
-  // Update window synchronously (fast).
-  if (m_IsSync)
-    update();
-
-  return true;
+  return SceneBase::on_idle();
 }

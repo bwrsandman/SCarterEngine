@@ -53,6 +53,9 @@ SceneBase::SceneBase (void)
 
     /* Set OpenGL-capability to the widget. */
     set_gl_capability(glconfig);
+    
+    /* Add events */
+    add_events(Gdk::VISIBILITY_NOTIFY_MASK);
 }
 
 SceneBase::~SceneBase (void)

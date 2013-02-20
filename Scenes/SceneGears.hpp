@@ -8,7 +8,7 @@
 #ifndef SCENEGEARS_HPP
 #define	SCENEGEARS_HPP
 
-class SceneGears : public Gtk::GL::DrawingArea
+class SceneGears : public SceneBase
 {
 public:
     explicit SceneGears(bool is_sync = true);
@@ -23,38 +23,15 @@ protected:
 
 protected:
     // signal handlers:
-    virtual void on_realize();
-    virtual bool on_configure_event(GdkEventConfigure* event);
     virtual bool on_expose_event(GdkEventExpose* event);
-    virtual bool on_map_event(GdkEventAny* event);
-    virtual bool on_unmap_event(GdkEventAny* event);
-    virtual bool on_visibility_notify_event(GdkEventVisibility* event);
     virtual bool on_idle();
     
     // Added
-    virtual bool init_opengl();
     virtual void create_geom();
     virtual void create_light();
     virtual void set_perspective();
-    virtual bool create_shaders (const char*) { return true; } //TODO remove
-    char* VERTEX_SHADER = NULL; //TODO remove
     virtual void render();
     virtual void print_framerate();
-    virtual bool on_expose_event2(GdkEventExpose* event); //TODO remove
-
-public:
-    // Invalidate whole window.
-    void invalidate() {
-      get_window()->invalidate_rect(get_allocation(), false);
-    }
-
-    // Update window synchronously (fast).
-    void update()
-    { get_window()->process_updates(false); }
-
-protected:
-    // idle signal connection:
-    sigc::connection m_ConnectionIdle;
 
 public:
     // get & set view rotation values.
@@ -80,7 +57,6 @@ protected:
 
 protected:
     // frame rate evaluation stuff:
-    Glib::Timer m_Timer;
     int m_Frames;
 };
 

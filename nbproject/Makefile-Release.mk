@@ -35,11 +35,11 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
+	${OBJECTDIR}/Scenes/SceneGears.o \
 	${OBJECTDIR}/Gui.o \
 	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/Scenes/SceneMorph.o \
 	${OBJECTDIR}/IKArm.o \
-	${OBJECTDIR}/SceneGears.o \
 	${OBJECTDIR}/IKLine.o \
 	${OBJECTDIR}/Scenes/SceneBase.o \
 	${OBJECTDIR}/Scenes/SceneIK.o
@@ -69,6 +69,11 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
+${OBJECTDIR}/Scenes/SceneGears.o: Scenes/SceneGears.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Scenes
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneGears.o Scenes/SceneGears.cpp
+
 ${OBJECTDIR}/Gui.o: Gui.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
@@ -88,11 +93,6 @@ ${OBJECTDIR}/IKArm.o: IKArm.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/IKArm.o IKArm.cpp
-
-${OBJECTDIR}/SceneGears.o: SceneGears.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/SceneGears.o SceneGears.cpp
 
 ${OBJECTDIR}/IKLine.o: IKLine.cpp 
 	${MKDIR} -p ${OBJECTDIR}
