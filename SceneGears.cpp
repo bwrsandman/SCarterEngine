@@ -315,6 +315,7 @@ void SceneGears::create_geom()
     glEndList();
 }
 
+// TODO: Function done in base
 bool SceneGears::on_configure_event(GdkEventConfigure* event)
 {
   //
@@ -331,20 +332,25 @@ bool SceneGears::on_configure_event(GdkEventConfigure* event)
   if (!gldrawable->gl_begin(get_gl_context()))
     return false;
 
-  GLfloat h = (GLfloat)(get_height()) / (GLfloat)(get_width());
-
   glViewport(0, 0, get_width(), get_height());
-  glMatrixMode(GL_PROJECTION);
-  glLoadIdentity();
-  glFrustum(-1.0, 1.0, -h, h, 5.0, 60.0);
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glTranslatef(0.0, 0.0, -40.0);
 
+  set_perspective();
+  
   gldrawable->gl_end();
   // *** OpenGL END ***
 
   return true;
+}
+
+void SceneGears::set_perspective()
+{
+    GLfloat h = (GLfloat)(get_height()) / (GLfloat)(get_width());
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-1.0, 1.0, -h, h, 5.0, 60.0);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    glTranslatef(0.0, 0.0, -40.0);
 }
 
 bool SceneGears::on_expose_event(GdkEventExpose* event)

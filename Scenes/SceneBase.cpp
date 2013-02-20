@@ -89,19 +89,26 @@ void SceneBase::on_realize (void)
 /* Signal to take any necessary actions when the widget changes size. */
 bool SceneBase::on_configure_event (GdkEventConfigure* event)
 {
-    /* Get GL::Window. */
-    Glib::RefPtr<Gdk::GL::Window> glwindow = get_gl_window();
+    /* Get GL::Drawable. */
+    Glib::RefPtr<Gdk::GL::Drawable> gldrawable = get_gl_drawable();
 
     /*** OpenGL BEGIN ***/
-    if (!glwindow->gl_begin(get_gl_context()))
+    if (!gldrawable->gl_begin(get_gl_context()))
         return false;
-
+    
     glViewport(0, 0, get_width(), get_height());
+    
+    set_perspective();
 
-    glwindow->gl_end();
+    gldrawable->gl_end();
     /*** OpenGL END ***/
 
     return true;
+}
+
+void SceneBase::set_perspective()
+{
+    // TODO: set persepctive based on get_height() and get_width()
 }
 
 /* Signal to handle redrawing the contents of the widget. */

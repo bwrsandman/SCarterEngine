@@ -38,6 +38,7 @@ protected:
     virtual bool create_shaders (const char*);
     virtual void create_geom (void);
     virtual void create_light(void);
+    virtual void set_perspective(void);
     virtual void render (void);
     virtual void release (void);
     

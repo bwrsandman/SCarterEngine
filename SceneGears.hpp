@@ -35,6 +35,7 @@ protected:
     virtual bool init_opengl();
     virtual void create_geom();
     virtual void create_light();
+    virtual void set_perspective();
     virtual bool create_shaders (const char*) { return true; } //TODO remove
     char* VERTEX_SHADER = NULL; //TODO remove
 
