@@ -35,14 +35,18 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/Scenes/SceneGears.o \
+	${OBJECTDIR}/GL1_Primitives/GL1_Cube.o \
+	${OBJECTDIR}/GL1_Primitives/GL1_Sphere.o \
+	${OBJECTDIR}/GameStates/CubicGameState.o \
 	${OBJECTDIR}/Gui.o \
-	${OBJECTDIR}/main.o \
-	${OBJECTDIR}/Scenes/SceneMorph.o \
 	${OBJECTDIR}/IKArm.o \
 	${OBJECTDIR}/IKLine.o \
 	${OBJECTDIR}/Scenes/SceneBase.o \
-	${OBJECTDIR}/Scenes/SceneIK.o
+	${OBJECTDIR}/Scenes/SceneCubicContainer.o \
+	${OBJECTDIR}/Scenes/SceneGears.o \
+	${OBJECTDIR}/Scenes/SceneIK.o \
+	${OBJECTDIR}/Scenes/SceneMorph.o \
+	${OBJECTDIR}/main.o
 
 
 # C Compiler Flags
@@ -67,27 +71,27 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine ${OBJECTFILES} ${LDLIBSOPTIONS} 
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/scarter_engine ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/Scenes/SceneGears.o: Scenes/SceneGears.cpp 
-	${MKDIR} -p ${OBJECTDIR}/Scenes
+${OBJECTDIR}/GL1_Primitives/GL1_Cube.o: GL1_Primitives/GL1_Cube.cpp 
+	${MKDIR} -p ${OBJECTDIR}/GL1_Primitives
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneGears.o Scenes/SceneGears.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/GL1_Primitives/GL1_Cube.o GL1_Primitives/GL1_Cube.cpp
+
+${OBJECTDIR}/GL1_Primitives/GL1_Sphere.o: GL1_Primitives/GL1_Sphere.cpp 
+	${MKDIR} -p ${OBJECTDIR}/GL1_Primitives
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/GL1_Primitives/GL1_Sphere.o GL1_Primitives/GL1_Sphere.cpp
+
+${OBJECTDIR}/GameStates/CubicGameState.o: GameStates/CubicGameState.cpp 
+	${MKDIR} -p ${OBJECTDIR}/GameStates
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/GameStates/CubicGameState.o GameStates/CubicGameState.cpp
 
 ${OBJECTDIR}/Gui.o: Gui.cpp 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Gui.o Gui.cpp
-
-${OBJECTDIR}/main.o: main.cpp 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
-
-${OBJECTDIR}/Scenes/SceneMorph.o: Scenes/SceneMorph.cpp 
-	${MKDIR} -p ${OBJECTDIR}/Scenes
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneMorph.o Scenes/SceneMorph.cpp
 
 ${OBJECTDIR}/IKArm.o: IKArm.cpp 
 	${MKDIR} -p ${OBJECTDIR}
@@ -104,10 +108,30 @@ ${OBJECTDIR}/Scenes/SceneBase.o: Scenes/SceneBase.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneBase.o Scenes/SceneBase.cpp
 
+${OBJECTDIR}/Scenes/SceneCubicContainer.o: Scenes/SceneCubicContainer.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Scenes
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneCubicContainer.o Scenes/SceneCubicContainer.cpp
+
+${OBJECTDIR}/Scenes/SceneGears.o: Scenes/SceneGears.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Scenes
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneGears.o Scenes/SceneGears.cpp
+
 ${OBJECTDIR}/Scenes/SceneIK.o: Scenes/SceneIK.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Scenes
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneIK.o Scenes/SceneIK.cpp
+
+${OBJECTDIR}/Scenes/SceneMorph.o: Scenes/SceneMorph.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Scenes
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneMorph.o Scenes/SceneMorph.cpp
+
+${OBJECTDIR}/main.o: main.cpp 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
 
 # Subprojects
 .build-subprojects:

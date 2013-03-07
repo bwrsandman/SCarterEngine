@@ -140,9 +140,9 @@ void SceneMorph::create_geom (void)
 }
 
 /* Draw Scene */
-void SceneMorph::render ()
+void SceneMorph::render (const float dt)
 {
-    SceneBase::render();
+    SceneBase::render(dt);
 
     /* Uniform update */
     glUniform1f(gAlpha, alpha);
@@ -158,4 +158,9 @@ void SceneMorph::render ()
     glDisableClientState(GL_VERTEX_ARRAY);
 
     /*** OpenGL END ***/
+}
+
+void SceneMorph::create_light()
+{
+    
 }

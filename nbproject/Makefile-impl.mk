@@ -24,7 +24,7 @@ CLEAN_SUBPROJECTS=${CLEAN_SUBPROJECTS_${SUBPROJECTS}}
 
 
 # Project Name
-PROJECTNAME=SCarter_engine
+PROJECTNAME=SCarter_Engine
 
 # Active Configuration
 DEFAULTCONF=Debug

@@ -25,7 +25,9 @@ public:
 private:
     virtual bool create_shaders (const char*);
     virtual void create_geom (void);
-    virtual void render (void);
+    virtual void create_light(void);
+    virtual void render (const float);
+    virtual void update (const float);
     Vector2f *random_spot(void);
     
     IKArm *arm = NULL;

@@ -73,11 +73,12 @@ void SceneIK::create_geom()
     arm = new IKArm();
 }
 
-void SceneIK::render()
-{   
+void SceneIK::update(const float dt)
+{
+    SceneBase::update(dt);
     // TODO use proper update(t) function
-    arm->move_to(*target_pos, 0.017f);
-    timer += 0.017f;
+    arm->move_to(*target_pos, dt);
+    timer += dt;
     
     if (timer > 5.0f)
     {
@@ -85,9 +86,11 @@ void SceneIK::render()
         delete target_pos;
         target_pos = random_spot();
     }
-    
-    
-    SceneBase::render();
+}
+
+void SceneIK::render(const float dt)
+{   
+    SceneBase::render(dt);
     
     for (int i = 0; i < 3; ++i)
     {
@@ -140,4 +143,9 @@ void SceneIK::render()
 
     /* disable program */
     glUseProgram(0);
+}
+
+void SceneIK::create_light()
+{
+    
 }

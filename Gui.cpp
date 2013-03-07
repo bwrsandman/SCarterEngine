@@ -28,6 +28,7 @@
 #include "Scenes/SceneMorph.hpp"
 #include "Scenes/SceneIK.hpp"
 #include "Scenes/SceneGears.hpp"
+#include "Scenes/SceneCubicContainer.hpp"
 
 Gui::Gui() 
 {
@@ -65,12 +66,6 @@ Gui::Gui(int argc, char** argv, const char* ui_filename)
     else
             std::cerr << "WARNING: Could not grab close button." << std::endl;
 
-    scene = new SceneGears();
-    if (gl_container)
-        gl_container->add(*scene);
-    else
-            std::cerr << "WARNING: Could not grab frame for OpenGL." << std::endl;
-
     builder->get_widget("sclNorm", scl_norm);
     if (scl_norm)
     {
@@ -85,6 +80,8 @@ Gui::Gui(int argc, char** argv, const char* ui_filename)
     if (ntb_Scenes)
         ntb_Scenes->signal_switch_page().connect(sigc::mem_fun(*this, &Gui::on_switch_scene_page));
 
+    on_switch_scene_page(NULL, ntb_Scenes->get_current_page());
+    
     scene->show();
 }
 
@@ -109,10 +106,12 @@ void Gui::on_set_norm_alpha(void)
 }
 
 void Gui::on_switch_scene_page(GtkNotebookPage* page, guint page_num)
-{
-    
+{            
     if (!gl_container)
+    {
+        std::cerr << "WARNING: Could not grab frame for OpenGL." << std::endl;
         return;
+    }
     gl_container->remove();
     delete scene; scene = NULL;
     switch(page_num)
@@ -121,9 +120,12 @@ void Gui::on_switch_scene_page(GtkNotebookPage* page, guint page_num)
         scene = new SceneGears();
         break;
     case 1:
-        scene = new SceneMorph();
+        scene = new SceneCubicContainer();
         break;
     case 2:
+        scene = new SceneMorph();
+        break;
+    case 3:
         scene = new SceneIK();
         break;
     }

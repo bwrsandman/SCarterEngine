@@ -11,6 +11,7 @@
 
 #include <gtkmm.h>
 #include <gtkglmm.h>
+#include <glibmm-2.4/glibmm/timer.h>
 
 #include "../GLConfigUtil.hpp"
 #include "../math3d.hpp"
@@ -73,7 +74,7 @@ bool SceneBase::init_opengl (void)
     std::cout << "GL_RENDERER   = " << glGetString(GL_RENDERER)   << std::endl;
     std::cout << "GL_VERSION    = " << glGetString(GL_VERSION)    << std::endl;
     std::cout << "GL_VENDOR     = " << glGetString(GL_VENDOR)     << std::endl;
-    std::cout << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS) << std::endl;
+    //std::cout << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS) << std::endl;
     std::cout << std::endl;
 
     /* Initialize GLEW */
@@ -184,17 +185,8 @@ bool SceneBase::create_shaders (const char* vsh)
     return true;
 }
 
-/* Vertex array objects */
-void SceneBase::create_geom (void)
-{
-}
-/* Create lights in the scene */
-void SceneBase::create_light(void)
-{
-}
-
 /* Draw Scene */
-void SceneBase::render ()
+void SceneBase::render (const float dt)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -206,7 +198,7 @@ void SceneBase::render ()
 
 }
 
-void SceneBase::update()
+void SceneBase::update(const float dt)
 {
     
 }
@@ -215,7 +207,6 @@ void SceneBase::update()
 void SceneBase::release (void)
 {
 }
-
 
 /*** EVENTS ***/
 
@@ -239,8 +230,9 @@ void SceneBase::on_realize (void)
     gldrawable->gl_end();
     /*** OpenGL END ***/
     
-    /* Start timer. */
-    m_Timer.start();
+    /* Start timers */
+    update_timer.start();
+    draw_timer.start();
 }
 
 /* Signal to take any necessary actions when the widget changes size. */
@@ -274,8 +266,10 @@ bool SceneBase::on_expose_event (GdkEventExpose* event)
         return false;
 
     /* Draw here */
-    render();
-
+    const float seconds = draw_timer.elapsed();
+    draw_timer.reset();
+    render(seconds);
+    
     /* Swap buffers. */
     if (gldrawable->is_double_buffered())
         gldrawable->swap_buffers();
@@ -320,14 +314,16 @@ bool SceneBase::on_visibility_notify_event(GdkEventVisibility* event)
 
 bool SceneBase::on_idle()
 {
+    float seconds = update_timer.elapsed();
+    update_timer.reset();
     /* Scene related updates */
-    update();
+    update(seconds);
     
     // Invalidate the whole window.
     _invalidate();
 
     // Update window synchronously (fast).
     _update_sync();
-
+    
     return true;
 }

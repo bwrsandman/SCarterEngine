@@ -21,7 +21,8 @@ public:
 
 protected:
     Matrix4f *World = NULL;
-    Glib::Timer m_Timer;
+    Glib::Timer update_timer;
+    Glib::Timer draw_timer;
    
     /* Uniforms */
     GLuint gWorldLocation;
@@ -44,11 +45,11 @@ protected:
     
     virtual bool init_opengl (void);
     virtual bool create_shaders (const char*);
-    virtual void create_geom (void);
-    virtual void create_light(void);
+    virtual void create_geom (void) = 0;
+    virtual void create_light(void) = 0;
     virtual void set_perspective(void);
-    virtual void render (void);
-    virtual void update (void);
+    virtual void render (const float);
+    virtual void update (const float);
     virtual void release (void);
     
     /* Shaders */

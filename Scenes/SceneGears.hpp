@@ -34,9 +34,9 @@ protected:
     virtual void create_geom();
     virtual void create_light();
     virtual void set_perspective();
-    virtual void render();
-    virtual void update();
-    virtual void print_framerate();
+    virtual void render(const float);
+    virtual void update(const float);
+    virtual void print_framerate(float);
 
     // OpenGL scene related variables:
     GLint m_Gear1;

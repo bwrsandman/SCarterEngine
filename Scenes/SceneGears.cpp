@@ -214,7 +214,7 @@ void SceneGears::set_perspective()
     glTranslatef(0.0, 0.0, -40.0);
 }
 
-void SceneGears::print_framerate()
+void SceneGears::print_framerate(const float dt)
 {
     //
     // Print frame rate.
@@ -222,21 +222,19 @@ void SceneGears::print_framerate()
 
     ++m_Frames;
 
-    double seconds = m_Timer.elapsed();
-    if (seconds >= 5.0)
+    if (dt >= 5.0f)
       {
         // std::cout.setf(std::ios_base::fixed, std::ios_base::floatfield);
         std::cout.setf(std::ios::fixed, std::ios::floatfield);
         std::cout.precision(3);
         std::cout << m_Frames << " frames in "
-                  << seconds << " seconds = "
-                  << (m_Frames / seconds) << " FPS\n";
-        m_Timer.reset();
+                  << dt << " seconds = "
+                  << (m_Frames / dt) << " FPS\n";
         m_Frames = 0;
       }
 }
 
-void SceneGears::render()
+void SceneGears::render(const float dt)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -265,11 +263,11 @@ void SceneGears::render()
 
     glPopMatrix();
     
-    print_framerate();
+    print_framerate(dt);
 }
 
-void SceneGears::update()
+void SceneGears::update(const float dt)
 {
-    SceneBase::update();
+    SceneBase::update(dt);
     m_Angle += 2.0;
 }
