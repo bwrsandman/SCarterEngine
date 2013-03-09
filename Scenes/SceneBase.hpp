@@ -35,12 +35,14 @@ protected:
     sigc::connection m_ConnectionIdle;
     
     /* Signal handlers */
-    virtual void on_realize (void);
     virtual bool on_configure_event (GdkEventConfigure* event);
     virtual bool on_expose_event (GdkEventExpose* event);
     virtual bool on_map_event(GdkEventAny* event);
     virtual bool on_unmap_event(GdkEventAny* event);
     virtual bool on_visibility_notify_event(GdkEventVisibility* event);
+    virtual bool on_button_press_event(GdkEventButton * event);
+    
+    virtual void on_realize (void);
     virtual bool on_idle (void);
     
     virtual bool init_opengl (void);

@@ -57,6 +57,7 @@ SceneBase::SceneBase (void)
     
     /* Add events */
     add_events(Gdk::VISIBILITY_NOTIFY_MASK);
+    add_events(Gdk::BUTTON_PRESS_MASK);
 }
 
 SceneBase::~SceneBase (void)
@@ -309,6 +310,11 @@ bool SceneBase::on_visibility_notify_event(GdkEventVisibility* event)
             sigc::mem_fun(*this, &SceneBase::on_idle), GDK_PRIORITY_REDRAW);
     }
 
+    return true;
+}
+
+bool SceneBase::on_button_press_event(GdkEventButton * event)
+{
     return true;
 }
 

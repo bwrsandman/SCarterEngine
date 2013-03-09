@@ -16,12 +16,16 @@ class Vector2f;
 
 class IKArm;
 
+const float countdown = 10.0f;
+
 class SceneIK : public SceneBase 
 {
 public:
     SceneIK();
     SceneIK(const SceneIK& orig);
     virtual ~SceneIK();
+protected:
+    virtual bool on_button_press_event(GdkEventButton * event);
 private:
     virtual bool create_shaders (const char*);
     virtual void create_geom (void);

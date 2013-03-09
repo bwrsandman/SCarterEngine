@@ -80,12 +80,21 @@ void SceneIK::update(const float dt)
     arm->move_to(*target_pos, dt);
     timer += dt;
     
-    if (timer > 5.0f)
+    if (timer > countdown)
     {
-        timer -= 5.0f;
+        timer -= countdown;
         delete target_pos;
         target_pos = random_spot();
     }
+}
+
+bool SceneIK::on_button_press_event(GdkEventButton * event)
+{
+    timer = 0.0f;
+    delete target_pos;
+    target_pos = new Vector2f( 2.0f * (float)event->x / get_width() - 1.0f,
+                              -2.0f * (float)event->y / get_height() + 1.0f);
+    return true;
 }
 
 void SceneIK::render(const float dt)
