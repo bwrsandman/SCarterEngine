@@ -19,7 +19,8 @@
 
 
 SceneBase::SceneBase (void)
-    : World(new Matrix4f(1.0f, 0.0f, 0.0f, 0.0f,
+    : Gtk::GL::DrawingArea()
+    , World(new Matrix4f(1.0f, 0.0f, 0.0f, 0.0f,
                          0.0f, 1.0f, 0.0f, 0.0f,
                          0.0f, 0.0f, 1.0f, 0.0f,
                          0.0f, 0.0f, 0.0f, 1.0f))
@@ -58,6 +59,7 @@ SceneBase::SceneBase (void)
     /* Add events */
     add_events(Gdk::VISIBILITY_NOTIFY_MASK);
     add_events(Gdk::BUTTON_PRESS_MASK);
+    add_events(Gdk::POINTER_MOTION_MASK);
 }
 
 SceneBase::~SceneBase (void)
@@ -315,7 +317,22 @@ bool SceneBase::on_visibility_notify_event(GdkEventVisibility* event)
 
 bool SceneBase::on_button_press_event(GdkEventButton * event)
 {
+    on_button_pressed(px_to_view(event->x, event->y));
     return true;
+}
+
+bool SceneBase::on_motion_notify_event (GdkEventMotion* event)
+{
+    on_pointer_moved(px_to_view(event->x, event->y));
+    return true;
+}
+
+void SceneBase::on_button_pressed(Vector2f location)
+{
+}
+
+void SceneBase::on_pointer_moved(Vector2f location)
+{
 }
 
 bool SceneBase::on_idle()
@@ -332,4 +349,11 @@ bool SceneBase::on_idle()
     _update_sync();
     
     return true;
+}
+
+
+Vector2f SceneBase::px_to_view(int x, int y)
+{
+    return Vector2f( 2.0f * float(x) / float(get_width()) - 1.0f,
+                    -2.0f * float(y) / float(get_height()) + 1.0f);
 }

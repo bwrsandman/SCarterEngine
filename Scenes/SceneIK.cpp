@@ -14,11 +14,13 @@
 #include "../math3d.hpp"
 
 SceneIK::SceneIK()
+    : SceneBase()
 {
     /* initialize random seed: */
     srand (time(NULL));
     
-    target_pos = new Vector2f(random_spot());
+    target_pos = new Vector2f();
+    timer = countdown;
 }
 
 SceneIK::SceneIK(const SceneIK& orig) 
@@ -33,8 +35,7 @@ SceneIK::~SceneIK()
 
 Vector2f SceneIK::random_spot()
 {
-    return Vector2f(2.0f * (float)rand()/(float)RAND_MAX - 1.0f,
-                    2.0f * (float)rand()/(float)RAND_MAX - 1.0f);
+    return px_to_view(rand() % get_width(), rand() % get_height());
 }
 
 /* Shaders */
@@ -88,13 +89,11 @@ void SceneIK::update(const float dt)
     }
 }
 
-bool SceneIK::on_button_press_event(GdkEventButton * event)
+void SceneIK::on_button_pressed(Vector2f location)
 {
     timer = 0.0f;
     delete target_pos;
-    target_pos = new Vector2f( 2.0f * (float)event->x / get_width() - 1.0f,
-                              -2.0f * (float)event->y / get_height() + 1.0f);
-    return true;
+    target_pos = new Vector2f(location);
 }
 
 void SceneIK::render(const float dt)

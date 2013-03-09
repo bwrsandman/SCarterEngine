@@ -9,6 +9,7 @@
 #define SCENEBASE_H
 
 class Matrix4f;
+class Vector2f;
 const float si = 0.75f;
 const int subs = 4;
 
@@ -41,10 +42,12 @@ protected:
     virtual bool on_unmap_event(GdkEventAny* event);
     virtual bool on_visibility_notify_event(GdkEventVisibility* event);
     virtual bool on_button_press_event(GdkEventButton * event);
-    
+    virtual bool on_motion_notify_event (GdkEventMotion* event);
     virtual void on_realize (void);
     virtual bool on_idle (void);
-    
+    virtual void on_button_pressed(Vector2f);
+    virtual void on_pointer_moved(Vector2f);
+
     virtual bool init_opengl (void);
     virtual bool create_shaders (const char*);
     virtual void create_geom (void) = 0;
@@ -53,7 +56,9 @@ protected:
     virtual void render (const float);
     virtual void update (const float);
     virtual void release (void);
-    
+
+    Vector2f px_to_view(int x, int y);
+
     /* Shaders */
     uint                SHVERT;
     uint                SHFRAG;
@@ -79,7 +84,7 @@ private:
     const float         CLEAR_G     = 1.0f;
     const float         CLEAR_B     = 1.0f;
     const float         CLEAR_A     = 1.0f;
-    
+
     const char* VERTEX_SHADER =
         /* morph.vert - interpolates between the model and the unit sphere */
         "#version 330\n"

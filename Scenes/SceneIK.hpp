@@ -25,7 +25,7 @@ public:
     SceneIK(const SceneIK& orig);
     virtual ~SceneIK();
 protected:
-    virtual bool on_button_press_event(GdkEventButton * event);
+    virtual void on_button_pressed(Vector2f);
 private:
     virtual bool create_shaders (const char*);
     virtual void create_geom (void);
