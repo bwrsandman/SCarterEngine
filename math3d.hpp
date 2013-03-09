@@ -13,6 +13,12 @@ public:
     {
     }
     
+     Vector2f(const Vector2f& orig)
+        : X(orig.X)
+        , Y(orig.Y)
+    {
+    }
+    
     float mag_squaded()
     {
         return X * X + Y * Y;

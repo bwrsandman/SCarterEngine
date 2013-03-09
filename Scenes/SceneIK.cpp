@@ -18,7 +18,7 @@ SceneIK::SceneIK()
     /* initialize random seed: */
     srand (time(NULL));
     
-    target_pos = random_spot();
+    target_pos = new Vector2f(random_spot());
 }
 
 SceneIK::SceneIK(const SceneIK& orig) 
@@ -31,10 +31,10 @@ SceneIK::~SceneIK()
     delete arm; arm = NULL;
 }
 
-Vector2f *SceneIK::random_spot()
+Vector2f SceneIK::random_spot()
 {
-    return new Vector2f(2.0f * (float)rand()/(float)RAND_MAX - 1.0f,
-                        2.0f * (float)rand()/(float)RAND_MAX - 1.0f);
+    return Vector2f(2.0f * (float)rand()/(float)RAND_MAX - 1.0f,
+                    2.0f * (float)rand()/(float)RAND_MAX - 1.0f);
 }
 
 /* Shaders */
@@ -84,7 +84,7 @@ void SceneIK::update(const float dt)
     {
         timer -= countdown;
         delete target_pos;
-        target_pos = random_spot();
+        target_pos = new Vector2f(random_spot());
     }
 }
 

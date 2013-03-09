@@ -32,7 +32,7 @@ private:
     virtual void create_light(void);
     virtual void render (const float);
     virtual void update (const float);
-    Vector2f *random_spot(void);
+    Vector2f random_spot(void);
     
     IKArm *arm = NULL;
     float timer = 0.0f;
