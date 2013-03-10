@@ -46,6 +46,9 @@ OBJECTFILES= \
 	${OBJECTDIR}/Scenes/SceneGears.o \
 	${OBJECTDIR}/Scenes/SceneIK.o \
 	${OBJECTDIR}/Scenes/SceneMorph.o \
+	${OBJECTDIR}/Scenes/SceneParticleBase.o \
+	${OBJECTDIR}/Scenes/SceneParticleFirework.o \
+	${OBJECTDIR}/Scenes/SceneParticleSmoke.o \
 	${OBJECTDIR}/main.o
 
 
@@ -127,6 +130,21 @@ ${OBJECTDIR}/Scenes/SceneMorph.o: Scenes/SceneMorph.cpp
 	${MKDIR} -p ${OBJECTDIR}/Scenes
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneMorph.o Scenes/SceneMorph.cpp
+
+${OBJECTDIR}/Scenes/SceneParticleBase.o: Scenes/SceneParticleBase.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Scenes
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneParticleBase.o Scenes/SceneParticleBase.cpp
+
+${OBJECTDIR}/Scenes/SceneParticleFirework.o: Scenes/SceneParticleFirework.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Scenes
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneParticleFirework.o Scenes/SceneParticleFirework.cpp
+
+${OBJECTDIR}/Scenes/SceneParticleSmoke.o: Scenes/SceneParticleSmoke.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Scenes
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneParticleSmoke.o Scenes/SceneParticleSmoke.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}

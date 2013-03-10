@@ -16,6 +16,9 @@
       <itemPath>Scenes/SceneGears.hpp</itemPath>
       <itemPath>Scenes/SceneIK.hpp</itemPath>
       <itemPath>Scenes/SceneMorph.hpp</itemPath>
+      <itemPath>Scenes/SceneParticleBase.hpp</itemPath>
+      <itemPath>Scenes/SceneParticleFirework.hpp</itemPath>
+      <itemPath>Scenes/SceneParticleSmoke.hpp</itemPath>
       <itemPath>../A1/interpolation.hpp</itemPath>
       <itemPath>math3d.hpp</itemPath>
     </logicalFolder>
@@ -38,6 +41,9 @@
       <itemPath>Scenes/SceneGears.cpp</itemPath>
       <itemPath>Scenes/SceneIK.cpp</itemPath>
       <itemPath>Scenes/SceneMorph.cpp</itemPath>
+      <itemPath>Scenes/SceneParticleBase.cpp</itemPath>
+      <itemPath>Scenes/SceneParticleFirework.cpp</itemPath>
+      <itemPath>Scenes/SceneParticleSmoke.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -115,6 +121,18 @@
       </item>
       <item path="Scenes/SceneMorph.hpp" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Scenes/SceneParticleBase.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Scenes/SceneParticleBase.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Scenes/SceneParticleFirework.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Scenes/SceneParticleFirework.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Scenes/SceneParticleSmoke.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Scenes/SceneParticleSmoke.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="math3d.hpp" ex="false" tool="3" flavor2="0">
@@ -188,6 +206,18 @@
       <item path="Scenes/SceneMorph.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Scenes/SceneMorph.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Scenes/SceneParticleBase.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Scenes/SceneParticleBase.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Scenes/SceneParticleFirework.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Scenes/SceneParticleFirework.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="Scenes/SceneParticleSmoke.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Scenes/SceneParticleSmoke.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

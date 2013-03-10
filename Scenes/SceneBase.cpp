@@ -24,6 +24,7 @@ SceneBase::SceneBase (void)
                          0.0f, 1.0f, 0.0f, 0.0f,
                          0.0f, 0.0f, 1.0f, 0.0f,
                          0.0f, 0.0f, 0.0f, 1.0f))
+    , total_time(0.0f)
 {
     /* Connect timeout */
     //Glib::signal_timeout().connect( sigc::mem_fun(*this, &SceneBase::on_timeout), 17 );
@@ -51,7 +52,7 @@ SceneBase::SceneBase (void)
     }
 
     /* print frame buffer attributes. */
-    GLConfigUtil::examine_gl_attrib(glconfig);
+    //GLConfigUtil::examine_gl_attrib(glconfig);
 
     /* Set OpenGL-capability to the widget. */
     set_gl_capability(glconfig);
@@ -74,11 +75,11 @@ SceneBase::~SceneBase (void)
 /* Initialize OpenGL */
 bool SceneBase::init_opengl (void)
 {
-    std::cout << "GL_RENDERER   = " << glGetString(GL_RENDERER)   << std::endl;
-    std::cout << "GL_VERSION    = " << glGetString(GL_VERSION)    << std::endl;
-    std::cout << "GL_VENDOR     = " << glGetString(GL_VENDOR)     << std::endl;
+    //std::cout << "GL_RENDERER   = " << glGetString(GL_RENDERER)   << std::endl;
+    //std::cout << "GL_VERSION    = " << glGetString(GL_VERSION)    << std::endl;
+    //std::cout << "GL_VENDOR     = " << glGetString(GL_VENDOR)     << std::endl;
     //std::cout << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS) << std::endl;
-    std::cout << std::endl;
+    //std::cout << std::endl;
 
     /* Initialize GLEW */
     GLenum err = glewInit();
@@ -184,7 +185,10 @@ bool SceneBase::create_shaders (const char* vsh)
     gWorldLocation = glGetUniformLocation(SHPROG, "gWorld");
     if (gWorldLocation == 0xFFFFFFFF)
         return false;
-
+    gTimeLocation = glGetUniformLocation(SHPROG, "gTime");
+    if (gTimeLocation == 0xFFFFFFFF)
+        std::cout << "gTime is not used in this shader" << std::endl;
+    
     return true;
 }
 
@@ -198,12 +202,13 @@ void SceneBase::render (const float dt)
     
     /* Uniform update */
     glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
+    glUniform1f(gTimeLocation, total_time);
 
 }
 
 void SceneBase::update(const float dt)
 {
-    
+    total_time += dt;
 }
 
 /* Releases the context */

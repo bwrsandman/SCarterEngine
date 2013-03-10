@@ -1,6 +1,9 @@
 #ifndef MATH_3D_H
 #define	MATH_3D_H
 
+#include <random>
+#include <cmath>
+
 class Vector2f
 {
 public:
@@ -259,5 +262,13 @@ struct Matrix4f
     }
 };
 
+inline float randFloat(void) { return (float)rand()/(float)RAND_MAX; }
+
+const float PI = 3.141592653589793f;
+const float TWOPI = 6.283185307179586f;
+
+inline float lerp(float v0, float v1, float t) {
+  return v0 + (v1 - v0) * t;
+}
 
 #endif	/* MATH_3D_H */

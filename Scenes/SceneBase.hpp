@@ -22,11 +22,14 @@ public:
 
 protected:
     Matrix4f *World = NULL;
+    GLfloat total_time = 0.0f;
     Glib::Timer update_timer;
     Glib::Timer draw_timer;
    
     /* Uniforms */
     GLuint gWorldLocation;
+    GLuint gTimeLocation;
+    
 
     /* Vertex arrays */
     GLfloat *vertices = NULL;
@@ -90,6 +93,7 @@ private:
         "#version 330\n"
         "layout (location = 0) in vec3 gl_Vertex;\n"
         "uniform mat4 gWorld;\n"
+        "uniform float gTime;\n"
         "out vec3 ex_Color;\n"
     
         "void main( void ) {\n"

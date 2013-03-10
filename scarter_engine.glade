@@ -50,6 +50,7 @@
                 <property name="width_request">200</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="tab_pos">right</property>
                 <child>
                   <object class="GtkBox" id="box4">
                     <property name="visible">True</property>
@@ -165,6 +166,54 @@
                   </object>
                   <packing>
                     <property name="position">3</property>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box6">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child type="tab">
+                  <object class="GtkLabel" id="label7">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Fireworks</property>
+                  </object>
+                  <packing>
+                    <property name="position">4</property>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox" id="box7">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">5</property>
+                  </packing>
+                </child>
+                <child type="tab">
+                  <object class="GtkLabel" id="label8">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Smoke</property>
+                  </object>
+                  <packing>
+                    <property name="position">5</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
