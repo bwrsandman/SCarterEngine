@@ -25,13 +25,20 @@ SceneParticleBase::~SceneParticleBase()
     velocities = NULL;
 }
 
+bool SceneParticleBase::post_shader_compile()
+{
+    const char * outputNames[] = {"Position", "Velocity", "StartTime"};
+    glTransformFeedbackVaryings(SHPROG, 3, outputNames, GL_SEPARATE_ATTRIBS);
+    return true;
+}
+
 bool SceneParticleBase::create_shaders(const char* vsh) 
 {
     bool ret = SceneBase::create_shaders(VERTEX_SHADER);
+    gH = glGetUniformLocation(SHPROG, "H");
+    if (gH == 0xFFFFFFFF)
+        ret = false;
     create_feedback_buffers();
-    //gH = glGetUniformLocation(SHPROG, "H");
-    //if (gH == 0xFFFFFFFF)
-    //    ret = false;
     return ret;
 }
 
@@ -103,7 +110,8 @@ void SceneParticleBase::render(const float dt)
     SceneBase::render(dt);
     
     /********* Update pass *********/
-    //glUniform1f(gH, dt);
+    //glTransformSubroutinesuiv(GL_VERTEX_SHADER, 1, &updateSub);
+    glUniform1f(gH, dt);
     
     
     /* Set current rendering shader */

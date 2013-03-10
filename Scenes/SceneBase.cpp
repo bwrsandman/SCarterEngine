@@ -129,6 +129,11 @@ void SceneBase::set_perspective()
     // TODO: set persepctive based on get_height() and get_width()
 }
 
+bool SceneBase::post_shader_compile()
+{
+    return true;
+}
+
 /* Shaders */
 bool SceneBase::create_shaders (const char* vsh)
 {
@@ -175,6 +180,9 @@ bool SceneBase::create_shaders (const char* vsh)
     glDeleteShader(SHVERT);
     glDeleteShader(SHFRAG);
 
+    if (!post_shader_compile())
+        return false;
+    
     /* Link the shaders */
     glLinkProgram(SHPROG);
     glGetProgramiv(SHPROG, GL_LINK_STATUS, &res);

@@ -42,10 +42,10 @@ public:
     virtual ~SceneParticleBase();
 protected:
     virtual bool create_shaders (const char* vsh);
+    virtual bool post_shader_compile(void);
     virtual void create_geom (void);
     virtual void create_light(void) { };
     virtual void render (const float);
-    //virtual void create_velocities(void);
     
     const char* VERTEX_SHADER =
         "#version 400\n"
