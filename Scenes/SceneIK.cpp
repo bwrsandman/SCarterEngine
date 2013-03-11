@@ -39,9 +39,9 @@ Vector2f SceneIK::random_spot()
 }
 
 /* Shaders */
-bool SceneIK::create_shaders (const char* vsh)
+bool SceneIK::create_shaders (const char* vsh, const char* fsh)
 {
-    if (!SceneBase::create_shaders(VERTEX_SHADER))
+    if (!SceneBase::create_shaders(VERTEX_SHADER, FRAGMENT_SHADER))
         return false;
     gOrient = glGetUniformLocation(SHPROG, "o");
     if (gOrient == 0xFFFFFFFF)

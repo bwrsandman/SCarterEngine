@@ -41,7 +41,7 @@ public:
     SceneParticleBase(const SceneParticleBase& orig);
     virtual ~SceneParticleBase();
 protected:
-    virtual bool create_shaders (const char* vsh);
+    virtual bool create_shaders (const char*, const char*);
     virtual bool post_shader_compile(void);
     virtual void create_geom (void);
     virtual bool CreateVBO(void);
@@ -121,8 +121,6 @@ protected:
     
 private:
     int drawbuff = 0;
-    GLfloat *velocities;
-    GLfloat *startTimes;
     
     /* Uniforms */
     GLuint gH;

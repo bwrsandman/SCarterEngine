@@ -20,15 +20,7 @@ SceneParticleBase::SceneParticleBase(const SceneParticleBase& orig)
 }
 
 SceneParticleBase::~SceneParticleBase() 
-{
-    if(startTimes)
-        delete(startTimes); 
-    startTimes = NULL;
-    
-    if(velocities)
-        delete(velocities); 
-    velocities = NULL;
-    
+{    
     /*for (int i = 0; i < 2; ++i)
     {
         if(particleArray[i])
@@ -47,9 +39,9 @@ bool SceneParticleBase::post_shader_compile()
     return true;
 }
 
-bool SceneParticleBase::create_shaders(const char* vsh) 
+bool SceneParticleBase::create_shaders(const char* vsh, const char* fsh) 
 {
-    bool ret = SceneBase::create_shaders(VERTEX_SHADER);
+    bool ret = SceneBase::create_shaders(VERTEX_SHADER, FRAGMENT_SHADER);
     gH = glGetUniformLocation(SHPROG, "H");
     if (gH == 0xFFFFFFFF)
         ret = false;

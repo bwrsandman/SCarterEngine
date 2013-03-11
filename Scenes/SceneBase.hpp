@@ -52,7 +52,7 @@ protected:
     virtual void on_pointer_moved(Vector2f);
 
     virtual bool init_opengl (void);
-    virtual bool create_shaders (const char*);
+    virtual bool create_shaders (const char*, const char*);
     virtual bool post_shader_compile(void);
     virtual void create_geom (void) = 0;
     virtual void create_light(void) = 0;

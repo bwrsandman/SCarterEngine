@@ -108,7 +108,7 @@ bool SceneBase::init_opengl (void)
       std::cout << "*** WARN: Machine does not support GLEW 4.3 API.\n";
 
     /* Create Shader and vertex buffer */
-    if(!create_shaders(VERTEX_SHADER))
+    if(!create_shaders(VERTEX_SHADER, FRAGMENT_SHADER))
     {
         std::cerr << "*** Error Creating shaders.\n";
         return false;
@@ -141,7 +141,7 @@ bool SceneBase::post_shader_compile()
 }
 
 /* Shaders */
-bool SceneBase::create_shaders (const char* vsh)
+bool SceneBase::create_shaders (const char* vsh, const char* fsh)
 {
     char shader_error[1024];
     int error_length = 0;
@@ -154,7 +154,7 @@ bool SceneBase::create_shaders (const char* vsh)
 
     /* Assign shader source code to these IDs */
     glShaderSource(SHVERT, 1, &vsh, NULL);
-    glShaderSource(SHFRAG, 1, &FRAGMENT_SHADER, NULL);
+    glShaderSource(SHFRAG, 1, &fsh, NULL);
 
     /* Compile the code */
     glCompileShader(SHVERT);

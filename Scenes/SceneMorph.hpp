@@ -22,7 +22,7 @@ public:
     
 protected:
     virtual void create_geom (void);
-    virtual bool create_shaders (const char*);
+    virtual bool create_shaders (const char*, const char*);
     virtual void create_light(void);
     virtual void render (const float);
 

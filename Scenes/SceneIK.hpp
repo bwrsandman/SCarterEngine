@@ -27,7 +27,7 @@ public:
 protected:
     virtual void on_button_pressed(Vector2f);
 private:
-    virtual bool create_shaders (const char*);
+    virtual bool create_shaders (const char*, const char*);
     virtual void create_geom (void);
     virtual void create_light(void);
     virtual void render (const float);
