@@ -8,6 +8,9 @@
 #ifndef SCENEBASE_H
 #define SCENEBASE_H
 
+#include <gtkmm.h>
+#include <gtkglmm.h>
+
 class Matrix4f;
 class Vector2f;
 const float si = 0.75f;

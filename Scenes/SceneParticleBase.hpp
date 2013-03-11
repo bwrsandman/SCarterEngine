@@ -32,7 +32,9 @@
 #include <gtkglmm.h>
 #include "SceneBase.hpp"
 
-const GLuint nParticles = 16;
+const GLuint nParticles = 16000;
+
+class Vector2f;
 
 class SceneParticleBase : public SceneBase
 {
@@ -48,68 +50,43 @@ protected:
     virtual bool DestroyVBO(void);
     virtual void create_light(void) { };
     virtual void render (const float);
+    virtual void on_pointer_moved(Vector2f);
     
     /* Particle arrays */
-    GLuint particleArray[2];
+    GLuint particles;
     
     const char* VERTEX_SHADER =
         "#version 400\n"
-        "subroutine void RenderPassType();\n"
-        "subroutine uniform RenderPassType RenderPass;\n"
-        "layout (location = 0) in vec3 VertexPosition;\n"
-        "layout (location = 1) in vec3 VertexVelocity;\n"
-        "layout (location = 2) in float VertexStartTime;\n"
-        "layout (location = 3) in vec3 VertexInitialVelocity;\n"    
-    
-        // To feedback
-        "out vec3 Position;\n"
-        "out vec3 Velocity;\n"
-        "out float StartTime;\n"
+        "layout (location = 0) in vec3 VertexInitVel;\n"
+        "layout (location = 1) in float StartTime;\n"
     
         // To fragment shader
         "out float Transp;\n" // Transparency of the particle
         "out vec3 ex_Color;\n"
     
         "uniform float gTime;\n"  // Animation time
-        "uniform float H;\n"      // Time between frames
+        "uniform vec2 origin;\n"
         "vec3 Accel = vec3(0.0,-0.4,0.0);\n"
         "float ParticleLifetime = 3.5;\n"
         "uniform mat4 gWorld;\n"
     
-        "subroutine (RenderPassType)\n"
-    
-        "void update( void ) {\n"
-        "  Position = VertexPosition;\n"
-        "  Velocity = VertexVelocity;\n"    
-        "  StartTime = VertexStartTime;\n"
-        "  if (gTime >= StartTime) {\n"
-        "    float age = gTime - StartTime;\n"
-        "    if (age > ParticleLifetime) {"
-        // Particle is past its lifetime, recycle
-        "      Position = vec3(0.0);\n"
-        "      Velocity = VertexInitialVelocity;\n"
-        "      StartTime = gTime;\n"
-        "    } else {\n"
-        // Particle is Alive, update.
-        "      Position += Velocity * H;\n"
-        "      Velocity += Accel * H;\n"
+        "void main( void ) {\n"
+        // Assume the initial position is (0,0,0).
+        "  vec3 pos = vec3(0.0, -1.0, 0.0);\n"
+        "  Transp = 0.0;\n"
+
+        "  if( gTime > StartTime ) {\n"
+        "    float t = gTime - StartTime;\n"
+        "    if( t < ParticleLifetime ) {\n"
+        "      pos += VertexInitVel * t + Accel * t * t;\n"
+        "      Transp = 1.0 - t / ParticleLifetime;\n"
         "    }\n"
         "  }\n"
-        "}\n"
-    
-        "subroutine (RenderPassType)\n"
-        "void render(void) {\n"
-        "  float age = gTime - VertexStartTime;\n"
-        "  Transp = 1.0 - age / ParticleLifetime;\n"
-        "  gl_Position = gWorld * vec4(VertexPosition, 1.0);\n"
-        "  ex_Color = clamp(VertexPosition, 0.0, 1.0);\n"
-        "}\n"
-    
-        "void main( void ) {\n"
-        // calls either render() or update()
-        "  RenderPass();\n"
+        "  gl_Position = gWorld * vec4(pos, 1.0);\n"
+        "  ex_Color = clamp(pos, 0.0, 1.0);\n"
         "}\n";
 
+    
     const char* FRAGMENT_SHADER =
     "#version 400\n"
     "in  vec3 ex_Color;\n"
@@ -120,22 +97,11 @@ protected:
     "  FragColor = vec4(ex_Color, Transp);}";
     
 private:
-    int drawbuff = 0;
-    
-    /* Uniforms */
-    GLuint gH;
-    
-    /* Subroutines */
-    GLuint updateSub;
-    GLuint renderSub;
-    
-    GLuint feedback[2];         // Transform feedback objects
-    GLuint posBuf[2];           // Position buffers (A and B)
-    GLuint velBuf[2];           // Velocity buffers (A and B)
-    GLuint startTime[2];        // Start time buffers (A and B)
+    GLuint startTime;
     GLuint initVel;
-    virtual void create_feedback_buffers (void);
     
+    GLuint gOrigin;
+    Vector2f * origin;
 };
 
 #endif	/* SCENEPARTICLEBASE_HPP */
