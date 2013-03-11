@@ -175,7 +175,23 @@
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel" id="label9">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">There are 2 000 000 particles
+rendered on the GPU
+
+This application supports a
+much larger number, however,
+the interaction with the mouse
+causes so much slowdown that
+the number of particles was capped.</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -186,7 +202,8 @@
                   <object class="GtkLabel" id="label7">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Fireworks</property>
+                    <property name="xalign">0.44999998807907104</property>
+                    <property name="label" translatable="yes">Repelant</property>
                   </object>
                   <packing>
                     <property name="position">4</property>
@@ -199,7 +216,23 @@
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <placeholder/>
+                      <object class="GtkLabel" id="label10">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">There are 2 000 000 particles
+rendered on the GPU
+
+This application supports a
+much larger number, however,
+the interaction with the mouse
+causes so much slowdown that
+the number of particles was capped.</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -210,7 +243,7 @@
                   <object class="GtkLabel" id="label8">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Smoke</property>
+                    <property name="label" translatable="yes">Fountain</property>
                   </object>
                   <packing>
                     <property name="position">5</property>

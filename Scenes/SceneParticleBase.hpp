@@ -32,7 +32,8 @@
 #include <gtkglmm.h>
 #include "SceneBase.hpp"
 
-const GLuint nParticles = 16000;
+const GLuint nParticles = 2000000;
+const float rate = 0.00075f;
 
 class Vector2f;
 
@@ -50,6 +51,7 @@ protected:
     virtual bool DestroyVBO(void);
     virtual void create_light(void) { };
     virtual void render (const float);
+    virtual void update (const float);
     virtual void on_pointer_moved(Vector2f);
     
     /* Particle arrays */

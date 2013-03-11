@@ -195,6 +195,8 @@ bool SceneBase::create_shaders (const char* vsh, const char* fsh)
     if (res == GL_FALSE)
         std::cerr << "Failed to link shader program" << std::endl;
 
+    glUseProgram(SHPROG);
+    
     /* Get Uniforms */
     gWorldLocation = glGetUniformLocation(SHPROG, "gWorld");
     if (gWorldLocation == 0xFFFFFFFF)

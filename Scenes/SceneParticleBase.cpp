@@ -94,7 +94,6 @@ bool SceneParticleBase::CreateVBO(void)
     delete [] data;
     data = new GLfloat[nParticles];
     float time = 0.0f;
-    float rate = 0.00075f;
     for(GLuint i = 0; i < nParticles; i++ ) {
         data[i] = time;
         time += rate;
@@ -155,8 +154,9 @@ bool SceneParticleBase::DestroyVBO(void)
 void SceneParticleBase::on_pointer_moved(Vector2f location)
 {
     GLfloat *data = new GLfloat[nParticles * 2];
-    GLuint start_index = total_time/0.00075f;
-    for (GLuint i = start_index; i < nParticles; ++i)
+    GLuint start_index = total_time/rate;
+    GLuint end_index = (total_time + 1.0f)/rate;
+    for (GLuint i = start_index; i < nParticles && i < end_index ; ++i)
     {
         data[2 * i + 0] = location.X;
         data[2 * i + 1] = location.Y;
@@ -165,6 +165,11 @@ void SceneParticleBase::on_pointer_moved(Vector2f location)
     glBindBuffer(GL_ARRAY_BUFFER, startPos);
     glBufferSubData(GL_ARRAY_BUFFER, 0, nParticles * 2 * sizeof(float), data);
     delete [] data;
+}
+
+void SceneParticleBase::update(const float dt)
+{
+    SceneBase::update(dt);
 }
 
 void SceneParticleBase::render(const float dt)
