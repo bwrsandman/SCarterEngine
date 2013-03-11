@@ -66,8 +66,14 @@ SceneBase::SceneBase (void)
 SceneBase::~SceneBase (void)
 { 
     release();
-    delete(World); World = NULL;
-    delete(vertices); vertices = NULL;
+    
+    if (World)
+        delete(World); 
+    World = NULL;
+    
+    if (vertices)
+        delete(vertices); 
+    vertices = NULL;
 }
 
 /* OpenGL specific functions */

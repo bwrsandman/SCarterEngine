@@ -20,9 +20,20 @@ SceneParticleBase::SceneParticleBase(const SceneParticleBase& orig)
 
 SceneParticleBase::~SceneParticleBase() 
 {
+    if(startTimes)
+        delete(startTimes); 
+    startTimes = NULL;
+    
     if(velocities)
         delete(velocities); 
     velocities = NULL;
+    
+    for (int i = 0; i < 2; ++i)
+    {
+        if(particleArray[i])
+            delete(particleArray[i]); 
+        particleArray[i] = NULL;
+    }
 }
 
 bool SceneParticleBase::post_shader_compile()
@@ -96,36 +107,71 @@ void SceneParticleBase::create_feedback_buffers()
 
 void SceneParticleBase::create_geom()
 {
-    vertices = new GLfloat[3 * nParticles] {0.0f};
+    particleArray[0] = new GLfloat[3 * nParticles] {0.0f};
+    particleArray[1] = new GLfloat[3 * nParticles] {0.0f};
     indices = new GLubyte[nParticles] {0};
     for (int i = 0; i < nParticles; ++i)
-    {
-        vertices[i*3] = 0.1f * i;
         indices[i] = 3 * i;
-    }
 }
 
 void SceneParticleBase::render(const float dt)
 {   
+    
     SceneBase::render(dt);
     
+     /* Set current rendering shader */
+    glUseProgram(SHPROG);   
+    
+    updateSub = glGetSubroutineIndex(SHPROG, 1, "update");
+    renderSub = glGetSubroutineIndex(SHPROG, 1, "render");
+    
     /********* Update pass *********/
-    //glTransformSubroutinesuiv(GL_VERTEX_SHADER, 1, &updateSub);
+    glUniformSubroutinesuiv(GL_VERTEX_SHADER, 1, &updateSub);
     glUniform1f(gH, dt);
     
+    // Disable rendering
+    glEnable(GL_RASTERIZER_DISCARD);
+    glBindTransformFeedback(GL_POINTS, feedback[drawbuff]);
     
-    /* Set current rendering shader */
-    glUseProgram(SHPROG);
-    
+    glBeginTransformFeedback(GL_POINTS);
+
     // activate and specify pointer to vertex array
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_FLOAT, 0, vertices);
+    glVertexPointer(3, GL_FLOAT, 0, particleArray[1 - drawbuff]);
 
     // draw first half, range is 6 - 0 + 1 = 7 vertices used
     glDrawRangeElements(GL_POINTS, 0, nParticles - 1, nParticles, GL_UNSIGNED_BYTE, indices);
 
     // deactivate vertex arrays after drawing
     glDisableClientState(GL_VERTEX_ARRAY);
+    
+    glEndTransformFeedback();
+    
+    /********* Render pass *********/
+    
+    // Re-enable rendering
+    glDisable(GL_RASTERIZER_DISCARD);
+    glUniformSubroutinesuiv(GL_VERTEX_SHADER, 1, &renderSub);
+    
+    /* Uniform update */ // TODO check if needed
+    glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
+   
+    // Unbind feedback object 
+    glBindTransformFeedback(GL_POINTS, 0);
+    
+    // Draw
+    // activate and specify pointer to vertex array
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, particleArray[drawbuff]);
+
+    // draw first half, range is 6 - 0 + 1 = 7 vertices used
+    glDrawRangeElements(GL_POINTS, 0, nParticles - 1, nParticles, GL_UNSIGNED_BYTE, indices);
+
+    // deactivate vertex arrays after drawing
+    glDisableClientState(GL_VERTEX_ARRAY);
+    
+    // Swap buffers
+    drawbuff = 1 - drawbuff;
     
     /* disable program */
     glUseProgram(0);

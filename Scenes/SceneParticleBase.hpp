@@ -47,6 +47,9 @@ protected:
     virtual void create_light(void) { };
     virtual void render (const float);
     
+    /* Particle arrays */
+    GLfloat *particleArray[2] = {NULL};
+    
     const char* VERTEX_SHADER =
         "#version 400\n"
         "subroutine void RenderPassType();\n"
@@ -115,11 +118,16 @@ protected:
     "  FragColor = vec4(ex_Color, Transp);}";
     
 private:
+    int drawbuff = 0;
     GLfloat *velocities;
     GLfloat *startTimes;
     
     /* Uniforms */
     GLuint gH;
+    
+    /* Subroutines */
+    GLuint updateSub;
+    GLuint renderSub;
     
     GLuint feedback[2];         // Transform feedback objects
     GLuint posBuf[2];           // Position buffers (A and B)
