@@ -44,11 +44,13 @@ protected:
     virtual bool create_shaders (const char* vsh);
     virtual bool post_shader_compile(void);
     virtual void create_geom (void);
+    virtual bool CreateVBO(void);
+    virtual bool DestroyVBO(void);
     virtual void create_light(void) { };
     virtual void render (const float);
     
     /* Particle arrays */
-    GLfloat *particleArray[2] = {NULL};
+    GLuint particleArray[2];
     
     const char* VERTEX_SHADER =
         "#version 400\n"
@@ -57,7 +59,7 @@ protected:
         "layout (location = 0) in vec3 VertexPosition;\n"
         "layout (location = 1) in vec3 VertexVelocity;\n"
         "layout (location = 2) in float VertexStartTime;\n"
-        "layout (location = 1) in vec3 VertexInitialVelocity;\n"    
+        "layout (location = 3) in vec3 VertexInitialVelocity;\n"    
     
         // To feedback
         "out vec3 Position;\n"
@@ -70,8 +72,8 @@ protected:
     
         "uniform float gTime;\n"  // Animation time
         "uniform float H;\n"      // Time between frames
-        "uniform float Accel;\n"
-        "float ParticleLifetime = 10.0;\n"
+        "vec3 Accel = vec3(0.0,-0.4,0.0);\n"
+        "float ParticleLifetime = 3.5;\n"
         "uniform mat4 gWorld;\n"
     
         "subroutine (RenderPassType)\n"
@@ -90,7 +92,7 @@ protected:
         "    } else {\n"
         // Particle is Alive, update.
         "      Position += Velocity * H;\n"
-        "      Velocity += Position * H;\n"
+        "      Velocity += Accel * H;\n"
         "    }\n"
         "  }\n"
         "}\n"
@@ -133,6 +135,7 @@ private:
     GLuint posBuf[2];           // Position buffers (A and B)
     GLuint velBuf[2];           // Velocity buffers (A and B)
     GLuint startTime[2];        // Start time buffers (A and B)
+    GLuint initVel;
     virtual void create_feedback_buffers (void);
     
 };
