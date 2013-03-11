@@ -47,8 +47,8 @@ OBJECTFILES= \
 	${OBJECTDIR}/Scenes/SceneIK.o \
 	${OBJECTDIR}/Scenes/SceneMorph.o \
 	${OBJECTDIR}/Scenes/SceneParticleBase.o \
-	${OBJECTDIR}/Scenes/SceneParticleFirework.o \
-	${OBJECTDIR}/Scenes/SceneParticleSmoke.o \
+	${OBJECTDIR}/Scenes/SceneParticleFountain.o \
+	${OBJECTDIR}/Scenes/SceneParticleRepelant.o \
 	${OBJECTDIR}/main.o
 
 
@@ -136,15 +136,15 @@ ${OBJECTDIR}/Scenes/SceneParticleBase.o: Scenes/SceneParticleBase.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneParticleBase.o Scenes/SceneParticleBase.cpp
 
-${OBJECTDIR}/Scenes/SceneParticleFirework.o: Scenes/SceneParticleFirework.cpp 
+${OBJECTDIR}/Scenes/SceneParticleFountain.o: Scenes/SceneParticleFountain.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Scenes
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneParticleFirework.o Scenes/SceneParticleFirework.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneParticleFountain.o Scenes/SceneParticleFountain.cpp
 
-${OBJECTDIR}/Scenes/SceneParticleSmoke.o: Scenes/SceneParticleSmoke.cpp 
+${OBJECTDIR}/Scenes/SceneParticleRepelant.o: Scenes/SceneParticleRepelant.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Scenes
 	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneParticleSmoke.o Scenes/SceneParticleSmoke.cpp
+	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneParticleRepelant.o Scenes/SceneParticleRepelant.cpp
 
 ${OBJECTDIR}/main.o: main.cpp 
 	${MKDIR} -p ${OBJECTDIR}

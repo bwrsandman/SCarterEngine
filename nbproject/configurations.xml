@@ -17,8 +17,8 @@
       <itemPath>Scenes/SceneIK.hpp</itemPath>
       <itemPath>Scenes/SceneMorph.hpp</itemPath>
       <itemPath>Scenes/SceneParticleBase.hpp</itemPath>
-      <itemPath>Scenes/SceneParticleFirework.hpp</itemPath>
-      <itemPath>Scenes/SceneParticleSmoke.hpp</itemPath>
+      <itemPath>Scenes/SceneParticleFountain.hpp</itemPath>
+      <itemPath>Scenes/SceneParticleRepelant.hpp</itemPath>
       <itemPath>../A1/interpolation.hpp</itemPath>
       <itemPath>math3d.hpp</itemPath>
     </logicalFolder>
@@ -42,8 +42,8 @@
       <itemPath>Scenes/SceneIK.cpp</itemPath>
       <itemPath>Scenes/SceneMorph.cpp</itemPath>
       <itemPath>Scenes/SceneParticleBase.cpp</itemPath>
-      <itemPath>Scenes/SceneParticleFirework.cpp</itemPath>
-      <itemPath>Scenes/SceneParticleSmoke.cpp</itemPath>
+      <itemPath>Scenes/SceneParticleFountain.cpp</itemPath>
+      <itemPath>Scenes/SceneParticleRepelant.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -125,13 +125,13 @@
       </item>
       <item path="Scenes/SceneParticleBase.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="Scenes/SceneParticleFirework.cpp" ex="false" tool="1" flavor2="0">
+      <item path="Scenes/SceneParticleFountain.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="Scenes/SceneParticleFirework.hpp" ex="false" tool="3" flavor2="0">
+      <item path="Scenes/SceneParticleFountain.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="Scenes/SceneParticleSmoke.cpp" ex="false" tool="1" flavor2="0">
+      <item path="Scenes/SceneParticleRepelant.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="Scenes/SceneParticleSmoke.hpp" ex="false" tool="3" flavor2="0">
+      <item path="Scenes/SceneParticleRepelant.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -211,13 +211,13 @@
       </item>
       <item path="Scenes/SceneParticleBase.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="Scenes/SceneParticleFirework.cpp" ex="false" tool="1" flavor2="0">
+      <item path="Scenes/SceneParticleFountain.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="Scenes/SceneParticleFirework.hpp" ex="false" tool="3" flavor2="0">
+      <item path="Scenes/SceneParticleFountain.hpp" ex="false" tool="3" flavor2="0">
       </item>
-      <item path="Scenes/SceneParticleSmoke.cpp" ex="false" tool="1" flavor2="0">
+      <item path="Scenes/SceneParticleRepelant.cpp" ex="false" tool="1" flavor2="0">
       </item>
-      <item path="Scenes/SceneParticleSmoke.hpp" ex="false" tool="3" flavor2="0">
+      <item path="Scenes/SceneParticleRepelant.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>

@@ -29,8 +29,8 @@
 #include "Scenes/SceneIK.hpp"
 #include "Scenes/SceneGears.hpp"
 #include "Scenes/SceneCubicContainer.hpp"
-#include "Scenes/SceneParticleSmoke.hpp"
-#include "Scenes/SceneParticleFirework.hpp"
+#include "Scenes/SceneParticleRepelant.hpp"
+#include "Scenes/SceneParticleFountain.hpp"
 
 Gui::Gui() 
 {
@@ -131,10 +131,10 @@ void Gui::on_switch_scene_page(GtkNotebookPage* page, guint page_num)
         scene = new SceneIK();
         break;
     case 4:
-        scene = new SceneParticleSmoke();
+        scene = new SceneParticleGravity();
         break;
     case 5:
-        scene = new SceneParticleFirework();
+        scene = new SceneParticleFountain();
         break;
     }
     gl_container->add(*scene);

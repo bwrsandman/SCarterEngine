@@ -57,8 +57,9 @@ protected:
     
     const char* VERTEX_SHADER =
         "#version 400\n"
-        "layout (location = 0) in vec3 VertexInitVel;\n"
+        "layout (location = 0) in vec2 VertexInitVel;\n"
         "layout (location = 1) in float StartTime;\n"
+        "layout (location = 2) in vec2 MousePos;\n"
     
         // To fragment shader
         "out float Transp;\n" // Transparency of the particle
@@ -66,13 +67,13 @@ protected:
     
         "uniform float gTime;\n"  // Animation time
         "uniform vec2 origin;\n"
-        "vec3 Accel = vec3(0.0,-0.4,0.0);\n"
+        "vec2 Accel = vec2(0.0,-0.4);\n"
         "float ParticleLifetime = 3.5;\n"
         "uniform mat4 gWorld;\n"
     
         "void main( void ) {\n"
         // Assume the initial position is (0,0,0).
-        "  vec3 pos = vec3(0.0, -1.0, 0.0);\n"
+        "  vec2 pos = vec2(0.0);\n"
         "  Transp = 0.0;\n"
 
         "  if( gTime > StartTime ) {\n"
@@ -82,8 +83,8 @@ protected:
         "      Transp = 1.0 - t / ParticleLifetime;\n"
         "    }\n"
         "  }\n"
-        "  gl_Position = gWorld * vec4(pos, 1.0);\n"
-        "  ex_Color = clamp(pos, 0.0, 1.0);\n"
+        "  gl_Position = gWorld * vec4(pos, 0.0, 1.0);\n"
+        "  ex_Color = clamp(vec3(pos, 0.0), 0.0, 1.0);\n"
         "}\n";
 
     
@@ -96,12 +97,12 @@ protected:
     "void main(void){\n"
     "  FragColor = vec4(ex_Color, Transp);}";
     
+    virtual float get_spread(void) = 0;
+    
 private:
     GLuint startTime;
+    GLuint startPos;
     GLuint initVel;
-    
-    GLuint gOrigin;
-    Vector2f * origin;
 };
 
 #endif	/* SCENEPARTICLEBASE_HPP */
