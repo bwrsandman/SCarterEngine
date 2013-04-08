@@ -70,71 +70,77 @@ void SceneMD5::load_md5_mesh(const char* filename)
 
 bool SceneMD5::create_shaders(const char* vsh, const char* fsh) 
 {
-    bool ret = create_joint_shader();
+    
+    bool ret = true;
+    // Create the joint shader program
+    ret &= create_shader(JOINTSHVERT, JOINTSHFRAG, JOINTSHPROG, 
+                         JOINT_VERTEX_SHADER, JOINT_FRAGMENT_SHADER);
     return ret;
 }
 
-bool SceneMD5::create_joint_shader ()
+bool SceneMD5::create_shader (GLuint& shvert, GLuint& shfrag, GLuint& shprog,
+                              const char* vertex_shader, 
+                              const char* fragment_shader)
 {
     char shader_error[1024];
     int error_length = 0;
     GLint res;
 
     /* Generate some IDs for our shader programs */
-    JOINTSHVERT = glCreateShader(GL_VERTEX_SHADER);
-    JOINTSHFRAG = glCreateShader(GL_FRAGMENT_SHADER);
-    JOINTSHPROG = glCreateProgram();
+    shvert = glCreateShader(GL_VERTEX_SHADER);
+    shfrag = glCreateShader(GL_FRAGMENT_SHADER);
+    shprog = glCreateProgram();
 
     /* Assign shader source code to these IDs */
-    glShaderSource(JOINTSHVERT, 1, &JOINT_VERTEX_SHADER, NULL);
-    glShaderSource(JOINTSHFRAG, 1, &JOINT_FRAGMENT_SHADER, NULL);
+    glShaderSource(shvert, 1, &vertex_shader, NULL);
+    glShaderSource(shfrag, 1, &fragment_shader, NULL);
 
     /* Compile the code */
-    glCompileShader(JOINTSHVERT);
-    glCompileShader(JOINTSHFRAG);
+    glCompileShader(shvert);
+    glCompileShader(shfrag);
 
     /* Check if compilation was successful */
-    glGetShaderiv(JOINTSHVERT, GL_COMPILE_STATUS, &res);
+    glGetShaderiv(shvert, GL_COMPILE_STATUS, &res);
     if (res == GL_FALSE)
     {
         std::cerr << "Compilation of vertex shader failed" << std::endl;
-        glGetShaderInfoLog(JOINTSHVERT, 1024, &error_length, shader_error);
+        glGetShaderInfoLog(shvert, 1024, &error_length, shader_error);
         std::cerr << shader_error << std::endl;
         return false;
     }
-    glGetShaderiv(JOINTSHFRAG, GL_COMPILE_STATUS, &res);
+    glGetShaderiv(shfrag, GL_COMPILE_STATUS, &res);
     if (res == GL_FALSE)
     {
         std::cerr << "Compilation of fragment shader failed" << std::endl;
-        glGetShaderInfoLog(JOINTSHFRAG, 1024, &error_length, shader_error);
+        glGetShaderInfoLog(shfrag, 1024, &error_length, shader_error);
         std::cerr << shader_error << std::endl;
         return false;
     }
 
     /* Attach these shaders to the shader program */
-    glAttachShader(JOINTSHPROG, JOINTSHVERT);
-    glAttachShader(JOINTSHPROG, JOINTSHFRAG);
+    glAttachShader(shprog, shvert);
+    glAttachShader(shprog, shfrag);
 
     /* Flag the shaders to be deleted when the shader program is deleted */
-    glDeleteShader(JOINTSHVERT);
-    glDeleteShader(JOINTSHFRAG);
+    glDeleteShader(shvert);
+    glDeleteShader(shfrag);
 
     if (!post_shader_compile())
         return false;
     
     /* Link the shaders */
-    glLinkProgram(JOINTSHPROG);
-    glGetProgramiv(JOINTSHPROG, GL_LINK_STATUS, &res);
+    glLinkProgram(shprog);
+    glGetProgramiv(shprog, GL_LINK_STATUS, &res);
     if (res == GL_FALSE)
         std::cerr << "Failed to link shader program" << std::endl;
 
-    glUseProgram(JOINTSHPROG);
+    glUseProgram(shprog);
     
     /* Get Uniforms */
-    gWorldLocation = glGetUniformLocation(JOINTSHPROG, "gWorld");
+    gWorldLocation = glGetUniformLocation(shprog, "gWorld");
     if (gWorldLocation == 0xFFFFFFFF)
         return false;
-    gTimeLocation = glGetUniformLocation(JOINTSHPROG, "gTime");
+    gTimeLocation = glGetUniformLocation(shprog, "gTime");
     if (gTimeLocation == 0xFFFFFFFF)
         std::cout << "gTime is not used in this shader" << std::endl;
     

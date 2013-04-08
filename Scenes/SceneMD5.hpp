@@ -26,7 +26,7 @@ protected:
     virtual void render(const float);
     virtual void update(const float);
     virtual bool create_shaders(const char*, const char*); 
-    bool create_joint_shader();
+    bool create_shader (GLuint&, GLuint&, GLuint&, const char*, const char*);
     
     virtual bool CreateVBO(void);
     bool CreateJointVBO(void);
