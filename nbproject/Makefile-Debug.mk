@@ -45,11 +45,17 @@ OBJECTFILES= \
 	${OBJECTDIR}/Scenes/SceneCubicContainer.o \
 	${OBJECTDIR}/Scenes/SceneGears.o \
 	${OBJECTDIR}/Scenes/SceneIK.o \
+	${OBJECTDIR}/Scenes/SceneMD5.o \
 	${OBJECTDIR}/Scenes/SceneMorph.o \
 	${OBJECTDIR}/Scenes/SceneParticleBase.o \
 	${OBJECTDIR}/Scenes/SceneParticleFountain.o \
 	${OBJECTDIR}/Scenes/SceneParticleRepelant.o \
-	${OBJECTDIR}/main.o
+	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/md5/Joint.o \
+	${OBJECTDIR}/md5/Mesh.o \
+	${OBJECTDIR}/md5/Triangle.o \
+	${OBJECTDIR}/md5/Vertex.o \
+	${OBJECTDIR}/md5/Weight.o
 
 
 # C Compiler Flags
@@ -126,6 +132,11 @@ ${OBJECTDIR}/Scenes/SceneIK.o: Scenes/SceneIK.cpp
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneIK.o Scenes/SceneIK.cpp
 
+${OBJECTDIR}/Scenes/SceneMD5.o: Scenes/SceneMD5.cpp 
+	${MKDIR} -p ${OBJECTDIR}/Scenes
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -MMD -MP -MF $@.d -o ${OBJECTDIR}/Scenes/SceneMD5.o Scenes/SceneMD5.cpp
+
 ${OBJECTDIR}/Scenes/SceneMorph.o: Scenes/SceneMorph.cpp 
 	${MKDIR} -p ${OBJECTDIR}/Scenes
 	${RM} $@.d
@@ -150,6 +161,31 @@ ${OBJECTDIR}/main.o: main.cpp
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.cc) -g -Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.cpp
+
+${OBJECTDIR}/md5/Joint.o: md5/Joint.cpp 
+	${MKDIR} -p ${OBJECTDIR}/md5
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -MMD -MP -MF $@.d -o ${OBJECTDIR}/md5/Joint.o md5/Joint.cpp
+
+${OBJECTDIR}/md5/Mesh.o: md5/Mesh.cpp 
+	${MKDIR} -p ${OBJECTDIR}/md5
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -MMD -MP -MF $@.d -o ${OBJECTDIR}/md5/Mesh.o md5/Mesh.cpp
+
+${OBJECTDIR}/md5/Triangle.o: md5/Triangle.cpp 
+	${MKDIR} -p ${OBJECTDIR}/md5
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -MMD -MP -MF $@.d -o ${OBJECTDIR}/md5/Triangle.o md5/Triangle.cpp
+
+${OBJECTDIR}/md5/Vertex.o: md5/Vertex.cpp 
+	${MKDIR} -p ${OBJECTDIR}/md5
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -MMD -MP -MF $@.d -o ${OBJECTDIR}/md5/Vertex.o md5/Vertex.cpp
+
+${OBJECTDIR}/md5/Weight.o: md5/Weight.cpp 
+	${MKDIR} -p ${OBJECTDIR}/md5
+	${RM} $@.d
+	$(COMPILE.cc) -g -Wall -std=c++11 `pkg-config --cflags gtkmm-2.4 glibmm-2.4 gtkglextmm-1.2 glew` -MMD -MP -MF $@.d -o ${OBJECTDIR}/md5/Weight.o md5/Weight.cpp
 
 # Subprojects
 .build-subprojects:

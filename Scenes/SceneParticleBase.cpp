@@ -49,7 +49,7 @@ bool SceneParticleBase::CreateVBO(void)
 
     // Generate the buffers
     glGenBuffers(1, &startTime); // Start time buffers
-    glGenBuffers(1, &initVel);   // Initial velocity buffer (never changes, only need one)
+    glGenBuffers(1, &initVel);   // Initial velocity buffer
     glGenBuffers(1, &startPos);
     
     // Allocate space for all buffers
@@ -57,7 +57,8 @@ bool SceneParticleBase::CreateVBO(void)
     glBindBuffer(GL_ARRAY_BUFFER, initVel);
     glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, startTime);
-    glBufferData(GL_ARRAY_BUFFER, nParticles * sizeof(float), NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, nParticles * sizeof(float), NULL, 
+            GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, startPos);
     glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_STATIC_DRAW);
 

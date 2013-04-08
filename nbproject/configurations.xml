@@ -11,14 +11,20 @@
       <itemPath>Gui.hpp</itemPath>
       <itemPath>IKArm.hpp</itemPath>
       <itemPath>IKLine.hpp</itemPath>
+      <itemPath>md5/Joint.hpp</itemPath>
+      <itemPath>md5/Mesh.hpp</itemPath>
       <itemPath>Scenes/SceneBase.hpp</itemPath>
       <itemPath>Scenes/SceneCubicContainer.hpp</itemPath>
       <itemPath>Scenes/SceneGears.hpp</itemPath>
       <itemPath>Scenes/SceneIK.hpp</itemPath>
+      <itemPath>Scenes/SceneMD5.hpp</itemPath>
       <itemPath>Scenes/SceneMorph.hpp</itemPath>
       <itemPath>Scenes/SceneParticleBase.hpp</itemPath>
       <itemPath>Scenes/SceneParticleFountain.hpp</itemPath>
       <itemPath>Scenes/SceneParticleRepelant.hpp</itemPath>
+      <itemPath>md5/Triangle.hpp</itemPath>
+      <itemPath>md5/Vertex.hpp</itemPath>
+      <itemPath>md5/Weight.hpp</itemPath>
       <itemPath>../A1/interpolation.hpp</itemPath>
       <itemPath>math3d.hpp</itemPath>
     </logicalFolder>
@@ -36,14 +42,20 @@
       <itemPath>Gui.cpp</itemPath>
       <itemPath>IKArm.cpp</itemPath>
       <itemPath>IKLine.cpp</itemPath>
+      <itemPath>md5/Joint.cpp</itemPath>
+      <itemPath>md5/Mesh.cpp</itemPath>
       <itemPath>Scenes/SceneBase.cpp</itemPath>
       <itemPath>Scenes/SceneCubicContainer.cpp</itemPath>
       <itemPath>Scenes/SceneGears.cpp</itemPath>
       <itemPath>Scenes/SceneIK.cpp</itemPath>
+      <itemPath>Scenes/SceneMD5.cpp</itemPath>
       <itemPath>Scenes/SceneMorph.cpp</itemPath>
       <itemPath>Scenes/SceneParticleBase.cpp</itemPath>
       <itemPath>Scenes/SceneParticleFountain.cpp</itemPath>
       <itemPath>Scenes/SceneParticleRepelant.cpp</itemPath>
+      <itemPath>md5/Triangle.cpp</itemPath>
+      <itemPath>md5/Vertex.cpp</itemPath>
+      <itemPath>md5/Weight.cpp</itemPath>
       <itemPath>main.cpp</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
@@ -117,6 +129,10 @@
       </item>
       <item path="Scenes/SceneIK.hpp" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Scenes/SceneMD5.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Scenes/SceneMD5.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Scenes/SceneMorph.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Scenes/SceneMorph.hpp" ex="false" tool="3" flavor2="0">
@@ -136,6 +152,26 @@
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="math3d.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="md5/Joint.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="md5/Joint.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="md5/Mesh.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="md5/Mesh.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="md5/Triangle.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="md5/Triangle.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="md5/Vertex.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="md5/Vertex.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="md5/Weight.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="md5/Weight.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="scarter_engine.glade" ex="false" tool="3" flavor2="0">
       </item>
@@ -203,6 +239,10 @@
       </item>
       <item path="Scenes/SceneIK.hpp" ex="false" tool="3" flavor2="0">
       </item>
+      <item path="Scenes/SceneMD5.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="Scenes/SceneMD5.hpp" ex="false" tool="3" flavor2="0">
+      </item>
       <item path="Scenes/SceneMorph.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="Scenes/SceneMorph.hpp" ex="false" tool="3" flavor2="0">
@@ -222,6 +262,26 @@
       <item path="main.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="math3d.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="md5/Joint.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="md5/Joint.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="md5/Mesh.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="md5/Mesh.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="md5/Triangle.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="md5/Triangle.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="md5/Vertex.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="md5/Vertex.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="md5/Weight.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="md5/Weight.hpp" ex="false" tool="3" flavor2="0">
       </item>
       <item path="scarter_engine.glade" ex="false" tool="3" flavor2="0">
       </item>

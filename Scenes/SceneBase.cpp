@@ -26,9 +26,6 @@ SceneBase::SceneBase (void)
                          0.0f, 0.0f, 0.0f, 1.0f))
     , total_time(0.0f)
 {
-    /* Connect timeout */
-    //Glib::signal_timeout().connect( sigc::mem_fun(*this, &SceneBase::on_timeout), 17 );
-
     /* Configure OpenGL-capable visual. */
     Glib::RefPtr<Gdk::GL::Config> glconfig;
 
@@ -81,11 +78,13 @@ SceneBase::~SceneBase (void)
 /* Initialize OpenGL */
 bool SceneBase::init_opengl (void)
 {
-    //std::cout << "GL_RENDERER   = " << glGetString(GL_RENDERER)   << std::endl;
-    //std::cout << "GL_VERSION    = " << glGetString(GL_VERSION)    << std::endl;
-    //std::cout << "GL_VENDOR     = " << glGetString(GL_VENDOR)     << std::endl;
-    //std::cout << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS) << std::endl;
-    //std::cout << std::endl;
+    /*
+    std::cout << "GL_RENDERER   = " << glGetString(GL_RENDERER)   << std::endl;
+    std::cout << "GL_VERSION    = " << glGetString(GL_VERSION)    << std::endl;
+    std::cout << "GL_VENDOR     = " << glGetString(GL_VENDOR)     << std::endl;
+    std::cout << "GL_EXTENSIONS = " << glGetString(GL_EXTENSIONS) << std::endl;
+    std::cout << std::endl;
+    */
 
     /* Initialize GLEW */
     GLenum err = glewInit();

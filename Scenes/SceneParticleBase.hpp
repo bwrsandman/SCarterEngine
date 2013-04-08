@@ -15,11 +15,11 @@
  * Process:
  * 1. Send the particle positions to the vertex shader for updating and capture
  *    the results using transform feedback. The input to the vertex shader will
- *    come from buffer A, and the output will be stored in buffer B. During this
- *    pass, we enable GL_RASTERIZER_DISCARD so that nothing is actually rendered
- *    to the framebuffer.
- * 2. Render the particles at their updated positions using buffer B as input to
- *    the vertex shader.
+ *    come from buffer A, and the output will be stored in buffer B. During 
+ *    this pass, we enable GL_RASTERIZER_DISCARD so that nothing is actually 
+ *    rendered to the framebuffer.
+ * 2. Render the particles at their updated positions using buffer B as input
+ *    to the vertex shader.
  * 3. Swap the purposes of the buffers.
  * 
  * Created on March 9, 2013, 3:28 PM

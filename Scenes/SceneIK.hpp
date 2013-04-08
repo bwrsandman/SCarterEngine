@@ -57,7 +57,8 @@ private:
         "                   0.0,     0.0,    1.0, 0.0,\n"
         "                   0.0,     0.0,    0.0, 1.0);\n"
 
-        "    gl_Position = gWorld * r * vec4(gl_Vertex, 1.0) + vec4(t, 0.0, 0.0);\n"
+        "    gl_Position = gWorld * r * vec4(gl_Vertex, 1.0) + "
+        "                               vec4(t, 0.0, 0.0);\n"
         "    ex_Color = clamp(gl_Vertex, 0.0, 1.0);\n"
         "}";
 };

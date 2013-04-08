@@ -31,6 +31,7 @@
 #include "Scenes/SceneCubicContainer.hpp"
 #include "Scenes/SceneParticleRepelant.hpp"
 #include "Scenes/SceneParticleFountain.hpp"
+#include "Scenes/SceneMD5.hpp"
 
 Gui::Gui() 
 {
@@ -53,9 +54,9 @@ Gui::Gui(int argc, char** argv, const char* ui_filename)
     /* Instantiate and run the application. */
     Glib::RefPtr<Gtk::Builder> builder;
     try {
-            builder = Gtk::Builder::create_from_file(ui_filename);
+        builder = Gtk::Builder::create_from_file(ui_filename);
     } catch (const Glib::FileError &ex) {
-            std::cerr << ex.what() << std::endl;
+        std::cerr << ex.what() << std::endl;
     }
 
     builder->get_widget(_main_window, main_win);
@@ -71,8 +72,9 @@ Gui::Gui(int argc, char** argv, const char* ui_filename)
     builder->get_widget("sclNorm", scl_norm);
     if (scl_norm)
     {
-            scl_norm->set_range (0.0, 1.0);
-            scl_norm->signal_value_changed().connect(sigc::mem_fun(*this, &Gui::on_set_norm_alpha));
+        scl_norm->set_range (0.0, 1.0);
+        scl_norm->signal_value_changed().connect(
+                    sigc::mem_fun(*this, &Gui::on_set_norm_alpha));
     } else {
             std::cerr << "WARNING: Could not grab normal slider." << std::endl;
     }
@@ -80,9 +82,19 @@ Gui::Gui(int argc, char** argv, const char* ui_filename)
     Gtk::Notebook* ntb_Scenes = NULL;
     builder->get_widget("ntbScenes", ntb_Scenes);
     if (ntb_Scenes)
-        ntb_Scenes->signal_switch_page().connect(sigc::mem_fun(*this, &Gui::on_switch_scene_page));
+        ntb_Scenes->signal_switch_page().connect(
+                sigc::mem_fun(*this, &Gui::on_switch_scene_page));
 
     on_switch_scene_page(NULL, ntb_Scenes->get_current_page());
+    
+    builder->get_widget("btnLoadMD5Mesh", btn_LoadMD5Mesh);
+    if (btn_LoadMD5Mesh)
+    {
+            btn_LoadMD5Mesh->signal_clicked().connect(
+                        sigc::mem_fun(*this, &Gui::on_load_md5_button_clicked));
+    } else {
+            std::cerr << "WARNING: Could not grab load MD5Mesh Button.\n";
+    }
     
     scene->show();
 }
@@ -107,17 +119,43 @@ void Gui::on_set_norm_alpha(void)
             std::cerr << "Scene or slider seems to be missing" << std::endl;
 }
 
+void Gui::on_load_md5_button_clicked()
+{
+    if(cur_page != 6)
+        return;
+    Gtk::FileChooserDialog dialog(*main_win,
+        "Please choose a folder",
+        Gtk::FILE_CHOOSER_ACTION_OPEN);
+
+    // Add response buttons the the dialog:
+    dialog.add_button(Gtk::Stock::CANCEL, Gtk::RESPONSE_CANCEL);
+    dialog.add_button("Load", Gtk::RESPONSE_OK);
+    
+    // Md5 file filter
+    Gtk::FileFilter filter_md5;
+    filter_md5.set_name("MD5 Mesh");
+    filter_md5.add_pattern("*.md5mesh");
+    dialog.add_filter(filter_md5);
+
+    int result = dialog.run();
+
+    if(result == Gtk::RESPONSE_ACCEPT)
+    {
+        const char* filename = dialog.get_filename().c_str();
+        dynamic_cast<SceneMD5*>(scene)->load_md5_mesh(filename);
+    }
+}
+
 void Gui::on_switch_scene_page(GtkNotebookPage* page, guint page_num)
 {            
-    if (!gl_container)
-    {
+    if (!gl_container) {
         std::cerr << "WARNING: Could not grab frame for OpenGL." << std::endl;
         return;
     }
     gl_container->remove();
     delete scene; scene = NULL;
-    switch(page_num)
-    {
+    cur_page = page_num;
+    switch(page_num) {
     case 0:
         scene = new SceneGears();
         break;
@@ -136,9 +174,14 @@ void Gui::on_switch_scene_page(GtkNotebookPage* page, guint page_num)
     case 5:
         scene = new SceneParticleFountain();
         break;
+    case 6:
+        scene = new SceneMD5();
+        break;
     }
-    gl_container->add(*scene);
-    scene->show();
+    if(scene) {
+        gl_container->add(*scene);
+        scene->show();
+    }
 }
 
 void Gui::Draw (void)
@@ -148,45 +191,3 @@ void Gui::Draw (void)
 		kit->run(*main_win);
 	}
 }
-
-/* TODO: INPUT HANDLING
- * Source: http://gtkglextmm.sourcearchive.com/downloads/1.2.0-4ubuntu1/
-bool Gears::on_key_press_event(GdkEventKey* event)
-{
-  GLfloat x, y, z;
-
-  m_GearsScene.get_view_rot(x, y, z);
-
-  switch (event->keyval)
-    {
-    case GDK_z:
-      z += 5.0;
-      break;
-    case GDK_Z:
-      z -= 5.0;
-      break;
-    case GDK_Up:
-      x += 5.0;
-      break;
-    case GDK_Down:
-      x -= 5.0;
-      break;
-    case GDK_Left:
-      y += 5.0;
-      break;
-    case GDK_Right:
-      y -= 5.0;
-      break;
-    case GDK_Escape:
-      Gtk::Main::quit();
-      break;
-    default:
-      return true;
-    }
-
-  m_GearsScene.set_view_rot(x, y, z);
-
-  m_GearsScene.invalidate();
-
-  return true;
-}*/
