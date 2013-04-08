@@ -102,7 +102,7 @@ bool SceneParticleBase::CreateVBO(void)
     glBindBuffer(GL_ARRAY_BUFFER, startTime);
     glBufferSubData(GL_ARRAY_BUFFER, 0, nParticles * sizeof(float), data);
 
-    glBindBuffer(GL_ARRAY_BUFFER,0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     delete [] data;
     
     // Create vertex arrays for each set of buffers

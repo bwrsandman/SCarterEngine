@@ -138,8 +138,8 @@ void Gui::on_load_md5_button_clicked()
     dialog.add_filter(filter_md5);
 
     int result = dialog.run();
-
-    if(result == Gtk::RESPONSE_ACCEPT)
+    
+    if(result == -5)
     {
         const char* filename = dialog.get_filename().c_str();
         dynamic_cast<SceneMD5*>(scene)->load_md5_mesh(filename);

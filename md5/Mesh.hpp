@@ -18,6 +18,13 @@ public:
     Mesh();
     Mesh(const Mesh&);
     virtual ~Mesh();
+    
+    inline const uint getNumVertices() const { return _numVertices; }
+    inline const Vertex* getVertices() const { return _vertices; }
+    
+    inline const uint getNumWeights() const { return _numWeights; }
+    inline const Weight* getWeights() const { return _weights; }
+
 private:
     uint _numVertices;
     uint _numTriangles;
