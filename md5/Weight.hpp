@@ -15,7 +15,9 @@ public:
     Weight(const Weight&);
     virtual ~Weight();
     inline const uint getIndex() const { return _index; }
+    inline const uint getJointIndex() const { return _jointIndex; }
     inline const glm::vec3 getPosition() const { return _position; }
+    inline const float getValue() const { return _value; }
     inline const bool isSignificant() const { return _value; }
 private:
     uint _index;

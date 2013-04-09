@@ -11,13 +11,20 @@
 
 #include "Weight.hpp"
 
-Weight::Weight() {
+Weight::Weight() 
+{
 }
 
-Weight::Weight(const Weight& orig) {
+Weight::Weight(const Weight& orig) 
+{
+    _index = orig.getIndex();
+    _value = orig.getValue();
+    _jointIndex = orig.getJointIndex();
+    _position = orig.getPosition();
 }
 
-Weight::~Weight() {
+Weight::~Weight() 
+{
 }
 
 /*============================

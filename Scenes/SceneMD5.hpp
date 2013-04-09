@@ -30,9 +30,11 @@ protected:
     
     virtual bool CreateVBO(void);
     bool CreateJointVBO(void);
+    bool CreateWeightVBO(void);
     virtual bool DestroyVBO(void);
 
     void renderJoints(const float);
+    void renderWeights(const float);
     
     const char* JOINT_VERTEX_SHADER =
         "#version 400\n"
@@ -65,25 +67,66 @@ protected:
         "  out_Color = mix(blue, red, clamp(ex_depth, 0.0, 1.0));\n"
         "}\n";
     
+    const char* WEIGHT_VERTEX_SHADER =
+        "#version 400\n"
+        "layout (location = 0) in vec3 VertexPosition;\n"
+        "layout (location = 1) in float Weight;\n"
+    
+        // To fragment shader
+        "out float ex_weight;\n"
+    
+        "uniform float gTime;\n"  // Animation time
+        "uniform mat4 gWorld;\n"
+    
+        "void main( void ) {\n"
+        // Assume the initial position is (0,0,0).
+        "  vec3 pos = VertexPosition;\n"
+
+        "  gl_Position = gWorld * vec4(pos, 1.0);\n"
+        "  ex_weight = Weight;\n"
+        "}\n";
+
+    const char* WEIGHT_FRAGMENT_SHADER =
+        "#version 400\n"
+        "in  float ex_weight;\n"
+        "out vec4 out_Color;\n"
+    
+        "const vec4 red = vec4(1.0, 0.0, 0.0, 1.0);\n"
+        "const vec4 blue = vec4(0.0, 0.0, 1.0, 1.0);\n"
+    
+        "void main(void){\n"
+        "  out_Color = mix(blue, red, clamp(ex_weight, 0.0, 1.0));\n"
+        "}\n";
+    
 private:
     Joint *joints = NULL;
     Mesh *meshes = NULL;
     uint numJoints = 0;
-    uint numMeshes;
+    uint numWeights = 0;
+    uint numMeshes = 0;
     
     GLuint jointsVAO;
-    uint numPoints;
+    GLuint weightsVAO;
+    
+    const GLuint jointVAOIndex = 0;
+    const GLuint weigthVAOIndex = 1;
     
     GLuint vertexPtr;
-    GLuint weightPtr;
     
-    GLuint jointPtr;
+    GLuint weightPositionPtr;
+    GLuint weightValuePtr;
+    
+    GLuint jointPositionPtr;
     GLuint jointDepthPtr;
     
     /* Shaders */
     GLuint                JOINTSHVERT;
     GLuint                JOINTSHFRAG;
     GLuint                JOINTSHPROG;
+    
+    GLuint                WEIGHTSHVERT;
+    GLuint                WEIGHTSHFRAG;
+    GLuint                WEIGHTSHPROG;
     
 };
 
