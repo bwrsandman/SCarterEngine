@@ -48,7 +48,6 @@ protected:
         "uniform mat4 gWorld;\n"
     
         "void main( void ) {\n"
-        // Assume the initial position is (0,0,0).
         "  vec3 pos = VertexPosition;\n"
 
         "  gl_Position = gWorld * vec4(pos, 1.0);\n"

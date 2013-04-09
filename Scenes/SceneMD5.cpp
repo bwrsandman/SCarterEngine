@@ -164,7 +164,7 @@ void SceneMD5::create_geom()
 {
     if(!joints)
         return;
-     CreateVBO();
+    CreateVBO();
 }
 
 bool SceneMD5::CreateVBO(void)
@@ -242,47 +242,51 @@ bool SceneMD5::CreateJointVBO(void)
 bool SceneMD5::CreateWeightVBO(void)
 {
     int sizeCoord = numWeights * 3;
+    GLuint ii = 0;
     
     GLenum ErrorCheckValue = glGetError();
 
     // Generate the joint location buffer
-    glGenBuffers(1, &weightPositionPtr);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, weightPositionPtr);
-    glBufferData(GL_ARRAY_BUFFER, sizeCoord * sizeof(float), NULL, GL_STATIC_DRAW);
+    {
+        glGenBuffers(1, &weightPositionPtr);
 
-    GLfloat *data = new GLfloat[sizeCoord];
-    GLuint ii = 0;
-    for (GLuint i = 0; i < numMeshes; ++i) {
-        for (GLuint j = 0; j < meshes[i].getNumWeights(); ++j) {
-            glm::vec3 p = meshes[i].getWeights()[j].getPosition();
-            data[ii * 3 + 0] = p.x;
-            data[ii * 3 + 1] = p.y;
-            data[ii * 3 + 2] = p.z;
-            ++ii;
+        glBindBuffer(GL_ARRAY_BUFFER, weightPositionPtr);
+        glBufferData(GL_ARRAY_BUFFER, sizeCoord * sizeof(float), NULL, GL_STATIC_DRAW);
+
+        GLfloat* data = new GLfloat[sizeCoord];
+        ii = 0;
+        for (GLuint i = 0; i < numMeshes; ++i) {
+            for (GLuint j = 0; j < meshes[i].getNumWeights(); ++j) {
+                glm::vec3 p = meshes[i].getWeights()[j].getPosition();
+                data[ii * 3 + 0] = p.x;
+                data[ii * 3 + 1] = p.y;
+                data[ii * 3 + 2] = p.z;
+                ++ii;
+            }
         }
+
+        glBindBuffer(GL_ARRAY_BUFFER, weightPositionPtr);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, sizeCoord * sizeof(float), data);
+        delete [] data;
     }
     
-    glBindBuffer(GL_ARRAY_BUFFER, weightPositionPtr);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeCoord * sizeof(float), data);
-    delete [] data;
-    
-    // Generate the depth buffer
-    glGenBuffers(1, &weightValuePtr);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, weightValuePtr);
-    glBufferData(GL_ARRAY_BUFFER, numWeights * sizeof(float), NULL, GL_STATIC_DRAW);
+    // Generate the weight buffer
+    {
+        glGenBuffers(1, &weightValuePtr);
 
-    data = new GLfloat[numWeights];
-    ii = 0;
-    for (GLuint i = 0; i < numMeshes; ++i)
-        for (GLuint j = 0; j < meshes[i].getNumWeights(); ++j)
-            data[ii++] = meshes[i].getWeights()[j].getValue();
-    
-    glBindBuffer(GL_ARRAY_BUFFER, weightValuePtr);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, numWeights * sizeof(float), data);
-    delete [] data;
-    
+        glBindBuffer(GL_ARRAY_BUFFER, weightValuePtr);
+        glBufferData(GL_ARRAY_BUFFER, numWeights * sizeof(float), NULL, GL_STATIC_DRAW);
+
+        GLfloat* data = new GLfloat[numWeights];
+        ii = 0;
+        for (GLuint i = 0; i < numMeshes; ++i)
+            for (GLuint j = 0; j < meshes[i].getNumWeights(); ++j)
+                data[ii++] = meshes[i].getWeights()[j].getValue();
+
+        glBindBuffer(GL_ARRAY_BUFFER, weightValuePtr);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, numWeights * sizeof(float), data);
+        delete [] data;
+    }
     
     // ---
     glBindBuffer(GL_ARRAY_BUFFER, weigthVAOIndex);
@@ -324,8 +328,11 @@ bool SceneMD5::DestroyVBO(void)
         glDeleteBuffers(1, &weightPositionPtr);
         glDeleteBuffers(1, &weightValuePtr);
 
-        glBindVertexArray(0);
+        glBindVertexArray(jointVAOIndex);
         glDeleteVertexArrays(numJoints, &jointsVAO);
+        
+        glBindVertexArray(weigthVAOIndex);
+        glDeleteVertexArrays(numWeights, &weightsVAO);
 
         ErrorCheckValue = glGetError();
         if (ErrorCheckValue != GL_NO_ERROR)
