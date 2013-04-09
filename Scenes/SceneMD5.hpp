@@ -37,9 +37,10 @@ protected:
     const char* JOINT_VERTEX_SHADER =
         "#version 400\n"
         "layout (location = 0) in vec3 VertexPosition;\n"
+        "layout (location = 1) in float depth;\n"
     
         // To fragment shader
-        "out vec3 ex_Color;\n"
+        "out float ex_depth;\n"
     
         "uniform float gTime;\n"  // Animation time
         "uniform mat4 gWorld;\n"
@@ -49,16 +50,19 @@ protected:
         "  vec3 pos = VertexPosition;\n"
 
         "  gl_Position = gWorld * vec4(pos, 1.0);\n"
-        "  ex_Color = clamp(pos, 0.0, 1.0);\n"
+        "  ex_depth = depth;\n"
         "}\n";
 
     const char* JOINT_FRAGMENT_SHADER =
         "#version 400\n"
-        "in  vec3 ex_Color;\n"
+        "in  float ex_depth;\n"
         "out vec4 out_Color;\n"
     
+        "const vec4 red = vec4(1.0, 0.0, 0.0, 1.0);\n"
+        "const vec4 blue = vec4(0.0, 0.0, 1.0, 1.0);\n"
+    
         "void main(void){\n"
-        "       out_Color = vec4(ex_Color, 1.0);\n"
+        "  out_Color = mix(blue, red, clamp(ex_depth, 0.0, 1.0));\n"
         "}\n";
     
 private:
@@ -67,12 +71,14 @@ private:
     uint numJoints = 0;
     uint numMeshes;
     
-    GLuint points;
+    GLuint jointsVAO;
     uint numPoints;
     
     GLuint vertexPtr;
     GLuint weightPtr;
+    
     GLuint jointPtr;
+    GLuint jointDepthPtr;
     
     /* Shaders */
     GLuint                JOINTSHVERT;

@@ -167,15 +167,14 @@ bool SceneMD5::CreateVBO(void)
 bool SceneMD5::CreateJointVBO(void)
 {
     int sizeCoord = numJoints * 3;
-    int size = sizeCoord * sizeof(float);
     
     GLenum ErrorCheckValue = glGetError();
 
-    // Generate the buffers
+    // Generate the joint location buffer
     glGenBuffers(1, &jointPtr);
     
     glBindBuffer(GL_ARRAY_BUFFER, jointPtr);
-    glBufferData(GL_ARRAY_BUFFER, size, NULL, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeCoord * sizeof(float), NULL, GL_STATIC_DRAW);
 
     GLfloat *data = new GLfloat[sizeCoord];
     for (GLuint i = 0; i < numJoints; ++i)
@@ -187,19 +186,40 @@ bool SceneMD5::CreateJointVBO(void)
     }
     
     glBindBuffer(GL_ARRAY_BUFFER, jointPtr);
-    glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeCoord * sizeof(float), data);
+    delete [] data;
+    
+    // Generate the depth buffer
+    glGenBuffers(1, &jointDepthPtr);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, jointDepthPtr);
+    glBufferData(GL_ARRAY_BUFFER, numJoints * sizeof(float), NULL, GL_STATIC_DRAW);
+
+    data = new GLfloat[numJoints];
+    for (GLuint i = 0; i < numJoints; ++i)
+        data[i] = (float)(joints[i].getParentIndex() + 1) / numJoints;
+    
+    glBindBuffer(GL_ARRAY_BUFFER, jointDepthPtr);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, numJoints * sizeof(float), data);
     delete [] data;
     
     
+    // ---
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     
     // Create vertex arrays for each set of buffers
-    glGenVertexArrays(1, &points);
-    glBindVertexArray(points);
+    glGenVertexArrays(1, &jointsVAO);
+    glBindVertexArray(jointsVAO);
     
+    // Position buffer
     glBindBuffer(GL_ARRAY_BUFFER, jointPtr);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(0);
+    
+    // Depth buffer
+    glBindBuffer(GL_ARRAY_BUFFER, jointDepthPtr);
+    glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(1);
 
     glBindVertexArray(0);
     
@@ -221,7 +241,7 @@ bool SceneMD5::DestroyVBO(void)
         glDeleteBuffers(0, &jointPtr);
 
         glBindVertexArray(0);
-        glDeleteVertexArrays(numJoints, &points);
+        glDeleteVertexArrays(numJoints, &jointsVAO);
 
         ErrorCheckValue = glGetError();
         if (ErrorCheckValue != GL_NO_ERROR)
@@ -253,7 +273,7 @@ void SceneMD5::renderJoints(const float dt)
     glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
     glUniform1f(gTimeLocation, total_time);
     
-    glBindVertexArray(points);
+    glBindVertexArray(jointsVAO);
     glDrawArrays(GL_POINTS, 0, numJoints);
     glDrawArrays(GL_LINE_STRIP, 0, numJoints);
     glDrawArrays(GL_LINES_ADJACENCY, 0, numJoints);
