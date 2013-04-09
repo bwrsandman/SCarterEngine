@@ -70,16 +70,18 @@ protected:
         "#version 400\n"
         "layout (location = 0) in vec3 VertexPosition;\n"
         "layout (location = 1) in float Weight;\n"
+        "layout (location = 2) in uint JointIndex;\n"
     
         // To fragment shader
         "out float ex_weight;\n"
     
         "uniform float gTime;\n"  // Animation time
         "uniform mat4 gWorld;\n"
+        "uniform vec3 jointPosition[16];\n"
     
         "void main( void ) {\n"
-        // Assume the initial position is (0,0,0).
-        "  vec3 pos = VertexPosition;\n"
+        "  vec3 jointOffset = jointPosition[JointIndex];\n"
+        "  vec3 pos = jointOffset + VertexPosition;\n"
 
         "  gl_Position = gWorld * vec4(pos, 1.0);\n"
         "  ex_weight = Weight;\n"
@@ -100,6 +102,9 @@ protected:
 private:
     Joint *joints = NULL;
     Mesh *meshes = NULL;
+    
+    float* jointPositions = NULL;
+    
     uint numJoints = 0;
     uint numWeights = 0;
     uint numMeshes = 0;
@@ -114,6 +119,7 @@ private:
     
     GLuint weightPositionPtr;
     GLuint weightValuePtr;
+    GLuint weightJointPtr;
     
     GLuint jointPositionPtr;
     GLuint jointDepthPtr;
@@ -126,6 +132,9 @@ private:
     GLuint                WEIGHTSHVERT;
     GLuint                WEIGHTSHFRAG;
     GLuint                WEIGHTSHPROG;
+    
+    /* Uniforms */
+    GLuint gJointLocation;
     
 };
 

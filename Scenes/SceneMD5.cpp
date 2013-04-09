@@ -27,6 +27,8 @@ SceneMD5::~SceneMD5()
     DestroyVBO();
     delete [] joints;
     joints = NULL;
+    delete [] jointPositions;
+    jointPositions = NULL;
 }
 
 void SceneMD5::load_md5_mesh(const char* filename)
@@ -84,6 +86,8 @@ bool SceneMD5::create_shaders(const char* vsh, const char* fsh)
     // Weights
     ret &= create_shader(WEIGHTSHVERT, WEIGHTSHFRAG, WEIGHTSHPROG, 
                      WEIGHT_VERTEX_SHADER, WEIGHT_FRAGMENT_SHADER);
+    gJointLocation = glGetUniformLocation(WEIGHTSHPROG, "jointPosition");
+    
     return ret;
 }
 
@@ -164,6 +168,8 @@ void SceneMD5::create_geom()
 {
     if(!joints)
         return;
+    delete [] jointPositions;
+    jointPositions = new GLfloat[numJoints * 3];
     CreateVBO();
 }
 
@@ -287,7 +293,24 @@ bool SceneMD5::CreateWeightVBO(void)
         glBufferSubData(GL_ARRAY_BUFFER, 0, numWeights * sizeof(float), data);
         delete [] data;
     }
-    
+
+    // Generate the joint index buffer
+    {
+        glGenBuffers(1, &weightJointPtr);
+
+        glBindBuffer(GL_ARRAY_BUFFER, weightJointPtr);
+        glBufferData(GL_ARRAY_BUFFER, numWeights * sizeof(int), NULL, GL_STATIC_DRAW);
+
+        GLuint* data = new GLuint[numWeights];
+        ii = 0;
+        for (GLuint i = 0; i < numMeshes; ++i)
+            for (GLuint j = 0; j < meshes[i].getNumWeights(); ++j)
+                data[ii++] = meshes[i].getWeights()[j].getJointIndex();
+
+        glBindBuffer(GL_ARRAY_BUFFER, weightJointPtr);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, numWeights * sizeof(int), data);
+        delete [] data;
+    }
     // ---
     glBindBuffer(GL_ARRAY_BUFFER, weigthVAOIndex);
     
@@ -304,6 +327,12 @@ bool SceneMD5::CreateWeightVBO(void)
     glBindBuffer(GL_ARRAY_BUFFER, weightValuePtr);
     glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(1);
+    
+
+    // Joint buffer
+    glBindBuffer(GL_ARRAY_BUFFER, weightJointPtr);
+    glVertexAttribPointer(2, 1, GL_INT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(2);
 
     glBindVertexArray(weigthVAOIndex);
     
@@ -327,6 +356,7 @@ bool SceneMD5::DestroyVBO(void)
         
         glDeleteBuffers(1, &weightPositionPtr);
         glDeleteBuffers(1, &weightValuePtr);
+        glDeleteBuffers(1, &weightJointPtr);
 
         glBindVertexArray(jointVAOIndex);
         glDeleteVertexArrays(numJoints, &jointsVAO);
@@ -380,7 +410,8 @@ void SceneMD5::renderWeights(const float dt)
     /* Uniform update */
     glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
     glUniform1f(gTimeLocation, total_time);
-    
+    glUniform3fv(gJointLocation, numJoints, jointPositions);
+
     glBindVertexArray(weightsVAO);
     glDrawArrays(GL_POINTS, 0, numWeights);
 }
@@ -388,4 +419,11 @@ void SceneMD5::renderWeights(const float dt)
 void SceneMD5::update(const float dt)
 {
     SceneBase::update(dt);
+    for (GLuint i = 0; i < numJoints; ++i)
+    {
+        glm::vec3 p = joints[i].getPosition();
+        jointPositions[3 * i + 0] = p.x;
+        jointPositions[3 * i + 1] = p.y;
+        jointPositions[3 * i + 2] = p.z;
+    }
 }
