@@ -12,6 +12,7 @@
 #include "../md5/Joint.hpp"
 #include "../md5/Mesh.hpp"
 #include "../md5/Weight.hpp"
+#include "../md5/Vertex.hpp"
 
 #include "../math3d.hpp"
 
@@ -25,18 +26,21 @@ SceneMD5::SceneMD5()
 SceneMD5::~SceneMD5()
 {
     DestroyVBO();
+    
     delete [] joints;
     joints = NULL;
+    
     delete [] jointPositions;
     jointPositions = NULL;
+    
+    delete [] jointOrientations;
+    jointOrientations = NULL;
 }
 
 void SceneMD5::load_md5_mesh(const char* filename)
 {
     std::ifstream input;
     input.open(filename);
-    
-    //std::cout << filename << std::endl;
     
     std::string keyword;
     
@@ -68,8 +72,12 @@ void SceneMD5::load_md5_mesh(const char* filename)
     
     
     numWeights = 0;
+    numVertices = 0;
     for (uint i = 0; i < numMeshes; ++i)
+    {
         numWeights += meshes[i].getNumWeights();
+        numVertices += meshes[i].getNumVertices();
+    }
     
     DestroyVBO();
     create_geom();
@@ -85,8 +93,15 @@ bool SceneMD5::create_shaders(const char* vsh, const char* fsh)
                          JOINT_VERTEX_SHADER, JOINT_FRAGMENT_SHADER);
     // Weights
     ret &= create_shader(WEIGHTSHVERT, WEIGHTSHFRAG, WEIGHTSHPROG, 
-                     WEIGHT_VERTEX_SHADER, WEIGHT_FRAGMENT_SHADER);
-    gJointLocation = glGetUniformLocation(WEIGHTSHPROG, "jointPosition");
+                         WEIGHT_VERTEX_SHADER, WEIGHT_FRAGMENT_SHADER);
+    gWeightJointLocation = glGetUniformLocation(WEIGHTSHPROG, "jointPosition");
+    gWeightJointOrientation = glGetUniformLocation(WEIGHTSHPROG, "jointOrientation");
+
+    // Vertices
+    ret &= create_shader(MD5SHVERT, MD5SHFRAG, MD5SHPROG, 
+                         MD5_VERTEX_SHADER, MD5_FRAGMENT_SHADER);
+    gMD5JointLocation = glGetUniformLocation(MD5SHPROG, "jointPosition");
+    gMD5JointOrientation = glGetUniformLocation(MD5SHPROG, "jointOrientation");
     
     return ret;
 }
@@ -169,13 +184,15 @@ void SceneMD5::create_geom()
     if(!joints)
         return;
     delete [] jointPositions;
+    delete [] jointOrientations;
     jointPositions = new GLfloat[numJoints * 3];
+    jointOrientations = new GLfloat[numJoints * 4];
     CreateVBO();
 }
 
 bool SceneMD5::CreateVBO(void)
 {
-    return CreateJointVBO() && CreateWeightVBO();
+    return CreateJointVBO() && CreateWeightVBO() && CreateMD5VBO();
 }
 
 
@@ -299,16 +316,16 @@ bool SceneMD5::CreateWeightVBO(void)
         glGenBuffers(1, &weightJointPtr);
 
         glBindBuffer(GL_ARRAY_BUFFER, weightJointPtr);
-        glBufferData(GL_ARRAY_BUFFER, numWeights * sizeof(int), NULL, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, numWeights * sizeof(uint), NULL, GL_STATIC_DRAW);
 
-        GLuint* data = new GLuint[numWeights];
+        uint* data = new uint[numWeights];
         ii = 0;
         for (GLuint i = 0; i < numMeshes; ++i)
             for (GLuint j = 0; j < meshes[i].getNumWeights(); ++j)
                 data[ii++] = meshes[i].getWeights()[j].getJointIndex();
 
         glBindBuffer(GL_ARRAY_BUFFER, weightJointPtr);
-        glBufferSubData(GL_ARRAY_BUFFER, 0, numWeights * sizeof(int), data);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, numWeights * sizeof(uint), data);
         delete [] data;
     }
     // ---
@@ -328,10 +345,9 @@ bool SceneMD5::CreateWeightVBO(void)
     glVertexAttribPointer(1, 1, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(1);
     
-
     // Joint buffer
     glBindBuffer(GL_ARRAY_BUFFER, weightJointPtr);
-    glVertexAttribPointer(2, 1, GL_INT, GL_FALSE, 0, NULL);
+    glVertexAttribPointer(2, 1, GL_UNSIGNED_INT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(2);
 
     glBindVertexArray(weigthVAOIndex);
@@ -343,31 +359,127 @@ bool SceneMD5::CreateWeightVBO(void)
     return true;
 }
 
+bool SceneMD5::CreateMD5VBO(void)
+{
+    GLuint ii = 0;
+    
+    GLenum ErrorCheckValue = glGetError();
+
+    // Generate the Weight and location buffer
+    glGenBuffers(4, md5WeightPositionPtr);
+    for (uint p = 0; p < 4; ++p) {
+        glBindBuffer(GL_ARRAY_BUFFER, md5WeightPositionPtr[p]);
+        glBufferData(GL_ARRAY_BUFFER, numVertices * 4 * sizeof(float), NULL, GL_STATIC_DRAW);
+
+        GLfloat* data = new GLfloat[numVertices * 4];
+        for (GLuint i = 0; i < numVertices * 4; ++i)
+            data[i] = 0.0f;
+
+        ii = 0;
+        for (GLuint i = 0; i < numMeshes; ++i) {
+            const Vertex* verts = meshes[i].getVertices();
+            const Weight* wm = meshes[i].getWeights();
+            for (GLuint j = 0; j < meshes[i].getNumVertices(); ++j) {
+                if (p < verts[j].getWeightElement()) {
+                    const Weight* ws = wm + verts[j].getWeightIndex() + p;
+                    data[ii + 0] = ws->getPosition().x;
+                    data[ii + 1] = ws->getPosition().y;
+                    data[ii + 2] = ws->getPosition().z;
+                    data[ii + 3] = ws->getValue();
+                }
+                ii += 4;
+            }
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, md5WeightPositionPtr[p]);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices * 4 * sizeof(float), data);
+        delete [] data;
+    }
+
+    // Generate the joint index buffer
+    {
+        glGenBuffers(1, &md5JointPtr);
+
+        glBindBuffer(GL_ARRAY_BUFFER, md5JointPtr);
+        glBufferData(GL_ARRAY_BUFFER, numVertices * 4 * sizeof(uint), NULL, GL_STATIC_DRAW);
+
+        uint* data = new uint[numVertices * 4];
+        for (GLuint i = 0; i < numVertices * 4; ++i)
+            data[i] = 0.0f;
+
+        ii = 0;
+        for (GLuint i = 0; i < numMeshes; ++i) {
+            const Vertex* verts = meshes[i].getVertices();
+            const Weight* wm = meshes[i].getWeights();
+            for (GLuint j = 0; j < meshes[i].getNumVertices(); ++j) {
+                const Weight* ws = wm + verts[j].getWeightIndex();
+                for (GLuint k = 0; k < 4 && k < verts[j].getWeightElement(); ++k)
+                    data[ii + k] = ws[k].getJointIndex();
+                ii += 4;
+            }
+        }
+
+        glBindBuffer(GL_ARRAY_BUFFER, md5JointPtr);
+        glBufferSubData(GL_ARRAY_BUFFER, 0, numVertices * 4 * sizeof(uint), data);
+        delete [] data;
+    }
+    // ---
+    glBindBuffer(GL_ARRAY_BUFFER, md5VAOIndex);
+    
+    
+    // Create vertex arrays for each set of buffers
+    glGenVertexArrays(1, &md5VAO);
+    glBindVertexArray(md5VAO);
+    
+    // Position buffers
+    for (uint i = 0; i < 4; ++i) {
+        glBindBuffer(GL_ARRAY_BUFFER, md5WeightPositionPtr[i]);
+        glVertexAttribPointer(i, 4, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(i);
+    }
+    
+    // Joint buffer
+    glBindBuffer(GL_ARRAY_BUFFER, md5JointPtr);
+    glVertexAttribPointer(5, 4, GL_UNSIGNED_INT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(5);
+
+    glBindVertexArray(md5VAOIndex);
+    
+    ErrorCheckValue = glGetError();
+    if (ErrorCheckValue != GL_NO_ERROR)
+        return false;
+
+    return true;
+}
+
 bool SceneMD5::DestroyVBO(void)
 {
-	GLenum ErrorCheckValue = glGetError();
+    GLenum ErrorCheckValue = glGetError();
 
-	glDisableVertexAttribArray(0);
-	
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glDisableVertexAttribArray(0);
 
-        glDeleteBuffers(1, &jointPositionPtr);
-        glDeleteBuffers(1, &jointDepthPtr);
-        
-        glDeleteBuffers(1, &weightPositionPtr);
-        glDeleteBuffers(1, &weightValuePtr);
-        glDeleteBuffers(1, &weightJointPtr);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        glBindVertexArray(jointVAOIndex);
-        glDeleteVertexArrays(numJoints, &jointsVAO);
-        
-        glBindVertexArray(weigthVAOIndex);
-        glDeleteVertexArrays(numWeights, &weightsVAO);
+    glDeleteBuffers(1, &jointPositionPtr);
+    glDeleteBuffers(1, &jointDepthPtr);
 
-        ErrorCheckValue = glGetError();
-        if (ErrorCheckValue != GL_NO_ERROR)
-            return false;
-        return true;
+    glDeleteBuffers(1, &weightPositionPtr);
+    glDeleteBuffers(1, &weightValuePtr);
+    glDeleteBuffers(1, &weightJointPtr);
+
+    glBindVertexArray(jointVAOIndex);
+    glDeleteVertexArrays(numJoints, &jointsVAO);
+
+    glBindVertexArray(weigthVAOIndex);
+    glDeleteVertexArrays(numWeights, &weightsVAO);
+
+    glBindVertexArray(md5VAOIndex);
+    glDeleteVertexArrays(numVertices, &md5VAO);
+
+    ErrorCheckValue = glGetError();
+    if (ErrorCheckValue != GL_NO_ERROR)
+        return false;
+    return true;
 }
 
 void SceneMD5::set_perspective()
@@ -379,7 +491,8 @@ void SceneMD5::render(const float dt)
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     renderJoints(dt);
-    renderWeights(dt);
+    //renderWeights(dt);
+    renderMD5(dt);
     
     // Disable program
     glUseProgram(0);
@@ -403,17 +516,32 @@ void SceneMD5::renderJoints(const float dt)
 
 void SceneMD5::renderWeights(const float dt)
 {
-    
     /* Set current rendering shader */
     glUseProgram(WEIGHTSHPROG);
     
     /* Uniform update */
     glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
     glUniform1f(gTimeLocation, total_time);
-    glUniform3fv(gJointLocation, numJoints, jointPositions);
+    glUniform3fv(gWeightJointLocation, numJoints, jointPositions);
+    glUniform4fv(gWeightJointOrientation, numJoints, jointOrientations);
 
     glBindVertexArray(weightsVAO);
     glDrawArrays(GL_POINTS, 0, numWeights);
+}
+
+void SceneMD5::renderMD5(const float dt)
+{
+    /* Set current rendering shader */
+    glUseProgram(MD5SHPROG);
+    
+    /* Uniform update */
+    glUniformMatrix4fv(gWorldLocation, 1, GL_TRUE, World->m);
+    glUniform1f(gTimeLocation, total_time);
+    glUniform3fv(gMD5JointLocation, numJoints, jointPositions);
+    glUniform4fv(gMD5JointOrientation, numJoints, jointOrientations);
+
+    glBindVertexArray(md5VAO);
+    glDrawArrays(GL_POINTS, 0, numVertices);
 }
 
 void SceneMD5::update(const float dt)
@@ -422,8 +550,15 @@ void SceneMD5::update(const float dt)
     for (GLuint i = 0; i < numJoints; ++i)
     {
         glm::vec3 p = joints[i].getPosition();
+        glm::vec4 o = joints[i].getOrientation();
+        
         jointPositions[3 * i + 0] = p.x;
         jointPositions[3 * i + 1] = p.y;
         jointPositions[3 * i + 2] = p.z;
+        
+        jointOrientations[4 * i + 0] = o.x;
+        jointOrientations[4 * i + 1] = o.y;
+        jointOrientations[4 * i + 2] = o.z;
+        jointOrientations[4 * i + 3] = o.w;
     }
 }

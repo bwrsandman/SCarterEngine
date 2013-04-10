@@ -27,6 +27,8 @@ public:
     inline void setPosition(float x, float y, float z) 
         { _position = glm::vec3(x, y, z); }
     
+    inline const glm::vec4 getOrientation() const { return _orientation;}
+    
     inline void setOrientation(float x, float y, float z) 
     { 
         float w = 1.0f - x * x - y * y  - z * z;

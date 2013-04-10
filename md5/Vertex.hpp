@@ -18,6 +18,8 @@ public:
     inline const uint getWeightElement() const { return _weightElement; }
     inline void setWeightElement( uint e) { _weightElement = e; }
     
+    inline const uint getWeightIndex() const { return _weightIndex; }
+    
     inline const uint getIndex() const { return _index; }
     inline void setIndex(const uint index) { _index = index; }
 private:
