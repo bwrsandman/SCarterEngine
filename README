@@ -1,6 +1,5 @@
-Assignment 2
-COMP477 Winter 2013
-Sandy Carter 1121057
+Author: Sandy Carter
+This application was built with the help of Netbeans, while it can be compiled without, it is recommended to use Netbeans.
 
 Contents
     GLConfigUtil.hpp  
