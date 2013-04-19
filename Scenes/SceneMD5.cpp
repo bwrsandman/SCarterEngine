@@ -25,6 +25,39 @@ SceneMD5::~SceneMD5()
     model = NULL;
 }
 
+void SceneMD5::set_afps(float afps)
+{
+    if(model) 
+        model->afps = afps;
+}
+
+void SceneMD5::set_scale(float scale)
+{
+    this->scale = scale;
+}
+
+void SceneMD5::toggle_slerp(bool status)
+{
+    if(model) 
+        model->interpolate = status;
+}
+
+void SceneMD5::toggle_joints(bool status)
+{
+    if(model) 
+        model->drawJoints = status;
+}
+
+void SceneMD5::toggle_wireframe(bool status)
+{
+    wireframe = status;
+}
+
+void SceneMD5::toggle_fill(bool status)
+{
+    fill = status;            
+}
+
 void SceneMD5::create_light()
 {
     //Add ambient light
@@ -66,7 +99,6 @@ void SceneMD5::set_perspective()
     glLoadIdentity();
     glTranslatef(0.0f, -7.5f, -50.0f);
     glRotatef (-90.0f, 1.0, 0.0, 0.0);
-    glScalef(30.0f, 30.0f, 30.0f);
 }
 
 void SceneMD5::render(const float dt)
@@ -77,6 +109,7 @@ void SceneMD5::render(const float dt)
         return;
 
     glPushMatrix();
+        glScalef(scale, scale, scale);
 	glRotatef(_angle, 0.0f, 0.0f, 1.0f);
 
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);

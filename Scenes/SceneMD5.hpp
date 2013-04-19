@@ -17,6 +17,12 @@ public:
     explicit SceneMD5();
     virtual ~SceneMD5();
     void load_md5_mesh(const char*);
+    void set_afps(float);
+    void set_scale(float);
+    void toggle_slerp(bool);
+    void toggle_joints(bool);
+    void toggle_wireframe(bool);
+    void toggle_fill(bool);
 
 protected:
     virtual void create_geom();
@@ -29,8 +35,10 @@ protected:
 private:
     float _angle = -70.0f;
     md5* model = NULL;
-    bool fill = false;
+    bool fill = true;
     bool wireframe = true;
+    float scale = 30.0f;
+    
     
 };
 

@@ -45,11 +45,26 @@ private:
     Gtk::Alignment* gl_container = NULL;
     Gtk::Scale* scl_norm = NULL;
     Gtk::Button* btn_LoadMD5Mesh = NULL;
+    
+    Gtk::Scale* scl_afps = NULL;
+    Gtk::Scale* scl_scale = NULL;
+    Gtk::CheckButton* chk_slerp = NULL;
+    Gtk::CheckButton* chk_joints = NULL;
+    Gtk::CheckButton* chk_wireframe = NULL;
+    Gtk::CheckButton* chk_fill = NULL;
+    
     SceneBase* scene = NULL;
 
     void on_set_norm_alpha(void);
     void on_switch_scene_page(GtkNotebookPage*, guint);
+    
     void on_load_md5_button_clicked();
+    void on_set_afps(void);
+    void on_set_scale(void);
+    void on_toggle_slerp(void);
+    void on_toggle_joints(void);
+    void on_toggle_wireframe(void);
+    void on_toggle_fill(void);
 };
 
 #endif	/* GUI_HPP */

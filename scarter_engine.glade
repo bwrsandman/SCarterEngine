@@ -263,20 +263,128 @@ the number of particles was capped.</property>
                         <property name="yalign">0.50999999046325684</property>
                       </object>
                       <packing>
-                        <property name="x">200</property>
+                        <property name="x">20</property>
                         <property name="y">20</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkEntry" id="entry1">
+                      <object class="GtkScale" id="sclAFPS">
+                        <property name="width_request">160</property>
+                        <property name="height_request">80</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="invisible_char">●</property>
-                        <property name="invisible_char_set">True</property>
+                        <property name="round_digits">5</property>
+                        <property name="digits">2</property>
+                      </object>
+                      <packing>
+                        <property name="x">160</property>
+                        <property name="y">60</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label12">
+                        <property name="width_request">90</property>
+                        <property name="height_request">40</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Animation
+Framerate</property>
                       </object>
                       <packing>
                         <property name="x">20</property>
-                        <property name="y">20</property>
+                        <property name="y">80</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="chkSlerp">
+                        <property name="label" translatable="yes">Frame Interpolation</property>
+                        <property name="width_request">200</property>
+                        <property name="height_request">20</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="xalign">0</property>
+                        <property name="draw_indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="x">20</property>
+                        <property name="y">240</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="chkJoints">
+                        <property name="label" translatable="yes">Joints</property>
+                        <property name="width_request">200</property>
+                        <property name="height_request">20</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="xalign">0</property>
+                        <property name="draw_indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="x">20</property>
+                        <property name="y">270</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="chkWireframe">
+                        <property name="label" translatable="yes">Wireframe</property>
+                        <property name="width_request">200</property>
+                        <property name="height_request">20</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="xalign">0</property>
+                        <property name="draw_indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="x">20</property>
+                        <property name="y">300</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="chkFill">
+                        <property name="label" translatable="yes">Fill</property>
+                        <property name="width_request">200</property>
+                        <property name="height_request">20</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="xalign">0</property>
+                        <property name="draw_indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="x">20</property>
+                        <property name="y">330</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label13">
+                        <property name="width_request">100</property>
+                        <property name="height_request">80</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Model Scale</property>
+                        <property name="ellipsize">end</property>
+                      </object>
+                      <packing>
+                        <property name="x">20</property>
+                        <property name="y">130</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScale" id="sclScale">
+                        <property name="width_request">160</property>
+                        <property name="height_request">80</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="round_digits">2</property>
+                        <property name="digits">2</property>
+                      </object>
+                      <packing>
+                        <property name="x">160</property>
+                        <property name="y">130</property>
                       </packing>
                     </child>
                   </object>

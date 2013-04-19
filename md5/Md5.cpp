@@ -196,13 +196,14 @@ void md5::draw()
     for(uint i = 0; i != numMeshes; ++i)
     {
         my_mesh[i].draw(my_joints);
-        joint::draw(numJoints, my_joints);
+        if(drawJoints)
+            joint::draw(numJoints, my_joints);
     }
 }
 
 void md5::animate(float dt)
 {
-    animTime += dt;
+    animTime += dt * afps;
     if (animTime > numFrames)
         animTime -= numFrames;
     uint curframenum = (int)animTime;

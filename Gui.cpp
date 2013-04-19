@@ -79,6 +79,68 @@ Gui::Gui(int argc, char** argv, const char* ui_filename)
             std::cerr << "WARNING: Could not grab normal slider." << std::endl;
     }
     
+    builder->get_widget("sclAFPS", scl_afps);
+    if (scl_afps)
+    {
+        scl_afps->set_range (1.0, 60.0);
+        scl_afps->set_value(24.0);
+        scl_afps->signal_value_changed().connect(
+                    sigc::mem_fun(*this, &Gui::on_set_afps));
+    } else {
+            std::cerr << "WARNING: Could not grab normal slider." << std::endl;
+    }
+        
+    builder->get_widget("sclScale", scl_scale);
+    if (scl_scale)
+    {
+        scl_scale->set_range (0.0, 60.0);
+        scl_scale->set_value(30.0);
+        scl_scale->signal_value_changed().connect(
+                    sigc::mem_fun(*this, &Gui::on_set_scale));
+    } else {
+            std::cerr << "WARNING: Could not grab normal slider." << std::endl;
+    }
+    
+    builder->get_widget("chkSlerp", chk_slerp);
+    if (chk_slerp)
+    {
+        chk_slerp->set_active(false);
+        chk_slerp->signal_toggled().connect(
+                    sigc::mem_fun(*this, &Gui::on_toggle_slerp));
+    } else {
+            std::cerr << "WARNING: Could not grab checkbox." << std::endl;
+    }
+    
+    builder->get_widget("chkJoints", chk_joints);
+    if (chk_joints)
+    {
+        chk_joints->set_active(false);
+        chk_joints->signal_toggled().connect(
+                    sigc::mem_fun(*this, &Gui::on_toggle_joints));
+    } else {
+            std::cerr << "WARNING: Could not grab checkbox." << std::endl;
+    }
+    
+    builder->get_widget("chkWireframe", chk_wireframe);
+    if (chk_wireframe)
+    {
+        chk_wireframe->set_active(true);
+        chk_wireframe->signal_toggled().connect(
+                    sigc::mem_fun(*this, &Gui::on_toggle_wireframe));
+    } else {
+            std::cerr << "WARNING: Could not grab checkbox." << std::endl;
+    }
+    
+    builder->get_widget("chkFill", chk_fill);
+    if (chk_fill)
+    {
+        chk_fill->set_active(true);
+        chk_fill->signal_toggled().connect(
+                    sigc::mem_fun(*this, &Gui::on_toggle_fill));
+    } else {
+            std::cerr << "WARNING: Could not grab checkbox." << std::endl;
+    }
+    
     Gtk::Notebook* ntb_Scenes = NULL;
     builder->get_widget("ntbScenes", ntb_Scenes);
     if (ntb_Scenes)
@@ -110,13 +172,60 @@ Gui::~Gui()
     delete(kit); kit = NULL;
 }
 
-
 void Gui::on_set_norm_alpha(void)
 {
     if (scl_norm && scene && dynamic_cast<SceneMorph*>(scene))
             dynamic_cast<SceneMorph*>(scene)->set_alpha(scl_norm->get_value());
     else
             std::cerr << "Scene or slider seems to be missing" << std::endl;
+}
+
+void Gui::on_set_afps(void)
+{
+    if (scl_afps && scene && dynamic_cast<SceneMD5*>(scene))
+            dynamic_cast<SceneMD5*>(scene)->set_afps(scl_afps->get_value());
+    else
+            std::cerr << "Scene or slider seems to be missing" << std::endl;
+}
+
+void Gui::on_set_scale(void)
+{
+    if (scl_scale && scene && dynamic_cast<SceneMD5*>(scene))
+            dynamic_cast<SceneMD5*>(scene)->set_scale(scl_scale->get_value());
+    else
+            std::cerr << "Scene or slider seems to be missing" << std::endl;
+}
+
+void Gui::on_toggle_slerp(void)
+{
+    if (chk_slerp && scene && dynamic_cast<SceneMD5*>(scene))
+            dynamic_cast<SceneMD5*>(scene)->toggle_slerp(chk_slerp->get_active());
+    else
+            std::cerr << "Checkbox seems to be missing" << std::endl;
+}
+
+void Gui::on_toggle_joints()
+{
+    if (chk_joints && scene && dynamic_cast<SceneMD5*>(scene))
+            dynamic_cast<SceneMD5*>(scene)->toggle_joints(chk_joints->get_active());
+    else
+            std::cerr << "Checkbox seems to be missing" << std::endl;
+}
+
+void Gui::on_toggle_wireframe()
+{
+    if (chk_wireframe && scene && dynamic_cast<SceneMD5*>(scene))
+            dynamic_cast<SceneMD5*>(scene)->toggle_wireframe(chk_wireframe->get_active());
+    else
+            std::cerr << "Checkbox seems to be missing" << std::endl;
+}
+
+void Gui::on_toggle_fill()
+{
+    if (chk_fill && scene && dynamic_cast<SceneMD5*>(scene))
+            dynamic_cast<SceneMD5*>(scene)->toggle_fill(chk_fill->get_active());
+    else
+            std::cerr << "Checkbox seems to be missing" << std::endl;
 }
 
 void Gui::on_load_md5_button_clicked()
