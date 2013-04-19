@@ -28,7 +28,7 @@ protected:
 
 private:
     float _angle = -70.0f;
-    md5* fish = NULL;
+    md5* model = NULL;
     bool fill = false;
     bool wireframe = true;
     

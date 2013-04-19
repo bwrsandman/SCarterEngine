@@ -89,7 +89,7 @@ void joint::draw(int numjoints, const joint *j)
             }
         glEnd();
 
-        glColor3f(1.0f, 1.0f, 1.0f);
+        glColor3f(0.0f, 0.0f, 0.0f);
         glPointSize(5.0);
 
         if(j[i].parentIndex == -1)
