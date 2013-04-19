@@ -12,6 +12,7 @@ public:
     ~md5();
     void draw();
     void animate(float);
+    bool interpolate = true;
 private:
     friend std::ostream& operator<< (std::ostream& os, md5& m);
     uint numFrames;

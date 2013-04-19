@@ -25,6 +25,7 @@ public:
     inline quaternion getOrient() const { return *orient; }
 
     void set(const jointframe& jf); 
+    void slerp(const jointframe&, const jointframe&, float);
     static void draw(int numjoints, const joint *j);
 
 };

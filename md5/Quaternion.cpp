@@ -90,6 +90,11 @@ const quaternion operator*(const quaternion& lhs, const quaternion& rhs)
     return quaternion(s, glm::vec3(x,y,z));
 }
 
+const quaternion operator+(const quaternion& lhs, const quaternion& rhs)
+{
+    return quaternion(lhs.w + rhs.w, lhs.v + rhs.v);
+}
+
 const quaternion operator*(const quaternion& lhs, const glm::vec3& rhs)
 {
     // perform quaternion multiplication with w = 0.0f
@@ -100,6 +105,47 @@ const quaternion operator*(const glm::vec3& lhs, const quaternion& rhs)
 {
     // perform quaternion multiplication with w = 0.0f
     return quaternion(0.0f, lhs) * rhs;
+}
+
+const float quaternion::dot(const quaternion& lhs, const quaternion& rhs)
+{
+    return lhs.w * rhs.w + glm::dot(lhs.v,rhs.v);
+}
+
+const quaternion quaternion::slerp(const quaternion& early, const quaternion& late, const float interp)
+{
+    if (interp <= 0.0)
+        return early;
+    else if (interp >= 1.0)
+        return late;
+
+    float cosOmega = dot (early, late);
+
+    quaternion q1 = late;
+
+    if (cosOmega < 0.0f)
+    {
+      q1 = -q1;
+      cosOmega = -cosOmega;
+    }
+
+    /* Compute interpolation fraction, checking for quaternions
+       almost exactly the same */
+    float k0, k1;
+
+    if (cosOmega > 0.9999f) {
+        k0 = 1.0f - interp;
+        k1 = interp;
+    } else {
+        float sinOmega = sqrt (1.0f - (cosOmega * cosOmega));
+        float omega = atan2 (sinOmega, cosOmega);
+        float oneOverSinOmega = 1.0f / sinOmega;
+        k0 = sin ((1.0f - interp) * omega) * oneOverSinOmega;
+        k1 = sin (interp * omega) * oneOverSinOmega;
+    }
+
+    /* Interpolate and return new quaternion */
+    return k0 * early + k1 * q1;
 }
 
 void quaternion::normalize()

@@ -13,6 +13,7 @@
 
 #include "Triangle.hpp"
 #include "JointFrame.hpp"
+#include "Quaternion.hpp"
 
 #include "Joint.hpp"
 
@@ -59,6 +60,12 @@ std::istream& operator>> (std::istream& is, joint& j)
     // Read the rest of the line 
     getline(is, keyword);
     return is;
+}
+
+void joint::slerp(const jointframe& early, const jointframe& late, float interp)
+{
+    *orient = quaternion::slerp(early.getOrient(), late.getOrient(), interp);
+    pos = early.getPos() + interp * (late.getPos() - early.getPos());
 }
 
 void joint::set(const jointframe& jf)

@@ -17,6 +17,7 @@ private:
     friend const quaternion operator*(const quaternion&, const glm::vec3&);
     friend const quaternion operator*(const glm::vec3&, const quaternion&);
     friend const quaternion operator-(const quaternion&);
+    friend const quaternion operator+(const quaternion&, const quaternion&);
     friend std::ostream& operator<<(std::ostream&, const quaternion&); 
 
     template <typename T>
@@ -34,6 +35,8 @@ public:
     ~quaternion();
 
     glm::vec3 rotate(const glm::vec3&) const;
+    static const float dot(const quaternion&, const quaternion&);
+    static const quaternion slerp(const quaternion&, const quaternion&, const float);
 };
 
 #endif

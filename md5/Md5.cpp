@@ -207,7 +207,12 @@ void md5::animate(float dt)
         animTime -= numFrames;
     uint curframenum = (int)animTime;
     md5frame currentFrame = my_frames[curframenum];
+    md5frame nextFrame = my_frames[(curframenum + 1) % numFrames];
+    float interp = animTime - curframenum;
     for(uint i = 0; i != numJoints; ++i) {
-        my_joints[i].set(currentFrame.getJoint(i));
+        if (interpolate)
+            my_joints[i].slerp(currentFrame.getJoint(i), nextFrame.getJoint(i), interp);
+        else
+            my_joints[i].set(currentFrame.getJoint(i));
     }
 }
