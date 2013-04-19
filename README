@@ -3,15 +3,15 @@ COMP477 Winter 2013
 Sandy Carter 1121057
 
 Contents
-	GLConfigUtil.hpp  
-	Gui.cpp  
-	Gui.hpp  
-	IKArm.cpp  
-	IKArm.hpp  
-	IKLine.cpp  
-	IKLine.hpp  
-	Makefile  
-	README  
+    GLConfigUtil.hpp  
+    Gui.cpp  
+    Gui.hpp  
+    IKArm.cpp  
+    IKArm.hpp  
+    IKLine.cpp  
+    IKLine.hpp  
+    Makefile  
+    README  
 	Scenes/
         SceneBase.cpp  
         SceneBase.hpp  
@@ -19,11 +19,17 @@ Contents
         SceneIK.hpp  
         SceneMorph.cpp  /* Part 1 */
         SceneMorph.hpp
-	main.cpp  
-	math3d.hpp  
-	nbproject/
+        SceneParticleBase.cpp  /* Part 3 */
+        SceneParticleBase.hpp
+        SceneParticleFountain.cpp
+        SceneParticleFountain.hpp
+        SceneParticleRepelant.cpp
+        SceneParticleRepelant.hpp
+    main.cpp  
+    math3d.hpp  
+    nbproject/
         ** Netbeans project files **
-	scarter_engine.glade
+    scarter_engine.glade
 
 
 	The source files compile into a single executable.
@@ -61,4 +67,5 @@ Controls
 
 	- IK (Part 2)
         Target location is randomly changed every 5 seconds.
-
+    - Particle systems (Part 3)
+        Mouse movement interacts with the particle system.

@@ -37,15 +37,19 @@ public:
 private:
     const char* const _main_window = "main_window";
     const char* const _gl_frame = "gl_frame";
+    
+    uint cur_page;
 
     Gtk::Main* kit = NULL;
     Gtk::Window* main_win = NULL;
     Gtk::Alignment* gl_container = NULL;
     Gtk::Scale* scl_norm = NULL;
+    Gtk::Button* btn_LoadMD5Mesh = NULL;
     SceneBase* scene = NULL;
 
     void on_set_norm_alpha(void);
     void on_switch_scene_page(GtkNotebookPage*, guint);
+    void on_load_md5_button_clicked();
 };
 
 #endif	/* GUI_HPP */

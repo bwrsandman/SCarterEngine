@@ -24,8 +24,6 @@ IKLine::IKLine(const IKLine& orig)
 IKLine::~IKLine() 
 {
     parent = NULL;
-    delete [] vertices;
-    delete [] indices;
 }
 
 float IKLine::cum_orient() const

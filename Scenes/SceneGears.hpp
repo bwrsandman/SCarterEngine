@@ -32,6 +32,7 @@ protected:
               GLfloat tooth_depth);
 
     virtual void create_geom();
+    virtual bool create_shaders(const char*, const char*) { return true; } 
     virtual void create_light();
     virtual void set_perspective();
     virtual void render(const float);

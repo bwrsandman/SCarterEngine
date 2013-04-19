@@ -81,7 +81,10 @@ protected:
 
 private:
     /* Invalidate whole window. */
-    void _invalidate() { get_window()->invalidate_rect(get_allocation(), false); }
+    void _invalidate() 
+    { 
+        get_window()->invalidate_rect(get_allocation(), false); 
+    }
 
     /* Update window synchronously (fast). */
     void _update_sync()    { get_window()->process_updates(false); }
