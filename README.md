@@ -4,6 +4,7 @@ Author: Sandy Carter
 
 ## Contents
 ```
+    CMakeLists.txt
     GLConfigUtil.hpp  
     Gui.cpp  
     Gui.hpp  
@@ -11,8 +12,7 @@ Author: Sandy Carter
     IKArm.hpp  
     IKLine.cpp  
     IKLine.hpp  
-    Makefile  
-    README  
+    README.md
 	Scenes/
         SceneBase.cpp  
         SceneBase.hpp  
@@ -28,8 +28,6 @@ Author: Sandy Carter
         SceneParticleRepelant.hpp
     main.cpp  
     math3d.hpp  
-    nbproject/
-        ** Netbeans project files **
     scarter_engine.glade
 ```
 
@@ -38,6 +36,7 @@ The source files compile into a single executable.
 
 ## Unpacking and Compiling instructions
 ### Prerequisites
+- CMake
 - Linux
 - GTK
 - gtkmm 2.4 
@@ -50,8 +49,10 @@ The source files compile into a single executable.
 - OpenGL 4.3.0 compatible Video Card
 
 ## Compiling
-- `$ make`
-- or build in Netbeans
+```
+$ cmake .
+$ make
+```
 
 
 ## Running instructions 

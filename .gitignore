@@ -5,3 +5,11 @@
 build/
 dist/
 scarter_engine
+.idea/
+CMakeFiles/
+CMakeCache.txt
+*.cbp
+cmake_install.cmake
+Makefile
+cmake-build-debug/
+SCarterEngine
