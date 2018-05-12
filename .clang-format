@@ -1,0 +1,10 @@
+# Defines the Google C++ style for automatic reformatting.
+# http://clang.llvm.org/docs/ClangFormatStyleOptions.html
+BasedOnStyle: Google
+DerivePointerAlignment: false
+MaxEmptyLinesToKeep: 1
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+Cpp11BracedListStyle: true
+PointerAlignment: Middle
