@@ -24,6 +24,14 @@ file(GLOB SOURCE_FILES
     include/Debug.h
 
     src/Debug.cc
+    include/Logging.h
+
+    src/Debug.cc
+    src/Logging.cc
+
+    src/private/Manager.h
+    src/private/Logging/LoggingManager.h
+    src/private/Logging/LoggingManager.cc
 )
 
 add_executable(SCarterEngine ${SOURCE_FILES} main.cc)
