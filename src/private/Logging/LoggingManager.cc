@@ -4,13 +4,11 @@
 
 #include "LoggingManager.h"
 #include <Debug.h>
+#include <algorithm>
 #include <array>
 #include <iostream>
 
 namespace sce::logging::private_ {
-const std::array<const char *, 5> LEVEL_STRINGS{
-    "DEBUG", "INFO", "WARN", "ERROR", "FATAL",
-};
 
 void LoggingManager::Initialize() {
   DEBUG_RUNTIME_ASSERT_FALSE(this->isInitialized);
@@ -32,7 +30,10 @@ void LoggingManager::Log(const std::string & source_file, uint32_t source_line,
   DEBUG_RUNTIME_ASSERT_TRUE(this->isInitialized);
   if (level < logLevel_)
     return;
-  std::cout << LEVEL_STRINGS[static_cast<size_t>(level)] << ": " << source_file
-            << ":" << source_line << ": " << message << std::endl;
+  auto level_str = std::string(level._to_string());
+  std::transform(level_str.begin(), level_str.end(), level_str.begin(),
+                 ::toupper);
+  std::cout << level_str << ": " << source_file << ":" << source_line << ": "
+            << message << std::endl;
 }
 }  // namespace sce::logging::private_

@@ -5,6 +5,7 @@
 #ifndef SCARTERENGINE_LOGGING_H
 #define SCARTERENGINE_LOGGING_H
 
+#include <enum.h>
 #include <string>
 
 #define LOG(level, message)                                     \
@@ -14,13 +15,7 @@
 
 namespace sce::logging {
 
-enum class Level {
-  Debug,
-  Info,
-  Warning,
-  Error,
-  Fatal,
-};
+BETTER_ENUM(Level, uint8_t, Debug, Info, Warning, Error, Fatal);
 
 void Initialize();
 void Terminate();
