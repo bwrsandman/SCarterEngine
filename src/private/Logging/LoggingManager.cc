@@ -33,7 +33,13 @@ void LoggingManager::Log(const std::string & source_file, uint32_t source_line,
   auto level_str = std::string(level._to_string());
   std::transform(level_str.begin(), level_str.end(), level_str.begin(),
                  ::toupper);
-  std::cout << level_str << ": " << source_file << ":" << source_line << ": "
-            << message << std::endl;
+  std::cout << level_str << ": ";
+  // Source line cannot be 0
+  // Special case where we don't want line number and file (such as script
+  // logging)
+  if (source_line > 0) {
+    std::cout << source_file << ":" << source_line << ": ";
+  }
+  std::cout << message << std::endl;
 }
 }  // namespace sce::logging::private_
