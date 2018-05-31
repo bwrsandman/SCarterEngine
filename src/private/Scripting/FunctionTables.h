@@ -12,7 +12,9 @@
 #include <lua.hpp>
 
 #include <Debug.h>
+#include <Game.h>
 #include <Logging.h>
+#include <Scene.h>
 
 #include "ScriptingUtils.h"
 
@@ -115,13 +117,52 @@ constexpr std::array<luaL_Reg, 2> GetFunctionTable() noexcept {
 static decltype(auto) function_table = GetFunctionTable();
 }  // namespace sce::logging
 
+using sce::scene::Scene;
+DEFINE_LUA_USERDATA_TYPE_PUSH(Scene)
+namespace sce::game {
+constexpr std::array<luaL_Reg, 2> GetFunctionTable() noexcept {
+  return {
+      AUTO_BIND_C_FUNCTION_TO_LUA(std::shared_ptr<Scene>, AddScene,
+                                  std::string),
+      AUTO_BIND_C_FUNCTION_TO_LUA(void, RemoveScene, std::string),
+  };
+}
+static decltype(auto) function_table = GetFunctionTable();
+}  // namespace sce::game
+
+namespace sce::scene {
+using namespace sce::scripting::private_;
+constexpr std::array<luaL_Reg, 2> GetFunctionTable() noexcept {
+  return {
+      // TODO: Implicitly add this
+      LUA_USERDATA_GC_REG(Scene),
+      luaL_Reg{"__tostring",
+               [](lua_State * L) -> int {
+                 auto scene = LUA_USERDATA_CAST(L, 1, Scene);
+                 std::stringstream ss;
+                 ss << "Scene"
+                    << " {"
+                    << " name=\"" << scene->Name().c_str() << "\", "
+                    << "}";
+                 sce::scripting::private_::push(L, ss.str().c_str());
+                 return 1;
+               }},
+  };
+}
+static decltype(auto) function_table = GetFunctionTable();
+}  // namespace sce::scene
+
 namespace sce::scripting::private_ {
 
-static decltype(auto) function_tables = std::array<functionNamespace, 2>{
+static decltype(auto) function_tables = std::array<functionNamespace, 4>{
     functionNamespace{"Debug", false, sce::debug::function_table.size(),
                       sce::debug::function_table.data()},
     functionNamespace{"Logging", false, sce::logging::function_table.size(),
                       sce::logging::function_table.data()},
+    functionNamespace{"Game", false, sce::game::function_table.size(),
+                      sce::game::function_table.data()},
+    functionNamespace{"Scene", true, sce::scene::function_table.size(),
+                      sce::scene::function_table.data()},
 };
 }  // namespace sce::scripting::private_
 

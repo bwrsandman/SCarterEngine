@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <Debug.h>
+#include <Game.h>
 #include <Logging.h>
 
 #include "FunctionTables.h"
