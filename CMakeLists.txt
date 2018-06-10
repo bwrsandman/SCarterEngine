@@ -24,17 +24,21 @@ option(FORCE_INCLUDED_THIRD_PARTY "Don't use system libraries, instead use those
 
 file(GLOB SOURCE_FILES
     include/Debug.h
+    include/Engine.h
     include/Game.h
     include/Logging.h
     include/Scene.h
     include/Scripting.h
 
     src/Debug.cc
+    src/Engine.cc
     src/Game.cc
     src/Logging.cc
     src/Scripting.cc
 
     src/private/Manager.h
+    src/private/Engine/EngineManager.h
+    src/private/Engine/EngineManager.cc
     src/private/Game/GameManager.h
     src/private/Game/GameManager.cc
     src/private/Logging/LoggingManager.h

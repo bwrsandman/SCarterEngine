@@ -29,7 +29,7 @@ TEST(scripting_test, scripting_init_terminate) {
 
 TEST_F(ScriptingTest, run_string_print) {
   testing::internal::CaptureStdout();
-  ASSERT_EQ(sce::scripting::RunSource("print(\"Test\")\n"), EXIT_SUCCESS);
+  ASSERT_EQ(sce::scripting::LoadSource("print(\"Test\")\n"), EXIT_SUCCESS);
   std::string output = testing::internal::GetCapturedStdout();
   EXPECT_STREQ(output.c_str(), "Test\n");
 }
@@ -37,7 +37,7 @@ TEST_F(ScriptingTest, run_string_print) {
 TEST_F(ScriptingTest, run_string_error_syntax) {
   sce::logging::Initialize();
   testing::internal::CaptureStdout();
-  ASSERT_EQ(sce::scripting::RunSource("print("), EXIT_FAILURE);
+  ASSERT_EQ(sce::scripting::LoadSource("print("), EXIT_FAILURE);
   std::string output;
   output = testing::internal::GetCapturedStdout();
   EXPECT_PRED_FORMAT2(::testing::IsSubstring,
@@ -63,7 +63,7 @@ TEST_F(ScriptingTest, run_string) {
       "-- calling a function\n"
       "print(max(10, 4))\n"
       "print(max(5, 6))";
-  ASSERT_EQ(sce::scripting::RunSource(source), EXIT_SUCCESS);
+  ASSERT_EQ(sce::scripting::LoadSource(source), EXIT_SUCCESS);
   std::string output = testing::internal::GetCapturedStdout();
   EXPECT_STREQ(output.c_str(), "10\n6\n");
 }
@@ -73,7 +73,7 @@ TEST_F(ScriptingTest, run_file_error_syntax) {
   auto filename = test_info_->test_case_name() + std::string(".") +
                   test_info_->name() + ".lua";
   testing::internal::CaptureStdout();
-  ASSERT_EQ(sce::scripting::RunFile(filename), EXIT_FAILURE);
+  ASSERT_EQ(sce::scripting::LoadFile(filename), EXIT_FAILURE);
   std::string output = testing::internal::GetCapturedStdout();
   EXPECT_PRED_FORMAT2(::testing::IsSubstring, "unexpected symbol near <eof>",
                       output.c_str());
@@ -84,7 +84,7 @@ TEST_F(ScriptingTest, run_file) {
   auto filename = test_info_->test_case_name() + std::string(".") +
                   test_info_->name() + ".lua";
   testing::internal::CaptureStdout();
-  ASSERT_EQ(sce::scripting::RunFile(filename), EXIT_SUCCESS);
+  ASSERT_EQ(sce::scripting::LoadFile(filename), EXIT_SUCCESS);
   std::string output = testing::internal::GetCapturedStdout();
   EXPECT_STREQ(output.c_str(), "10\n6\n");
 }

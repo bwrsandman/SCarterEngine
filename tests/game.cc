@@ -50,7 +50,7 @@ TEST_F(GameTest, scripting) {
 
   sce::scripting::Initialize();
 
-  ASSERT_EQ(sce::scripting::RunSource(source), EXIT_SUCCESS);
+  ASSERT_EQ(sce::scripting::LoadSource(source), EXIT_SUCCESS);
 
   sce::scripting::Terminate();
 }

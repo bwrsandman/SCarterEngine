@@ -10,8 +10,9 @@
 namespace sce::scripting {
 void Initialize();
 void Terminate();
-int RunSource(const std::string & source);
-int RunFile(const std::string & file);
+int LoadSource(const std::string & source);
+int LoadFile(const std::string & file);
+void RunFrame(double dt);
 }  // namespace sce::scripting
 
 #endif  // SCARTERENGINE_SCRIPTING_H

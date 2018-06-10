@@ -29,6 +29,6 @@ TEST(assert_test, scripting) {
       "Engine.Debug.AssertFalse(false)\n"
       "Engine.Debug.AssertNotNull(1)\n");
   sce::scripting::Initialize();
-  ASSERT_EQ(sce::scripting::RunSource(source), EXIT_SUCCESS);
+  ASSERT_EQ(sce::scripting::LoadSource(source), EXIT_SUCCESS);
   sce::scripting::Terminate();
 }

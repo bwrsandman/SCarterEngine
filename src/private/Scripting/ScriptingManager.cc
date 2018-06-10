@@ -9,6 +9,7 @@
 #include <vector>
 
 #include <Debug.h>
+#include <Engine.h>
 #include <Game.h>
 #include <Logging.h>
 
@@ -19,6 +20,8 @@ namespace sce::scripting::private_ {
 void ScriptingManager::Initialize() {
   if (initialized_)
     return;
+
+  configured_ = false;
 
   lua_state_ = luaL_newstate();
 
@@ -78,27 +81,129 @@ void ScriptingManager::Initialize() {
 void ScriptingManager::Terminate() {
   if (initialized_) {
     DEBUG_RUNTIME_ASSERT_NOT_NULL(lua_state_);
+    RunScriptTerminate();
     lua_close(lua_state_);
   }
   initialized_ = false;
 }
 
-int ScriptingManager::RunSource(std::string source) {
-  auto result = luaL_dostring(lua_state_, source.c_str());
-  if (result != EXIT_SUCCESS) {
+void ScriptingManager::Check(int load_result) {
+  if (load_result != EXIT_SUCCESS) {
     auto error = lua_tostring(lua_state_, -1);
     logging::Log("", 0, logging::Level::Error, error);
+    engine::ScheduleQuit();
+    return;
   }
+
+  int loop = lua_getglobal(lua_state_, "Loop");
+  if (loop == 0) {
+    LOG(logging::Level::Warning,
+        "Lua Script has no \"Loop()\" function, game will quit.");
+    engine::ScheduleQuit();
+    return;
+  }
+  if (!lua_isfunction(lua_state_, -1)) {
+    LOG(logging::Level::Warning,
+        "Lua Global \"Loop\" is not a function, game will quit.");
+    engine::ScheduleQuit();
+    return;
+  }
+
+  configured_ = true;
+}
+
+int ScriptingManager::LoadSource(std::string source) {
+  auto result = luaL_dostring(lua_state_, source.c_str());
+  Check(result);
+  RunScriptInit();
   return result;
 }
 
-int ScriptingManager::RunFile(std::string file) {
+int ScriptingManager::LoadFile(std::string file) {
   auto result = luaL_dofile(lua_state_, file.c_str());
-  if (result != EXIT_SUCCESS) {
-    auto error = lua_tostring(lua_state_, -1);
-    logging::Log("", 0, logging::Level::Error, error);
+  Check(result);
+  RunScriptInit();
+  return result;
+}
+
+void ScriptingManager::RunFrame(double dt) {
+  DEBUG_RUNTIME_ASSERT_TRUE(initialized_);
+  DEBUG_RUNTIME_ASSERT_TRUE(configured_);
+
+  if (!GetAndCheckFunction("Loop")) {
+    LOG(logging::Level::Warning, "Game will quit.");
+    engine::ScheduleQuit();
+    return;
+  }
+  push(lua_state_, dt);
+  lua_call(lua_state_, 1, 0);
+
+  int Engine = lua_getglobal(lua_state_, "Engine");
+  if (Engine == 0) {
+    LOG(logging::Level::Fatal, "Lua Global \"Engine\" is missing.");
+    engine::ScheduleQuit();
+    return;
+  }
+  if (!lua_istable(lua_state_, -1)) {
+    LOG(logging::Level::Fatal, "Lua Global \"Engine\" is no longer a table.");
+    engine::ScheduleQuit();
+    lua_remove(lua_state_, -1);
+    return;
   }
 
-  return result;
+  int shouldQuit = lua_getfield(lua_state_, -1, "Quit");
+  if (shouldQuit > 0) {
+    if (lua_isfunction(lua_state_, -1)) {
+      lua_call(lua_state_, 0, 1);
+      if (pop<bool>(lua_state_, -1))
+        engine::ScheduleQuit();
+      lua_remove(lua_state_, -1);
+      lua_remove(lua_state_, -1);
+      return;
+    }
+    if (lua_is<bool>(lua_state_, -1)) {
+      if (pop<bool>(lua_state_, -1))
+        engine::ScheduleQuit();
+      lua_remove(lua_state_, -1);
+      lua_remove(lua_state_, -1);
+      return;
+    }
+    lua_remove(lua_state_, -1);
+    LOG(logging::Level::Warning,
+        "Lua Global \"Engine.Quit\" could not be interpreted.");
+  }
+}
+
+bool ScriptingManager::GetAndCheckFunction(std::string name) {
+  int func = lua_getglobal(lua_state_, name.c_str());
+  if (func == 0) {
+    LOG(logging::Level::Warning,
+        "Lua Script has no \"" + name + "()\" function.");
+    lua_remove(lua_state_, -1);
+    return false;
+  }
+  if (!lua_isfunction(lua_state_, -1)) {
+    LOG(logging::Level::Warning,
+        "Lua Global \"" + name + "\" is not a function.");
+    lua_remove(lua_state_, -1);
+    return false;
+  }
+  return true;
+}
+
+void ScriptingManager::RunScriptInit() {
+  if (!GetAndCheckFunction("Initialize")) {
+    lua_remove(lua_state_, -1);
+    return;
+  }
+  lua_call(lua_state_, 0, 0);
+}
+
+void ScriptingManager::RunScriptTerminate() {
+  if (!GetAndCheckFunction("Terminate")) {
+    lua_remove(lua_state_, -1);
+    return;
+  }
+  lua_call(lua_state_, 0, 0);
 }
 }  // namespace sce::scripting::private_

@@ -44,7 +44,7 @@ TEST_F(LoggingTest, scripting) {
   sce::scripting::Initialize();
 
   testing::internal::CaptureStdout();
-  ASSERT_EQ(sce::scripting::RunSource(source), EXIT_SUCCESS);
+  ASSERT_EQ(sce::scripting::LoadSource(source), EXIT_SUCCESS);
   output = testing::internal::GetCapturedStdout();
   expected_output =
       std::string("DEBUG: ") +
@@ -59,6 +59,6 @@ TEST_F(LoggingTest, scripting_bad_enum) {
   const auto source =
       std::string(R"(Engine.Logging.Log("BadEnum", "Test Message"))");
   sce::scripting::Initialize();
-  ASSERT_DEATH(sce::scripting::RunSource(source), "assert true failed");
+  ASSERT_DEATH(sce::scripting::LoadSource(source), "assert true failed");
   sce::scripting::Terminate();
 }

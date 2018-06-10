@@ -18,12 +18,16 @@ void Terminate() {
   gScriptingManager.Terminate();
 }
 
-int RunSource(const std::string & source) {
-  return gScriptingManager.RunSource(source);
+int LoadSource(const std::string & source) {
+  return gScriptingManager.LoadSource(source);
 }
 
-int RunFile(const std::string & file) {
-  return gScriptingManager.RunFile(file);
+int LoadFile(const std::string & file) {
+  return gScriptingManager.LoadFile(file);
+}
+
+void RunFrame(double dt) {
+  return gScriptingManager.RunFrame(dt);
 }
 
 }  // namespace sce::scripting

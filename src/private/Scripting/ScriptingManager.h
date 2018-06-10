@@ -13,13 +13,21 @@ namespace sce::scripting::private_ {
 
 class ScriptingManager : public sce::private_::Manager {
   bool initialized_;
+  bool configured_;
   lua_State * lua_state_;
+
+  void Check(int load_result);
+  /// Will leave function on stack if result is true
+  bool GetAndCheckFunction(std::string name);
+  void RunScriptInit();
+  void RunScriptTerminate();
 
  public:
   void Initialize() override;
   void Terminate() override;
-  int RunSource(std::string source);
-  int RunFile(std::string file);
+  int LoadSource(std::string source);
+  int LoadFile(std::string file);
+  void RunFrame(double dt);
 };
 
 }  // namespace sce::scripting::private_
