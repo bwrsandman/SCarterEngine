@@ -25,4 +25,12 @@ void RemoveScene(const std::string & name) {
   gGameManager.RemoveScene(name);
 }
 
+std::shared_ptr<scene::Scene> GetCurrentScene() {
+  return gGameManager.GetCurrentScene();
+}
+
+void SetCurrentScene(std::shared_ptr<scene::Scene> current) {
+  return gGameManager.SetCurrentScene(std::move(current));
+}
+
 }  // namespace sce::game

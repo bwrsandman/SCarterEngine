@@ -20,13 +20,18 @@ function Terminate()
 end
 
 loops = 0
+time = 0.0
 
 function Loop(dt)
+    time = time + dt
     fps = string.format("%.02f", 1000 / dt)
     Engine.Logging.Log("Debug", "Looping ("..loops..") at " .. fps .. " FPS")
-    loops = loops + 1
-end
 
-function Engine.Quit()
-    return loops > 10000
+    -- Engine.Game.CurrentScene:Update()
+    -- Engine.Rendering.Target = Engine.Rendering.Screen
+    local sin = math.sin(time / 1000)
+    local gray = sin * sin
+    -- cam.ClearColor = {gray, gray, gray, 0}
+
+    loops = loops + 1
 end

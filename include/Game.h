@@ -15,6 +15,8 @@ void Initialize();
 void Terminate();
 std::shared_ptr<scene::Scene> AddScene(const std::string & name);
 void RemoveScene(const std::string & name);
+std::shared_ptr<scene::Scene> GetCurrentScene();
+void SetCurrentScene(std::shared_ptr<scene::Scene> current);
 
 }  // namespace sce::game
 

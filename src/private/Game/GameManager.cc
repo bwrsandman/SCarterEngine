@@ -35,8 +35,19 @@ void GameManager::RemoveScene(const std::string & name) {
   auto extraction = scenes_.find(name);
   DEBUG_RUNTIME_ASSERT_TRUE(extraction != scenes_.end());
   if (extraction != scenes_.end()) {
+    if (extraction->second == currentScene_)
+      currentScene_.reset();
     scenes_.erase(extraction);
   }
+}
+
+std::shared_ptr<scene::Scene> GameManager::GetCurrentScene() {
+  return currentScene_;
+}
+
+void GameManager::SetCurrentScene(std::shared_ptr<scene::Scene> current) {
+  DEBUG_RUNTIME_ASSERT_TRUE(scenes_.find(current->Name()) != scenes_.end());
+  currentScene_ = current;
 }
 
 }  // namespace sce::game::private_

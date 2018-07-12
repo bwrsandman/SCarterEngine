@@ -21,6 +21,9 @@ function(define_file_basename_for_sources targetname)
 endfunction()
 
 option(FORCE_INCLUDED_THIRD_PARTY "Don't use system libraries, instead use those in third_party/" OFF)
+if (NOT EMSCRIPTEN)
+    option(VULKAN_SUPPORT "Include the vulkan renderer" ON)
+endif()
 
 file(GLOB SOURCE_FILES
     include/Debug.h
@@ -28,6 +31,7 @@ file(GLOB SOURCE_FILES
     include/Game.h
     include/Input.h
     include/Logging.h
+    include/Rendering.h
     include/Scene.h
     include/Scripting.h
 
@@ -36,6 +40,7 @@ file(GLOB SOURCE_FILES
     src/Game.cc
     src/Input.cc
     src/Logging.cc
+    src/Rendering.cc
     src/Scripting.cc
 
     src/private/Manager.h
@@ -50,6 +55,11 @@ file(GLOB SOURCE_FILES
     src/private/Input/InputManager.cc
     src/private/Logging/LoggingManager.h
     src/private/Logging/LoggingManager.cc
+    src/private/Rendering/GLES/CommandQueueGles.h
+    src/private/Rendering/GLES/RenderingManagerGles.h
+    src/private/Rendering/GLES/RenderingManagerGles.cc
+    src/private/Rendering/RenderingManager.h
+    src/private/Rendering/RenderingManager.cc
     src/private/Scene/SceneImpl.h
     src/private/Scene/SceneImpl.cc
     src/private/Scripting/FunctionTables.h
@@ -58,9 +68,22 @@ file(GLOB SOURCE_FILES
     src/private/Scripting/ScriptingManager.cc
 )
 
+file(GLOB VULKAN_SOURCE_FILES
+    src/private/Rendering/Vulkan/RenderingManagerVulkan.h
+    src/private/Rendering/Vulkan/RenderingManagerVulkan.cc
+)
+
 file(GLOB LUA_MAIN_FILE main.lua)
 
 list(APPEND SOURCE_FILES ${LUA_MAIN_FILE})
+
+if (EMSCRIPTEN)
+    list(APPEND SOURCE_FILES ${EMSCRIPTEN_SOURCE_FILES})
+endif()
+
+if (VULKAN_SUPPORT)
+    list(APPEND SOURCE_FILES ${VULKAN_SOURCE_FILES})
+endif()
 
 add_executable(SCarterEngine ${SOURCE_FILES} main.cc)
 
@@ -71,15 +94,32 @@ if (EMSCRIPTEN OR FORCE_INCLUDED_THIRD_PARTY)
     set(LUA_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/third_party/lua-5.3.5/src)
 else()
     find_package(Lua REQUIRED)
+    set(OPENGL_LIBRARIES OpenGL::GL)
 endif()
+
+if (NOT EMSCRIPTEN)
+    find_package(SDL2 REQUIRED)
+    set(SDL2_LIBRARIES SDL2::SDL2)
+endif()
+
+if (VULKAN_SUPPORT)
+    find_package(Vulkan REQUIRED)
+    set(VULKAN_LIBRARIES Vulkan::Vulkan)
+endif()
+
+find_package(OpenGL REQUIRED)
 
 set(SCarterEngine_DEP_INCLUDE_DIRS
     include/
     ${LUA_INCLUDE_DIR}
+    ${SDL2_INCLUDE_DIRS}
 )
 set(SCarterEngine_DEP_LIBRARIES
     c++
     ${LUA_LIBRARIES}
+    ${SDL2_LIBRARIES}
+    ${OPENGL_LIBRARIES}
+    ${VULKAN_LIBRARIES}
 )
 
 set_target_properties(SCarterEngine PROPERTIES COMPILE_FLAGS "-stdlib=libc++")  # Compatibility with emscripten
@@ -100,6 +140,8 @@ define_file_basename_for_sources(SCarterEngine)
 if (EMSCRIPTEN)
     list(APPEND EMSCRIPTEN_OPTIONS "WASM=1")
     list(APPEND EMSCRIPTEN_OPTIONS "ERROR_ON_UNDEFINED_SYMBOLS=1")
+    list(APPEND EMSCRIPTEN_OPTIONS "USE_SDL=2")
+    list(APPEND EMSCRIPTEN_OPTIONS "USE_WEBGL2=1")
     list(APPEND PRELOAD_FILES "${LUA_MAIN_FILE_BASENAME}")
     foreach(OPT ${EMSCRIPTEN_OPTIONS})
         set(EMSCRIPTEN_OPTION_STR "${EMSCRIPTEN_OPTION_STR} -s ${OPT}")
@@ -114,6 +156,10 @@ if (EMSCRIPTEN)
     set(CMAKE_EXECUTABLE_SUFFIX ".html")
     set_target_properties(SCarterEngine PROPERTIES OUTPUT_NAME "index")
 else()
+    if (VULKAN_SUPPORT)
+        target_compile_definitions(SCarterEngine PUBLIC SCE_SUPPORTS_VULKAN)
+    endif()
+
     enable_testing()
     find_package(GTest REQUIRED)
 

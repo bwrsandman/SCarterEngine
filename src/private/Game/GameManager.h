@@ -15,12 +15,15 @@ namespace sce::game::private_ {
 
 class GameManager : public sce::private_::Manager {
   std::unordered_map<std::string, std::shared_ptr<scene::Scene>> scenes_;
+  std::shared_ptr<scene::Scene> currentScene_;
 
  public:
   void Initialize() override;
   void Terminate() override;
   std::shared_ptr<scene::Scene> AddScene(const std::string & name);
   void RemoveScene(const std::string & name);
+  std::shared_ptr<scene::Scene> GetCurrentScene();
+  void SetCurrentScene(std::shared_ptr<scene::Scene> current);
 };
 
 }  // namespace sce::game::private_
