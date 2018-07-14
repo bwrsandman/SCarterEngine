@@ -49,7 +49,7 @@ bool EngineManager::RunFrame() {
     sce::input::RunFrame(dt);
   }
   if (!shouldQuit_) {
-    sce::rendering::RunFrame(dt, nullptr);
+    sce::rendering::RunFrame(dt, sce::game::GetCurrentScene());
   }
   return shouldQuit_;
 }

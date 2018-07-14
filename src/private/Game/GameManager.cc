@@ -46,7 +46,8 @@ std::shared_ptr<scene::Scene> GameManager::GetCurrentScene() {
 }
 
 void GameManager::SetCurrentScene(std::shared_ptr<scene::Scene> current) {
-  DEBUG_RUNTIME_ASSERT_TRUE(scenes_.find(current->Name()) != scenes_.end());
+  DEBUG_RUNTIME_ASSERT_TRUE(current == nullptr ||
+                            scenes_.find(current->Name()) != scenes_.end());
   currentScene_ = current;
 }
 

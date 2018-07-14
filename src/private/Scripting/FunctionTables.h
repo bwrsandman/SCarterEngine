@@ -6,6 +6,7 @@
 #define SCARTERENGINE_FUNCTION_TABLES_H
 
 #include <array>
+#include <map>
 #include <sstream>
 #include <vector>
 
@@ -119,15 +120,55 @@ static decltype(auto) function_table = GetFunctionTable();
 
 using sce::scene::Scene;
 DEFINE_LUA_USERDATA_TYPE_PUSH(Scene)
+DEFINE_LUA_USERDATA_TYPE_POP(Scene)
 namespace sce::game {
-constexpr std::array<luaL_Reg, 2> GetFunctionTable() noexcept {
+constexpr std::array<luaL_Reg, 3> GetFunctionTable() noexcept {
   return {
       AUTO_BIND_C_FUNCTION_TO_LUA(std::shared_ptr<Scene>, AddScene,
                                   std::string),
+      AUTO_BIND_C_FUNCTION_TO_LUA(
+          void, SetCurrentScene,
+          std::shared_ptr<Scene>),  // TODO: deprecate this
       AUTO_BIND_C_FUNCTION_TO_LUA(void, RemoveScene, std::string),
   };
 }
+constexpr std::array<luaL_Reg, 2> GetMetamethods() noexcept {
+  return {
+      luaL_Reg{"__newindex",
+               [](lua_State * lua) -> int {
+                 auto indexName =
+                     sce::scripting::private_::pop<std::string>(lua, 2);
+                 DEBUG_RUNTIME_ASSERT_FALSE(indexName.empty());
+
+                 if (indexName == "CurrentScene") {
+                   auto scene = lua_isnoneornil(lua, 3)
+                                    ? nullptr
+                                    : LUA_USERDATA_CAST(lua, 3, Scene);
+                   SetCurrentScene(scene);
+                 } else {
+                   luaL_error(lua, "Setting index %s of Game is forbidden.",
+                              indexName.c_str());
+                 }
+                 return 0;
+               }},
+      luaL_Reg{"__index",
+               [](lua_State * lua) -> int {
+                 auto indexName =
+                     sce::scripting::private_::pop<std::string>(lua, 2);
+                 DEBUG_RUNTIME_ASSERT_FALSE(indexName.empty());
+
+                 if (indexName == "CurrentScene") {
+                   auto scene = GetCurrentScene();
+                   sce::scripting::private_::push(lua, scene);
+                   return 1;
+                 } else {
+                   return lua_rawget(lua, 1);
+                 }
+               }},
+  };
+}
 static decltype(auto) function_table = GetFunctionTable();
+static decltype(auto) metamethods = GetMetamethods();
 }  // namespace sce::game
 
 namespace sce::scene {
@@ -160,7 +201,9 @@ static decltype(auto) function_tables = std::array<functionNamespace, 4>{
     functionNamespace{"Logging", false, sce::logging::function_table.size(),
                       sce::logging::function_table.data()},
     functionNamespace{"Game", false, sce::game::function_table.size(),
-                      sce::game::function_table.data()},
+                      sce::game::function_table.data(),
+                      sce::game::metamethods.size(),
+                      sce::game::metamethods.data()},
     functionNamespace{"Scene", true, sce::scene::function_table.size(),
                       sce::scene::function_table.data()},
 };
