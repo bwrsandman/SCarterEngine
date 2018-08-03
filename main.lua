@@ -5,14 +5,13 @@ function Initialize()
     -- TODO: Move these calls to GameManager init
     Engine.Game.CurrentScene = Engine.Game.AddScene("Main")
 
-    -- TODO: This should work once Scene has AddCamera definition
-    -- cam = Engine.Game.CurrentScene:AddCamera("MainCamera")
+    cam = Engine.Game.CurrentScene:AddCamera("MainCamera")
 end
 
 function Terminate()
     -- TODO: This can be removed once Engine.Scene.Current is managed by engine
-    -- Engine.Game.CurrentScene:RemoveCamera("MainCamera")
-    -- cam = nil
+    Engine.Game.CurrentScene:RemoveCamera("MainCamera")
+    cam = nil
     Engine.Game.CurrentScene = nil
     Engine.Game.RemoveScene("Main")
 

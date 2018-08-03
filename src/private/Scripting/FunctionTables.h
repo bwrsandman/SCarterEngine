@@ -12,6 +12,7 @@
 
 #include <lua.hpp>
 
+#include <Camera.h>
 #include <Debug.h>
 #include <Game.h>
 #include <Logging.h>
@@ -171,9 +172,11 @@ static decltype(auto) function_table = GetFunctionTable();
 static decltype(auto) metamethods = GetMetamethods();
 }  // namespace sce::game
 
+using sce::camera::Camera;
+DEFINE_LUA_USERDATA_TYPE_PUSH(Camera)
 namespace sce::scene {
 using namespace sce::scripting::private_;
-constexpr std::array<luaL_Reg, 2> GetFunctionTable() noexcept {
+constexpr std::array<luaL_Reg, 4> GetFunctionTable() noexcept {
   return {
       // TODO: Implicitly add this
       LUA_USERDATA_GC_REG(Scene),
@@ -188,14 +191,40 @@ constexpr std::array<luaL_Reg, 2> GetFunctionTable() noexcept {
                  sce::scripting::private_::push(L, ss.str().c_str());
                  return 1;
                }},
+      AUTO_BIND_C_USERDATA_FUNCTION_TO_LUA1(Scene, std::shared_ptr<Camera>,
+                                            AddCamera, std::string),
+      AUTO_BIND_C_USERDATA_FUNCTION_TO_LUA1(Scene, void, RemoveCamera,
+                                            std::string),
   };
 }
 static decltype(auto) function_table = GetFunctionTable();
 }  // namespace sce::scene
 
+namespace sce::camera {
+using namespace sce::scripting::private_;
+constexpr std::array<luaL_Reg, 2> GetFunctionTable() noexcept {
+  return {
+      // TODO: Implicitly add this
+      LUA_USERDATA_GC_REG(Camera),
+      luaL_Reg{"__tostring",
+               [](lua_State * L) -> int {
+                 auto camera = LUA_USERDATA_CAST(L, 1, Camera);
+                 std::stringstream ss;
+                 ss << "Camera"
+                    << " {"
+                    << " name=\"" << camera->Name().c_str() << "\", "
+                    << "}";
+                 sce::scripting::private_::push(L, ss.str().c_str());
+                 return 1;
+               }},
+  };
+}
+static decltype(auto) function_table = GetFunctionTable();
+}  // namespace sce::camera
+
 namespace sce::scripting::private_ {
 
-static decltype(auto) function_tables = std::array<functionNamespace, 4>{
+static decltype(auto) function_tables = std::array<functionNamespace, 5>{
     functionNamespace{"Debug", false, sce::debug::function_table.size(),
                       sce::debug::function_table.data()},
     functionNamespace{"Logging", false, sce::logging::function_table.size(),
@@ -206,6 +235,8 @@ static decltype(auto) function_tables = std::array<functionNamespace, 4>{
                       sce::game::metamethods.data()},
     functionNamespace{"Scene", true, sce::scene::function_table.size(),
                       sce::scene::function_table.data()},
+    functionNamespace{"Camera", true, sce::camera::function_table.size(),
+                      sce::camera::function_table.data()},
 };
 }  // namespace sce::scripting::private_
 

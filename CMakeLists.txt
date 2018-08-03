@@ -26,6 +26,7 @@ if (NOT EMSCRIPTEN)
 endif()
 
 file(GLOB SOURCE_FILES
+    include/Camera.h
     include/Debug.h
     include/Engine.h
     include/Game.h
@@ -44,6 +45,8 @@ file(GLOB SOURCE_FILES
     src/Scripting.cc
 
     src/private/Manager.h
+    src/private/Camera/CameraImpl.h
+    src/private/Camera/CameraImpl.cc
     src/private/Command/Command.h
     src/private/Command/ReusableCommandQueue.h
     src/private/Command/ReusableCommandQueue.cc
