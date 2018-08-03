@@ -164,6 +164,26 @@ struct is_stl_container {
       is_stl_container_impl::is_stl_container<std::decay_t<T>>::value;
 };
 
+namespace is_glm_struct_impl {
+template <typename T>
+struct is_glm_struct : std::false_type {};
+template <glm::length_t L, typename T>
+struct is_glm_struct<glm::vec<L, T>> : std::true_type {};
+}  // namespace is_glm_struct_impl
+template <typename T>
+struct is_glm_struct {
+  static constexpr bool const value =
+      is_glm_struct_impl::is_glm_struct<std::decay_t<T>>::value;
+};
+
+template <typename T>
+struct glm_struct_dim;
+
+template <glm::length_t N, typename T>
+struct glm_struct_dim<glm::vec<N, T>> {
+  static constexpr glm::length_t const value = N;
+};
+
 template <typename T>
 static std::shared_ptr<T> * LUA_USERDATA_CAST_PTR(lua_State * L, int pos,
                                                   const char * typename_) {
@@ -182,7 +202,8 @@ template <typename T>
 static T lua_to(lua_State * L, int idx);
 
 // Regular types
-template <typename T, std::enable_if_t<!is_stl_container<T>::value> * = nullptr>
+template <typename T, std::enable_if_t<!is_stl_container<T>::value &&
+                                       !is_glm_struct<T>::value> * = nullptr>
 static T pop(lua_State * L, int idx) {
   DEBUG_RUNTIME_ASSERT_TRUE(lua_is<T>(L, idx) != 0);
   return lua_to<T>(L, idx);
@@ -395,6 +416,43 @@ std::string lua_to<std::string>(lua_State * L, int idx) {
   auto c_str = luaL_tolstring(L, idx, nullptr);
   auto res = std::string(c_str);
   return res;
+}
+
+// glm::vecN
+template <glm::length_t N, typename T>
+void push(lua_State * L, glm::vec<N, T> obj) {
+  lua_createtable(L, N, 0);
+  for (auto i = 0; i < N; ++i) {
+    push(L, obj[i]);
+    lua_rawseti(L, -2, i + 1);
+  }
+}
+
+template <typename T, glm::length_t N, typename VT>
+T pop_glm(lua_State * L, int idx) {
+  auto isTable = static_cast<bool>(lua_istable(L, idx));
+  if (!isTable)
+    return T();
+  if (static_cast<size_t>(luaL_len(L, idx)) != N)
+    return T();
+  bool allValid = true;
+  T ret;
+  for (auto i = 0; i < N; ++i) {
+    lua_rawgeti(L, idx, i + 1);
+    allValid &= lua_is<float>(L, -1);
+    ret[i] = lua_to<VT>(L, -1);
+    lua_pop(L, 1);
+    if (!allValid)
+      return T();
+  }
+  return ret;
+}
+
+// GLM structs
+template <typename T, std::enable_if_t<is_glm_struct<T>::value> * = nullptr>
+static T pop(lua_State * L, int idx) {
+  typedef typename T::value_type VT;
+  return pop_glm<T, glm_struct_dim<T>::value, VT>(L, idx);
 }
 
 // Shared Pointer

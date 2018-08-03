@@ -102,7 +102,8 @@ void RenderingManagerGles::GenerateCommands() {
   commandQueue_.Reset();
   commandQueue_.glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1,
                                  "Clear Back Buffer");
-  commandQueue_.glClearColor(0.0f, 1.0f, 0.0f, 0.0f);
+  commandQueue_.glClearColor(clearColor_.r, clearColor_.g, clearColor_.b,
+                             clearColor_.a);
   commandQueue_.glClear(static_cast<uint32_t>(GL_COLOR_BUFFER_BIT));
   commandQueue_.glPopDebugGroup();
 }

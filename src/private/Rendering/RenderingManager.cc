@@ -46,6 +46,14 @@ void RenderingManager::Terminate() {
 
 void RenderingManager::RunFrame(double dt,
                                 std::shared_ptr<scene::Scene> currentScene) {
+  // Set ClearColor Uniform
+  if (currentScene) {
+    // For each camera
+    for (auto cam : currentScene->GetCameras()) {
+      SetClearValue(cam.second->GetClearValue());
+    }
+  }
+
   if (commandQueueDirty_) {
     GenerateCommands();
     commandQueueDirty_ = false;
@@ -53,6 +61,13 @@ void RenderingManager::RunFrame(double dt,
 
   Submit();
   Present();
+}
+
+void RenderingManager::SetClearValue(glm::vec4 clearColor) {
+  if (clearColor != clearColor_) {
+    clearColor_ = clearColor;
+    commandQueueDirty_ = true;
+  }
 }
 
 }  // namespace sce::rendering::private_

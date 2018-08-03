@@ -9,6 +9,12 @@
 
 namespace sce::scene::private_ {
 SceneImpl::SceneImpl(std::string name) : name_(name) {}
+
+std::unordered_map<std::string, std::shared_ptr<camera::Camera>>
+SceneImpl::GetCameras() const {
+  return cameras_;
+}
+
 std::string SceneImpl::Name() const {
   return name_;
 }

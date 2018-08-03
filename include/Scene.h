@@ -7,12 +7,15 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include "Camera.h"
 
 namespace sce::scene {
 class Scene {
  public:
   virtual std::string Name() const = 0;
+  virtual std::unordered_map<std::string, std::shared_ptr<camera::Camera>>
+  GetCameras() const = 0;
   virtual std::shared_ptr<camera::Camera> AddCamera(std::string name) = 0;
   virtual void RemoveCamera(std::string name) = 0;
 };

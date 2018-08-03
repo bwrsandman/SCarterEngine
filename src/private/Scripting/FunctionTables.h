@@ -176,7 +176,16 @@ using sce::camera::Camera;
 DEFINE_LUA_USERDATA_TYPE_PUSH(Camera)
 namespace sce::scene {
 using namespace sce::scripting::private_;
-constexpr std::array<luaL_Reg, 4> GetFunctionTable() noexcept {
+constexpr std::array<luaL_Reg, 2> GetMemberFunctions() noexcept {
+  return {
+      AUTO_BIND_C_USERDATA_FUNCTION_TO_LUA1(Scene, std::shared_ptr<Camera>,
+                                            AddCamera, std::string),
+      AUTO_BIND_C_USERDATA_FUNCTION_TO_LUA1(Scene, void, RemoveCamera,
+                                            std::string),
+  };
+}
+static decltype(auto) member_function_table = GetMemberFunctions();
+constexpr std::array<luaL_Reg, 3> GetFunctionTable() noexcept {
   return {
       // TODO: Implicitly add this
       LUA_USERDATA_GC_REG(Scene),
@@ -191,10 +200,30 @@ constexpr std::array<luaL_Reg, 4> GetFunctionTable() noexcept {
                  sce::scripting::private_::push(L, ss.str().c_str());
                  return 1;
                }},
-      AUTO_BIND_C_USERDATA_FUNCTION_TO_LUA1(Scene, std::shared_ptr<Camera>,
-                                            AddCamera, std::string),
-      AUTO_BIND_C_USERDATA_FUNCTION_TO_LUA1(Scene, void, RemoveCamera,
-                                            std::string),
+      luaL_Reg{"__index",
+               [](lua_State * lua) -> int {
+                 auto indexName =
+                     sce::scripting::private_::pop<std::string>(lua, 2);
+                 DEBUG_RUNTIME_ASSERT_FALSE(indexName.empty());
+
+                 auto scene = LUA_USERDATA_CAST(lua, 1, Scene);
+
+                 if (indexName == "Cameras") {
+                   auto cameras = scene->GetCameras();
+                   push(lua, cameras);
+                   return 1;
+                 } else {
+                   for (auto & foo : member_function_table) {
+                     if (std::string(foo.name) == indexName) {
+                       lua_pushcclosure(lua, foo.func, 1);
+                       return 1;
+                     }
+                   }
+                 }
+                 luaL_error(lua, "Index %s of Scene is inaccessible.",
+                            indexName.c_str());
+                 return 0;
+               }},
   };
 }
 static decltype(auto) function_table = GetFunctionTable();
@@ -202,7 +231,7 @@ static decltype(auto) function_table = GetFunctionTable();
 
 namespace sce::camera {
 using namespace sce::scripting::private_;
-constexpr std::array<luaL_Reg, 2> GetFunctionTable() noexcept {
+constexpr std::array<luaL_Reg, 4> GetFunctionTable() noexcept {
   return {
       // TODO: Implicitly add this
       LUA_USERDATA_GC_REG(Camera),
@@ -216,6 +245,41 @@ constexpr std::array<luaL_Reg, 2> GetFunctionTable() noexcept {
                     << "}";
                  sce::scripting::private_::push(L, ss.str().c_str());
                  return 1;
+               }},
+      luaL_Reg{"__newindex",
+               [](lua_State * lua) -> int {
+                 auto indexName =
+                     sce::scripting::private_::pop<std::string>(lua, 2);
+                 DEBUG_RUNTIME_ASSERT_FALSE(indexName.empty());
+
+                 auto camera = LUA_USERDATA_CAST(lua, 1, Camera);
+
+                 if (indexName == "ClearColor") {
+                   auto clearValue = pop<glm::vec4>(lua, 3);
+                   camera->SetClearValue(clearValue);
+                 } else {
+                   luaL_error(lua, "Setting index %s of Camera is forbidden.",
+                              indexName.c_str());
+                 }
+                 return 0;
+               }},
+      luaL_Reg{"__index",
+               [](lua_State * lua) -> int {
+                 auto indexName =
+                     sce::scripting::private_::pop<std::string>(lua, 2);
+                 DEBUG_RUNTIME_ASSERT_FALSE(indexName.empty());
+
+                 auto camera = LUA_USERDATA_CAST(lua, 1, Camera);
+
+                 if (indexName == "ClearColor") {
+                   auto clearValue = camera->GetClearValue();
+                   push(lua, clearValue);
+                   return 1;
+                 } else {
+                   luaL_error(lua, "Index %s of Camera is inaccessible.",
+                              indexName.c_str());
+                 }
+                 return 0;
                }},
   };
 }

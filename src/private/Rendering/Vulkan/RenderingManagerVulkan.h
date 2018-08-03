@@ -45,7 +45,6 @@ class RenderingManagerVulkan : public RenderingManager {
   vk::Extent2D swapchainExtent_;
   vk::Format colorFormat_;
   vk::ColorSpaceKHR colorSpace_;
-  vk::ClearValue clearValue_;
 
   uint32_t currentPresentImageIndex;
 

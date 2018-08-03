@@ -18,6 +18,8 @@ class SceneImpl : public Scene {
  public:
   explicit SceneImpl(std::string name);
   std::string Name() const override;
+  std::unordered_map<std::string, std::shared_ptr<camera::Camera>> GetCameras()
+      const override;
   std::shared_ptr<camera::Camera> AddCamera(std::string name) override;
   void RemoveCamera(std::string name) override;
 };

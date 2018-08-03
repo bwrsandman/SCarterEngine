@@ -100,9 +100,13 @@ else()
     set(OPENGL_LIBRARIES OpenGL::GL)
 endif()
 
-if (NOT EMSCRIPTEN)
+if (EMSCRIPTEN)
+    set(GLM_INCLUDE_DIR /usr/include/glm)
+else()
+    find_package(glm REQUIRED)
     find_package(SDL2 REQUIRED)
     set(SDL2_LIBRARIES SDL2::SDL2)
+    set(GLM_INCLUDE_DIR ${GLM_INCLUDE_DIRS}/glm)
 endif()
 
 if (VULKAN_SUPPORT)
@@ -116,6 +120,7 @@ set(SCarterEngine_DEP_INCLUDE_DIRS
     include/
     ${LUA_INCLUDE_DIR}
     ${SDL2_INCLUDE_DIRS}
+    ${GLM_INCLUDE_DIR}
 )
 set(SCarterEngine_DEP_LIBRARIES
     c++

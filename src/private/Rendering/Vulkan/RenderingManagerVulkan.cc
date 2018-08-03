@@ -420,12 +420,14 @@ void RenderingManagerVulkan::GenerateCommands() {
   commandBuffer_ =
       std::move(device_->allocateCommandBuffersUnique(allocInfo)[0]);
 
-  vk::ClearValue clearValue =
-      vk::ClearColorValue(std::array<float, 4>{0.0f, 1.0f, 0.0f, 0.0f});
-
   vk::RenderPassBeginInfo renderPassBeginInfo(renderPass_);
   renderPassBeginInfo.renderArea.extent = swapchainExtent_;
   renderPassBeginInfo.clearValueCount = 1;
+  vk::ClearValue clearValue;
+  clearValue.color.float32[0] = clearColor_.r;
+  clearValue.color.float32[1] = clearColor_.g;
+  clearValue.color.float32[2] = clearColor_.b;
+  clearValue.color.float32[3] = clearColor_.a;
   renderPassBeginInfo.pClearValues = &clearValue;
 
   commandBuffer_->begin(vk::CommandBufferBeginInfo{});

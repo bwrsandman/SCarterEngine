@@ -10,10 +10,13 @@
 namespace sce::camera::private_ {
 class CameraImpl : public Camera {
   std::string name_;
+  glm::vec4 clearValue_;
 
  public:
   explicit CameraImpl(std::string name);
   std::string Name() const override;
+  glm::vec4 GetClearValue() const override;
+  void SetClearValue(glm::vec4 clearValue) override;
 };
 }  // namespace sce::camera::private_
 
