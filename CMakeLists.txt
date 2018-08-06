@@ -37,6 +37,9 @@ file(GLOB SOURCE_FILES
     src/Scripting.cc
 
     src/private/Manager.h
+    src/private/Command/Command.h
+    src/private/Command/ReusableCommandQueue.h
+    src/private/Command/ReusableCommandQueue.cc
     src/private/Engine/EngineManager.h
     src/private/Engine/EngineManager.cc
     src/private/Game/GameManager.h
