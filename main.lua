@@ -11,6 +11,25 @@ function Initialize()
     for k, v in pairs(Engine.Game.CurrentScene.Cameras) do
         Engine.Logging.Log("Debug", k .. ": " .. tostring(v))
     end
+
+    local triangle = Engine.Game.CurrentScene:AddMesh(
+        "Triangle",
+        {0, 1, 2},
+        {
+            { 0.1, 0.82},
+            { 0.1, -0.82},
+            { 0.82, -0.82 }
+        }
+    )
+    triangle = Engine.Game.CurrentScene:AddMesh(
+        "Triangle2",
+        {0, 1, 2},
+        {
+            { -0.1, 0.82},
+            { -0.82, -0.82},
+            { -0.1, -0.82 }
+        }
+    )
 end
 
 function Terminate()

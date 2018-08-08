@@ -4,13 +4,16 @@
 
 #include "RenderingManagerVulkan.h"
 
+#include <fstream>
+#include <set>
+
+#include <SDL_hints.h>
+#include <SDL_vulkan.h>
+#include <vulkan/vulkan.hpp>
+
 #include <Debug.h>
 #include <Engine.h>
 #include <Logging.h>
-#include <SDL_hints.h>
-#include <SDL_vulkan.h>
-#include <set>
-#include <vulkan/vulkan.hpp>
 
 namespace sce::rendering::private_ {
 
@@ -131,6 +134,25 @@ vk::Bool32 DebugCallback(uint32_t severity,
 }
 #endif
 
+vk::UniqueShaderModule LoadShaderModule(vk::UniqueDevice & device,
+                                        const std::string & filePath) {
+  // TODO: Use FS Manager to load shader binary
+  std::ifstream is(filePath, std::ios::binary | std::ios::in | std::ios::ate);
+  DEBUG_RUNTIME_ASSERT_TRUE(is.is_open());
+  auto shaderSize = (size_t)is.tellg();
+  is.seekg(0, std::ios::beg);
+  auto shaderSource = new char[shaderSize];
+  is.read(shaderSource, shaderSize);
+  is.close();
+  DEBUG_RUNTIME_ASSERT_TRUE(shaderSize > 0);
+  auto moduleInfo = vk::ShaderModuleCreateInfo(
+      vk::ShaderModuleCreateFlags(), shaderSize,
+      reinterpret_cast<const uint32_t *>(shaderSource));
+  auto module = device->createShaderModuleUnique(moduleInfo);
+  delete[] shaderSource;
+  return module;
+}
+
 void RenderingManagerVulkan::InitializeInternal() {
   auto to_char = [](std::set<std::string> & v) {
     std::vector<const char *> ret(v.size(), nullptr);
@@ -178,6 +200,7 @@ void RenderingManagerVulkan::InitializeInternal() {
   auto physicalDevices = instance_->enumeratePhysicalDevices();
   DEBUG_RUNTIME_ASSERT_FALSE(physicalDevices.empty());
   auto physicalDevice = physicalDevices[0];
+  memoryProperties_ = physicalDevice.getMemoryProperties();
 
   // Create surface
   SDL_Vulkan_CreateSurface(window_, instance_.get(),
@@ -335,6 +358,10 @@ void RenderingManagerVulkan::InitializeInternal() {
   swapchainCreateInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
   swapchain_ = device_->createSwapchainKHRUnique(swapchainCreateInfo);
 
+  // Get dynamic dispatch loader
+  dynamicDispatchLoader_ = std::make_unique<vk::DispatchLoaderDynamic>(
+      instance_.get(), device_.get());
+
   // Get swapchain images
   auto swapchainImagesKHR = device_->getSwapchainImagesKHR(swapchain_.get());
   swapchainImages_.resize(swapchainImagesKHR.size());
@@ -391,6 +418,10 @@ void RenderingManagerVulkan::InitializeInternal() {
   poolCreateInfo.queueFamilyIndex = deviceQueueCreateInfo.queueFamilyIndex;
   commandPool_ = device_->createCommandPoolUnique(poolCreateInfo);
 
+  // Create pipeline cache
+  auto pipelineCacheInfo = vk::PipelineCacheCreateInfo();
+  pipelineCache_ = device_->createPipelineCacheUnique(pipelineCacheInfo);
+
   // Create Frame Buffers
   auto commandBufferAllocateInfo = vk::CommandBufferAllocateInfo(
       commandPool_.get(), vk::CommandBufferLevel::ePrimary,
@@ -411,10 +442,124 @@ void RenderingManagerVulkan::InitializeInternal() {
         device_->createFramebuffer(framebufferCreateInfo);
     swapchainImages_[i].cmd = swapchain_cmds[i];
   }
+
+  // Create main mesh pipeline
+  {
+    auto vertModule = LoadShaderModule(device_, "opaque.vert.spv");
+    auto fragModule = LoadShaderModule(device_, "opaque.frag.spv");
+    const auto stages = std::array<vk::PipelineShaderStageCreateInfo, 2>{
+        vk::PipelineShaderStageCreateInfo(vk::PipelineShaderStageCreateFlags(),
+                                          vk::ShaderStageFlagBits::eVertex,
+                                          vertModule.get(), "main"),
+        vk::PipelineShaderStageCreateInfo(vk::PipelineShaderStageCreateFlags(),
+                                          vk::ShaderStageFlagBits::eFragment,
+                                          fragModule.get(), "main")};
+    const auto vertexBindings =
+        std::array<vk::VertexInputBindingDescription, 1>{
+            vk::VertexInputBindingDescription(0, sizeof(mesh::Vertex),
+                                              vk::VertexInputRate::eVertex),
+        };
+    const auto vertexAttributes =
+        std::array<vk::VertexInputAttributeDescription, 1>{
+            vk::VertexInputAttributeDescription(0, 0, vk::Format::eR32G32Sfloat,
+                                                0),
+        };
+    auto pipelineLayoutInfo = vk::PipelineLayoutCreateInfo();
+    pipelineLayout_ = device_->createPipelineLayoutUnique(pipelineLayoutInfo);
+    auto vertexInputState = vk::PipelineVertexInputStateCreateInfo(
+        vk::PipelineVertexInputStateCreateFlags(),
+        static_cast<uint32_t>(vertexBindings.size()), vertexBindings.data(),
+        static_cast<uint32_t>(vertexAttributes.size()),
+        vertexAttributes.data());
+    auto inputAssemblyState = vk::PipelineInputAssemblyStateCreateInfo(
+        vk::PipelineInputAssemblyStateCreateFlags(),
+        vk::PrimitiveTopology::eTriangleList);
+    auto viewportState = vk::PipelineViewportStateCreateInfo();
+    auto rasterState = vk::PipelineRasterizationStateCreateInfo();
+    auto multisampleState = vk::PipelineMultisampleStateCreateInfo();
+    auto depthStencilState = vk::PipelineDepthStencilStateCreateInfo();
+    auto blendAttachments =
+        std::array<vk::PipelineColorBlendAttachmentState, 1>{
+            vk::PipelineColorBlendAttachmentState(
+                VK_FALSE, vk::BlendFactor::eZero, vk::BlendFactor::eZero,
+                vk::BlendOp::eAdd, vk::BlendFactor::eZero,
+                vk::BlendFactor::eZero, vk::BlendOp::eAdd,
+                vk::ColorComponentFlagBits::eR |
+                    vk::ColorComponentFlagBits::eG |
+                    vk::ColorComponentFlagBits::eB |
+                    vk::ColorComponentFlagBits::eA)};
+    auto colorBlendState = vk::PipelineColorBlendStateCreateInfo(
+        vk::PipelineColorBlendStateCreateFlags(), VK_FALSE, vk::LogicOp::eClear,
+        static_cast<uint32_t>(blendAttachments.size()),
+        blendAttachments.data());
+    auto enabledDynamicStates = std::array<vk::DynamicState, 2>{
+        vk::DynamicState::eViewport,
+        vk::DynamicState::eScissor,
+    };
+    auto dynamicState = vk::PipelineDynamicStateCreateInfo(
+        vk::PipelineDynamicStateCreateFlags(),
+        static_cast<uint32_t>(enabledDynamicStates.size()),
+        enabledDynamicStates.data());
+    auto pipelineInfo = vk::GraphicsPipelineCreateInfo(
+        vk::PipelineCreateFlags(), static_cast<uint32_t>(stages.size()),
+        stages.data(), &vertexInputState, &inputAssemblyState,
+        nullptr,  //< Tessellation State
+        &viewportState, &rasterState, &multisampleState, &depthStencilState,
+        &colorBlendState, &dynamicState, pipelineLayout_.get(), renderPass_, 0,
+        vk::Pipeline(), -1);
+    pipeline_ = std::move(device_->createGraphicsPipelinesUnique(
+        pipelineCache_.get(),
+        vk::ArrayProxy<const vk::GraphicsPipelineCreateInfo>(pipelineInfo))[0]);
+  }
+}
+
+uint32_t RenderingManagerVulkan::GetMemoryType(
+    uint32_t typeBits, vk::MemoryPropertyFlags properties) {
+  for (uint32_t i = 0; i < memoryProperties_.memoryTypeCount; i++) {
+    if ((typeBits & 1) == 1) {
+      if ((memoryProperties_.memoryTypes[i].propertyFlags & properties) ==
+          properties) {
+        return i;
+      }
+    }
+    typeBits >>= 1;
+  }
+
+  DEBUG_RUNTIME_ASSERT_FALSE("Could not find a matching memory type");
+  return 0;
+}
+
+RenderingManagerVulkan::BoundBuffer RenderingManagerVulkan::CreateBoundBuffer(
+    vk::BufferUsageFlags usage, vk::MemoryPropertyFlags memoryPropertyFlags,
+    vk::DeviceSize dataSize, void * data) {
+  DEBUG_RUNTIME_ASSERT_TRUE(dataSize > 0);
+  auto bufferInfo =
+      vk::BufferCreateInfo(vk::BufferCreateFlags(), dataSize, usage);
+  auto buffer = device_->createBufferUnique(bufferInfo);
+  auto memReqs = device_->getBufferMemoryRequirements(buffer.get());
+  uint32_t memType = GetMemoryType(memReqs.memoryTypeBits, memoryPropertyFlags);
+  auto memInfo = vk::MemoryAllocateInfo(memReqs.size, memType);
+  auto memory = device_->allocateMemoryUnique(memInfo);
+
+  if (data != nullptr) {
+    auto mapped = device_->mapMemory(memory.get(), 0, VK_WHOLE_SIZE);
+    memcpy(mapped, data, dataSize);
+    if ((memoryPropertyFlags & vk::MemoryPropertyFlagBits::eHostCoherent) ==
+        vk::MemoryPropertyFlagBits()) {
+      auto range = vk::MappedMemoryRange(memory.get(), 0, VK_WHOLE_SIZE);
+      device_->flushMappedMemoryRanges(1, &range);
+    }
+    device_->unmapMemory(memory.get());
+  }
+
+  device_->bindBufferMemory(buffer.get(), memory.get(), 0);
+
+  return {std::move(buffer), std::move(memory)};
 }
 
 void RenderingManagerVulkan::GenerateCommands() {
   // Create Command Buffer
+  vk::DebugMarkerMarkerInfoEXT debugInfo;
   auto allocInfo = vk::CommandBufferAllocateInfo(
       commandPool_.get(), vk::CommandBufferLevel::ePrimary, 1);
   commandBuffer_ =
@@ -430,6 +575,69 @@ void RenderingManagerVulkan::GenerateCommands() {
   clearValue.color.float32[3] = clearColor_.a;
   renderPassBeginInfo.pClearValues = &clearValue;
 
+  int width, height;
+  SDL_Vulkan_GetDrawableSize(window_, &width, &height);
+  auto renderArea =
+      vk::Rect2D(vk::Offset2D(), vk::Extent2D(static_cast<uint32_t>(width),
+                                              static_cast<uint32_t>(height)));
+  auto viewport = vk::Viewport(0, 0, static_cast<uint32_t>(width),
+                               static_cast<uint32_t>(height), 0.0f, 1.0f);
+
+  // TODO: For each existing mesh buffer, reuse or free
+  // Merge all vertex and index data into single contiguous array
+  std::vector<mesh::Index> indices;
+  std::vector<mesh::Vertex> vertices;
+  std::vector<MergedMeshIndexBufferLocation> indexBufferLocations;
+  MergeMeshes(meshes_, indices, vertices, indexBufferLocations);
+
+  // Stage and Upload index and vertex data
+  if (!meshes_.empty()) {
+    auto stagingIndexBuffer =
+        CreateBoundBuffer(vk::BufferUsageFlagBits::eTransferSrc,
+                          vk::MemoryPropertyFlagBits::eHostVisible |
+                              vk::MemoryPropertyFlagBits::eHostCoherent,
+                          indices.size() * sizeof(mesh::Index), indices.data());
+    sceneIndexBuffer_ =
+        CreateBoundBuffer(vk::BufferUsageFlagBits::eIndexBuffer |
+                              vk::BufferUsageFlagBits::eTransferDst,
+                          vk::MemoryPropertyFlagBits::eDeviceLocal,
+                          indices.size() * sizeof(mesh::Index));
+    auto stagingVertexBuffer =
+        CreateBoundBuffer(vk::BufferUsageFlagBits::eTransferSrc,
+                          vk::MemoryPropertyFlagBits::eHostVisible |
+                              vk::MemoryPropertyFlagBits::eHostCoherent,
+                          vertices.size() * sizeof(mesh::Vertex),
+                          static_cast<void *>(vertices.data()));
+    sceneVertexBuffer_ =
+        CreateBoundBuffer(vk::BufferUsageFlagBits::eVertexBuffer |
+                              vk::BufferUsageFlagBits::eTransferDst,
+                          vk::MemoryPropertyFlagBits::eDeviceLocal,
+                          vertices.size() * sizeof(mesh::Vertex));
+    auto cmdInfo = vk::CommandBufferAllocateInfo(
+        commandPool_.get(), vk::CommandBufferLevel::ePrimary, 1);
+    auto stagingCommandBuffers = device_->allocateCommandBuffersUnique(cmdInfo);
+    auto stagingCmdInfo = vk::CommandBufferBeginInfo();
+
+    stagingCommandBuffers[0]->begin(stagingCmdInfo);
+    auto copyRegion = vk::BufferCopy();
+    copyRegion.size = indices.size() * sizeof(mesh::Index);
+    stagingCommandBuffers[0]->copyBuffer(stagingIndexBuffer.buffer.get(),
+                                         sceneIndexBuffer_.buffer.get(), 1,
+                                         &copyRegion);
+    copyRegion.size = vertices.size() * sizeof(mesh::Vertex);
+    stagingCommandBuffers[0]->copyBuffer(stagingVertexBuffer.buffer.get(),
+                                         sceneVertexBuffer_.buffer.get(), 1,
+                                         &copyRegion);
+    stagingCommandBuffers[0]->end();
+
+    auto submitInfo = vk::SubmitInfo();
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &stagingCommandBuffers[0].get();
+
+    deviceGraphicsQueue_.submit(1, &submitInfo, nullptr);
+    deviceGraphicsQueue_.waitIdle();
+  }
+
   commandBuffer_->begin(vk::CommandBufferBeginInfo{});
 
   for (auto & swapchainImage : swapchainImages_) {
@@ -441,6 +649,44 @@ void RenderingManagerVulkan::GenerateCommands() {
     swapchainImage.cmd.begin(beginInfo);
     swapchainImage.cmd.beginRenderPass(renderPassBeginInfo,
                                        vk::SubpassContents::eInline);
+
+    if (!meshes_.empty()) {
+      swapchainImage.cmd.setViewport(0, {viewport});
+      swapchainImage.cmd.setScissor(0, {renderArea});
+      // TODO: viewport culling in compute shader
+      // TODO: sorting of meshes
+      // Set global index and vertex buffers
+      vk::DeviceSize offset = 0;
+      swapchainImage.cmd.bindVertexBuffers(
+          0, 1, &sceneVertexBuffer_.buffer.get(), &offset);
+      static_assert(sizeof(mesh::Index) == 4);
+      swapchainImage.cmd.bindIndexBuffer(sceneIndexBuffer_.buffer.get(), 0,
+                                         vk::IndexType::eUint32);
+      if (dynamicDispatchLoader_ &&
+          dynamicDispatchLoader_->vkCmdDebugMarkerBeginEXT) {
+        debugInfo.pMarkerName = "Draw Opaque Meshes";
+        swapchainImage.cmd.debugMarkerBeginEXT(debugInfo,
+                                               *dynamicDispatchLoader_);
+      }
+      for (auto & location : indexBufferLocations) {
+        if (dynamicDispatchLoader_ &&
+            dynamicDispatchLoader_->vkCmdDebugMarkerBeginEXT) {
+          debugInfo.pMarkerName = location.name;
+          swapchainImage.cmd.debugMarkerBeginEXT(debugInfo,
+                                                 *dynamicDispatchLoader_);
+        }
+        swapchainImage.cmd.bindPipeline(vk::PipelineBindPoint::eGraphics,
+                                        pipeline_.get());
+        swapchainImage.cmd.drawIndexed(location.count, 1, 0, location.offset,
+                                       0);
+        if (dynamicDispatchLoader_ &&
+            dynamicDispatchLoader_->vkCmdDebugMarkerEndEXT)
+          swapchainImage.cmd.debugMarkerEndEXT(*dynamicDispatchLoader_);
+      }
+      if (dynamicDispatchLoader_ &&
+          dynamicDispatchLoader_->vkCmdDebugMarkerEndEXT)
+        swapchainImage.cmd.debugMarkerEndEXT(*dynamicDispatchLoader_);
+    }
     swapchainImage.cmd.endRenderPass();
     swapchainImage.cmd.end();
   }

@@ -84,6 +84,10 @@ class CommandQueueGles : public command::ReusableCommandQueue {
  public:
   GL_TO_COMMAND(glClearColor)
   GL_TO_COMMAND(glClear)
+  GL_TO_COMMAND(glBindBuffer)
+  GL_TO_COMMAND(glBindVertexArray)
+  GL_TO_COMMAND(glDrawElements)
+  GL_TO_COMMAND(glUseProgram)
   GL_TO_COMMAND_DEBUG(glPushDebugGroup)
   GL_TO_COMMAND_DEBUG(glPopDebugGroup)
 };

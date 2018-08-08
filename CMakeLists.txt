@@ -32,6 +32,7 @@ file(GLOB SOURCE_FILES
     include/Game.h
     include/Input.h
     include/Logging.h
+    include/Mesh.h
     include/Rendering.h
     include/Scene.h
     include/Scripting.h
@@ -76,6 +77,16 @@ file(GLOB VULKAN_SOURCE_FILES
     src/private/Rendering/Vulkan/RenderingManagerVulkan.cc
 )
 
+file(GLOB SHADER_SOURCE_FILES
+    src/private/Rendering/GLES/opaque.vert
+    src/private/Rendering/GLES/opaque.frag
+)
+
+file(GLOB VULKAN_SHADER_SOURCE_FILES
+    src/private/Rendering/Vulkan/opaque.vert
+    src/private/Rendering/Vulkan/opaque.frag
+)
+
 file(GLOB LUA_MAIN_FILE main.lua)
 
 list(APPEND SOURCE_FILES ${LUA_MAIN_FILE})
@@ -86,7 +97,32 @@ endif()
 
 if (VULKAN_SUPPORT)
     list(APPEND SOURCE_FILES ${VULKAN_SOURCE_FILES})
+    list(APPEND SHADER_SOURCE_FILES ${VULKAN_SHADER_SOURCE_FILES})
 endif()
+
+# Shaders
+foreach(SHADER_FILE ${SHADER_SOURCE_FILES})
+    get_filename_component(SHADER_FILE_BASENAME ${SHADER_FILE} NAME)
+    list(APPEND SHADER_COMPILED_FILES ${CMAKE_BINARY_DIR}/${SHADER_FILE_BASENAME})
+    add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/${SHADER_FILE_BASENAME}
+        COMMAND ${CMAKE_COMMAND} -E copy ${SHADER_FILE} ${CMAKE_BINARY_DIR}
+        MAIN_DEPENDENCY ${SHADER_FILE}
+    )
+endforeach()
+if (VULKAN_SUPPORT)
+    find_program(GLSLANG_VALIDATOR NAMES glslangValidator)
+    foreach(SHADER_FILE ${VULKAN_SHADER_SOURCE_FILES})
+        get_filename_component(SHADER_FILE_BASENAME ${SHADER_FILE} NAME)
+        list(APPEND SHADER_COMPILED_FILES ${CMAKE_BINARY_DIR}/${SHADER_FILE_BASENAME}.spv)
+        add_custom_command(OUTPUT ${CMAKE_BINARY_DIR}/${SHADER_FILE_BASENAME}.spv
+            COMMAND ${GLSLANG_VALIDATOR} -V ${SHADER_FILE} -o ${SHADER_FILE}.spv
+            COMMAND ${CMAKE_COMMAND} -E copy ${SHADER_FILE}.spv ${CMAKE_BINARY_DIR}
+            COMMAND ${CMAKE_COMMAND} -E remove ${SHADER_FILE}.spv
+            MAIN_DEPENDENCY ${SHADER_FILE}
+        )
+    endforeach()
+endif()
+list(APPEND SOURCE_FILES ${SHADER_COMPILED_FILES})
 
 add_executable(SCarterEngine ${SOURCE_FILES} main.cc)
 
@@ -151,6 +187,7 @@ if (EMSCRIPTEN)
     list(APPEND EMSCRIPTEN_OPTIONS "USE_SDL=2")
     list(APPEND EMSCRIPTEN_OPTIONS "USE_WEBGL2=1")
     list(APPEND PRELOAD_FILES "${LUA_MAIN_FILE_BASENAME}")
+    list(APPEND PRELOAD_FILES "${SHADER_COMPILED_FILES}")
     foreach(OPT ${EMSCRIPTEN_OPTIONS})
         set(EMSCRIPTEN_OPTION_STR "${EMSCRIPTEN_OPTION_STR} -s ${OPT}")
     endforeach()

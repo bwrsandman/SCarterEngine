@@ -16,6 +16,7 @@
 #include <Debug.h>
 #include <Game.h>
 #include <Logging.h>
+#include <Mesh.h>
 #include <Scene.h>
 
 #include "ScriptingUtils.h"
@@ -175,12 +176,19 @@ static decltype(auto) metamethods = GetMetamethods();
 using sce::camera::Camera;
 DEFINE_LUA_USERDATA_TYPE_PUSH(Camera)
 namespace sce::scene {
+using namespace sce::camera;
+using namespace sce::mesh;
 using namespace sce::scripting::private_;
-constexpr std::array<luaL_Reg, 2> GetMemberFunctions() noexcept {
+constexpr std::array<luaL_Reg, 4> GetMemberFunctions() noexcept {
   return {
       AUTO_BIND_C_USERDATA_FUNCTION_TO_LUA1(Scene, std::shared_ptr<Camera>,
                                             AddCamera, std::string),
       AUTO_BIND_C_USERDATA_FUNCTION_TO_LUA1(Scene, void, RemoveCamera,
+                                            std::string),
+      AUTO_BIND_C_USERDATA_FUNCTION_TO_LUA3(
+          Scene, std::shared_ptr<Mesh>, AddMesh, std::string,
+          std::vector<Index>, std::vector<Vertex>),
+      AUTO_BIND_C_USERDATA_FUNCTION_TO_LUA1(Scene, void, RemoveMesh,
                                             std::string),
   };
 }
@@ -286,9 +294,34 @@ constexpr std::array<luaL_Reg, 4> GetFunctionTable() noexcept {
 static decltype(auto) function_table = GetFunctionTable();
 }  // namespace sce::camera
 
+using sce::mesh::Mesh;
+DEFINE_LUA_USERDATA_TYPE_PUSH(Mesh)
+DEFINE_LUA_USERDATA_TYPE_POP(Mesh)
+namespace sce::mesh {
+using namespace sce::scripting::private_;
+constexpr std::array<luaL_Reg, 2> GetFunctionTable() noexcept {
+  return {
+      // TODO: Implicitly add this
+      LUA_USERDATA_GC_REG(Mesh),
+      luaL_Reg{"__tostring",
+               [](lua_State * L) -> int {
+                 auto mesh = LUA_USERDATA_CAST(L, 1, Mesh);
+                 std::stringstream ss;
+                 ss << "Mesh"
+                    << " {"
+                    << " name=\"" << mesh->Name().c_str() << "\", "
+                    << "}";
+                 sce::scripting::private_::push(L, ss.str().c_str());
+                 return 1;
+               }},
+  };
+}
+static decltype(auto) function_table = GetFunctionTable();
+}  // namespace sce::mesh
+
 namespace sce::scripting::private_ {
 
-static decltype(auto) function_tables = std::array<functionNamespace, 5>{
+static decltype(auto) function_tables = std::array<functionNamespace, 6>{
     functionNamespace{"Debug", false, sce::debug::function_table.size(),
                       sce::debug::function_table.data()},
     functionNamespace{"Logging", false, sce::logging::function_table.size(),
@@ -301,6 +334,8 @@ static decltype(auto) function_tables = std::array<functionNamespace, 5>{
                       sce::scene::function_table.data()},
     functionNamespace{"Camera", true, sce::camera::function_table.size(),
                       sce::camera::function_table.data()},
+    functionNamespace{"Mesh", true, sce::mesh::function_table.size(),
+                      sce::mesh::function_table.data()},
 };
 }  // namespace sce::scripting::private_
 

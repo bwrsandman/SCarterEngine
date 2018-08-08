@@ -49,8 +49,12 @@ void RenderingManager::RunFrame(double dt,
   // Set ClearColor Uniform
   if (currentScene) {
     // For each camera
+    // Update uniform data, if for some reason, there is data change,
+    // rebalance and rebuild command buffers, but do not issue commands every
+    // frame (inefficient)
     for (auto cam : currentScene->GetCameras()) {
       SetClearValue(cam.second->GetClearValue());
+      SetMeshes(currentScene->GetMeshes());
     }
   }
 
@@ -70,4 +74,34 @@ void RenderingManager::SetClearValue(glm::vec4 clearColor) {
   }
 }
 
+void RenderingManager::SetMeshes(
+    std::unordered_map<std::string, std::shared_ptr<mesh::Mesh>> meshes) {
+  if (meshes != meshes_) {
+    meshes_ = meshes;
+    commandQueueDirty_ = true;
+  }
+}
+
+void MergeMeshes(
+    std::unordered_map<std::string, std::shared_ptr<mesh::Mesh>> & meshes,
+    std::vector<mesh::Index> & indices, std::vector<mesh::Vertex> & vertices,
+    std::vector<MergedMeshIndexBufferLocation> & indexBufferLocations) {
+  for (const auto & [name, mesh] : meshes) {
+    auto newIndices = mesh->GetIndices();
+    indexBufferLocations.push_back({name.c_str(),
+                                    static_cast<uint32_t>(newIndices.size()),
+                                    static_cast<uint32_t>(indices.size())});
+    indices.reserve(indices.size() + newIndices.size());
+    // Move indices start up at new location with 0 being changed to size of
+    // current vertex vector
+    auto vertexOffset = static_cast<uint32_t>(vertices.size());
+    for (auto & index : newIndices) {
+      indices.push_back(index + vertexOffset);
+    }
+    auto newVertices = mesh->GetVertices();
+    vertices.reserve(vertices.size() + newVertices.size());
+    std::copy(newVertices.begin(), newVertices.end(),
+              std::back_inserter(vertices));
+  }
+}
 }  // namespace sce::rendering::private_

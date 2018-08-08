@@ -12,6 +12,10 @@ namespace sce::rendering::private_ {
 class RenderingManagerGles : public RenderingManager {
   SDL_GLContext context_;
   CommandQueueGles commandQueue_;
+  GLuint sceneIndexBuffer_;
+  GLuint sceneVertexArray_;
+  GLuint sceneVertexBuffer_;
+  GLuint scenePipelineProgram_;
 
   void InitializeInternal() override;
   void TerminateInternal() override;
