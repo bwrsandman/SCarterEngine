@@ -1,0 +1,9 @@
+.idea/
+TODO
+CMakeLists.txt
+cmake-build-debug/
+CMakeFiles/
+third_party/
+CMakeCache.txt 
+Makefile
+*.cmake
