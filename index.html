@@ -4,6 +4,13 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Emscripten-Generated Code</title>
+    <style type="text/css" media="screen">
+      #editor {
+        margin: auto;
+        width: 600px;
+        height: 400px;
+      }
+    </style>
     <style>
       body {
         font-family: arial;
@@ -1210,10 +1217,22 @@
       <progress value="0" max="100" id="progress" hidden=1></progress>
     </div>
 
-    
-    <div class="emscripten_border">
-      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-    </div>
+
+    <table>
+      <tr>
+        <td>
+          <input type="button" id="save_file_button" value="Save"/>
+          <div id="editor"></div>
+        </td>
+        <td>
+          <div class="emscripten_border">
+            <!-- tabindex="0" is required to regaining canvas focus -->
+            <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="0"></canvas>
+          </div>
+        </td>
+      </tr>
+    </table>
+
     <textarea id="output" rows="8"></textarea>
 
     <script type='text/javascript'>
@@ -1222,8 +1241,18 @@
       var spinnerElement = document.getElementById('spinner');
 
       var Module = {
-        preRun: [],
-        postRun: [],
+        preRun: [function()
+        {
+            // Let only the canvas forward keyboard events to SDL
+            // This lets other elements of the page interact with keyboard
+            // Default is '#windw'
+            ENV.SDL_EMSCRIPTEN_KEYBOARD_ELEMENT = "#canvas";
+        }],
+        postRun: [function()
+        {
+            // Focus the canvas by default
+            document.querySelector("#canvas").focus()
+        }],
         print: (function() {
           var element = document.getElementById('output');
           if (element) element.value = ''; // clear browser cache
@@ -1256,6 +1285,9 @@
           // application robust, you may want to override this behavior before shipping!
           // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
           canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+          // Allow canvas to regain focus when clicked
+          canvas.addEventListener("click", function() { canvas.focus(); });
 
           return canvas;
         })(),
@@ -1298,6 +1330,32 @@
       };
     </script>
     <script async type="text/javascript" src="SCarterEngine.js"></script>
+
+    <script src="ace/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        var editor = ace.edit("editor", {
+            theme: "ace/theme/monokai",
+            mode: "ace/mode/lua",
+            autoScrollEditorIntoView: true,
+            maxLines: 30,
+            minLines: 2
+        });
+        editor.resize();
+        setTimeout(function() {
+            editor.setValue(FS.readFile('main.lua', { encoding: 'utf8' }));
+        }, 1000);
+        editor.commands.addCommand({
+            name: 'save',
+            bindKey: {win: 'Ctrl-S',  mac: 'Command-S'},
+            exec: function(editor) {
+                FS.writeFile('main.lua', editor.getValue(), { encoding: 'utf8' });
+            },
+            readOnly: false
+        });
+        document.getElementById("save_file_button").onclick = function () { 
+                FS.writeFile('main.lua', editor.getValue(), { encoding: 'utf8' });
+        };
+    </script>
   </body>
 </html>
 

@@ -1,4 +1,5 @@
 function Initialize()
+    -- Engine.Logging.SetLogLevel("Debug")
     Engine.Logging.Log("Info", "Start of main script")
 
     -- TODO: Move these calls to GameManager init
@@ -47,7 +48,7 @@ time = 0.0
 function Loop(dt)
     time = time + dt
     fps = string.format("%.02f", 1000 / dt)
-    Engine.Logging.Log("Debug", "Looping ("..loops..") at " .. fps .. " FPS")
+    Engine.Logging.Log("Info", "Looping ("..loops..") at " .. fps .. " FPS")
 
     -- Engine.Game.CurrentScene:Update()
     -- Engine.Rendering.Target = Engine.Rendering.Screen
