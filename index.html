@@ -1210,9 +1210,10 @@
       <progress value="0" max="100" id="progress" hidden=1></progress>
     </div>
 
-    
+
     <div class="emscripten_border">
-      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+      <!-- tabindex="0" is required to regaining canvas focus -->
+      <canvas class="emscripten" id="canvas" oncontextmenu="event.preventDefault()" tabindex="0"></canvas>
     </div>
     <textarea id="output" rows="8"></textarea>
 
@@ -1222,8 +1223,18 @@
       var spinnerElement = document.getElementById('spinner');
 
       var Module = {
-        preRun: [],
-        postRun: [],
+        preRun: [function()
+        {
+            // Let only the canvas forward keyboard events to SDL
+            // This lets other elements of the page interact with keyboard
+            // Default is '#windw'
+            ENV.SDL_EMSCRIPTEN_KEYBOARD_ELEMENT = "#canvas";
+        }],
+        postRun: [function()
+        {
+            // Focus the canvas by default
+            document.querySelector("#canvas").focus()
+        }],
         print: (function() {
           var element = document.getElementById('output');
           if (element) element.value = ''; // clear browser cache
@@ -1256,6 +1267,9 @@
           // application robust, you may want to override this behavior before shipping!
           // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
           canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+
+          // Allow canvas to regain focus when clicked
+          canvas.addEventListener("click", function() { canvas.focus(); });
 
           return canvas;
         })(),
