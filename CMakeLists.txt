@@ -89,10 +89,12 @@ file(GLOB VULKAN_SHADER_SOURCE_FILES
 
 file(GLOB LUA_MAIN_FILE main.lua)
 
+file(GLOB EMSCRIPTEN_MAIN_FILE index.html)
+
 list(APPEND SOURCE_FILES ${LUA_MAIN_FILE})
 
 if (EMSCRIPTEN)
-    list(APPEND SOURCE_FILES ${EMSCRIPTEN_SOURCE_FILES})
+    list(APPEND SOURCE_FILES ${EMSCRIPTEN_MAIN_FILE})
 endif()
 
 if (VULKAN_SUPPORT)
@@ -197,9 +199,12 @@ if (EMSCRIPTEN)
     endforeach()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 ${EMSCRIPTEN_OPTION_STR}")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${EMSCRIPTEN_OPTION_STR} --emrun ${PRELOAD_FILE_STR}")
-    # Force emscripten to generate html file for us. In the future this will not be necessary.
-    set(CMAKE_EXECUTABLE_SUFFIX ".html")
-    set_target_properties(SCarterEngine PROPERTIES OUTPUT_NAME "index")
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/index.html
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${EMSCRIPTEN_MAIN_FILE} ${CMAKE_BINARY_DIR}
+        COMMENT "Copying ${EMSCRIPTEN_MAIN_FILE}"
+        MAIN_DEPENDENCY ${EMSCRIPTEN_MAIN_FILE}
+    )
 else()
     if (VULKAN_SUPPORT)
         target_compile_definitions(SCarterEngine PUBLIC SCE_SUPPORTS_VULKAN)
