@@ -90,11 +90,13 @@ file(GLOB VULKAN_SHADER_SOURCE_FILES
 file(GLOB LUA_MAIN_FILE main.lua)
 
 file(GLOB EMSCRIPTEN_MAIN_FILE index.html)
+file(GLOB ACE_MAIN_FILE third_party/ace-builds-1.4.1/src-min-noconflict/ace.js)
 
 list(APPEND SOURCE_FILES ${LUA_MAIN_FILE})
 
 if (EMSCRIPTEN)
     list(APPEND SOURCE_FILES ${EMSCRIPTEN_MAIN_FILE})
+    list(APPEND SOURCE_FILES ${ACE_MAIN_FILE})
 endif()
 
 if (VULKAN_SUPPORT)
@@ -199,6 +201,13 @@ if (EMSCRIPTEN)
     endforeach()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 ${EMSCRIPTEN_OPTION_STR}")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${EMSCRIPTEN_OPTION_STR} --emrun ${PRELOAD_FILE_STR}")
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/ace/ace.js
+        COMMAND ${CMAKE_COMMAND} -E echo copy_directory third_party/ace-builds-1.4.1/src-min-noconflict ${CMAKE_BINARY_DIR}/ace
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/third_party/ace-builds-1.4.1/src-min-noconflict ${CMAKE_BINARY_DIR}/ace
+        COMMENT "Copying Ace"
+        MAIN_DEPENDENCY ${ACE_MAIN_FILE}
+    )
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/index.html
         COMMAND ${CMAKE_COMMAND} -E copy_if_different ${EMSCRIPTEN_MAIN_FILE} ${CMAKE_BINARY_DIR}
