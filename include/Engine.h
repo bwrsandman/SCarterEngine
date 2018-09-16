@@ -8,6 +8,7 @@
 namespace sce::engine {
 int App();
 void ScheduleQuit();
+void Reload();
 }  // namespace sce::engine
 
 #endif  // SCARTERENGINE_ENGINE_H

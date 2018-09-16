@@ -12,12 +12,13 @@
 #include <Engine.h>
 #include <Game.h>
 #include <Logging.h>
+#include <sys/stat.h>
 
 #include "FunctionTables.h"
 
 namespace sce::scripting::private_ {
 
-void ScriptingManager::Initialize() {
+void ScriptingManager::Initialize(bool reload) {
   if (initialized_)
     return;
 
@@ -78,7 +79,7 @@ void ScriptingManager::Initialize() {
   initialized_ = true;
 }
 
-void ScriptingManager::Terminate() {
+void ScriptingManager::Terminate(bool reload) {
   if (initialized_) {
     DEBUG_RUNTIME_ASSERT_NOT_NULL(lua_state_);
     RunScriptTerminate();
@@ -116,13 +117,57 @@ int ScriptingManager::LoadSource(std::string source) {
   auto result = luaL_dostring(lua_state_, source.c_str());
   Check(result);
   RunScriptInit();
+  scriptIsFile_ = false;
+  scriptSource_ = source;
+  scriptLastModified_ = std::time(nullptr);
   return result;
 }
 
 int ScriptingManager::LoadFile(std::string file) {
-  auto result = luaL_dofile(lua_state_, file.c_str());
+  int result = luaL_dofile(lua_state_, file.c_str());
   Check(result);
   RunScriptInit();
+  struct stat file_stat {};
+  result = ::stat(file.c_str(), &file_stat);
+  if (result != 0) {
+    engine::ScheduleQuit();
+    LOG(logging::Level::Error, "Could not stat file");
+    return result;
+  }
+  scriptIsFile_ = true;
+  scriptSource_ = file;
+  scriptLastModified_ = file_stat.st_mtime;
+  return result;
+}
+
+bool ScriptingManager::ScriptModified() {
+  DEBUG_RUNTIME_ASSERT_TRUE(initialized_);
+  DEBUG_RUNTIME_ASSERT_TRUE(configured_);
+
+  if (scriptIsFile_) {
+    struct stat file_stat {};
+    auto result = ::stat(scriptSource_.c_str(), &file_stat);
+    if (result != 0) {
+      LOG(logging::Level::Warning, "Could not stat file");
+      return false;
+    }
+    return scriptLastModified_ < file_stat.st_mtime;
+  } else {
+    // TODO
+    return false;
+  }
+}
+
+int ScriptingManager::ReloadScript() {
+  int result;
+  RunScriptTerminate();
+  configured_ = false;
+  engine::Reload();
+  if (scriptIsFile_) {
+    result = LoadFile(scriptSource_);
+  } else {
+    result = LoadSource(scriptSource_);
+  }
   return result;
 }
 
@@ -171,6 +216,10 @@ void ScriptingManager::RunFrame(double dt) {
     lua_remove(lua_state_, -1);
     LOG(logging::Level::Warning,
         "Lua Global \"Engine.Quit\" could not be interpreted.");
+  }
+
+  if (ScriptModified()) {
+    ReloadScript();
   }
 }
 

@@ -5,6 +5,7 @@
 #ifndef SCARTERENGINE_SCRIPTING_PRIVATE_SCRIPTING_MANAGER_H
 #define SCARTERENGINE_SCRIPTING_PRIVATE_SCRIPTING_MANAGER_H
 
+#include <ctime>
 #include <lua.hpp>
 #include <string>
 #include "../Manager.h"
@@ -15,16 +16,21 @@ class ScriptingManager : public sce::private_::Manager {
   bool initialized_;
   bool configured_;
   lua_State * lua_state_;
+  bool scriptIsFile_;
+  std::time_t scriptLastModified_;
+  std::string scriptSource_;
 
   void Check(int load_result);
   /// Will leave function on stack if result is true
   bool GetAndCheckFunction(std::string name);
   void RunScriptInit();
   void RunScriptTerminate();
+  bool ScriptModified();
+  int ReloadScript();
 
  public:
-  void Initialize() override;
-  void Terminate() override;
+  void Initialize(bool reload) override;
+  void Terminate(bool reload) override;
   int LoadSource(std::string source);
   int LoadFile(std::string file);
   void RunFrame(double dt);

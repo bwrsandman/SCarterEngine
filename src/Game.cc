@@ -10,11 +10,11 @@ namespace sce::game {
 static private_::GameManager gGameManager;
 
 void Initialize() {
-  gGameManager.Initialize();
+  gGameManager.Initialize(false);
 }
 
 void Terminate() {
-  gGameManager.Terminate();
+  gGameManager.Terminate(false);
 }
 
 std::shared_ptr<scene::Scene> AddScene(const std::string & name) {

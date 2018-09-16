@@ -10,12 +10,12 @@
 
 namespace sce::logging::private_ {
 
-void LoggingManager::Initialize() {
+void LoggingManager::Initialize(bool reload) {
   DEBUG_RUNTIME_ASSERT_FALSE(this->isInitialized);
   isInitialized = true;
 }
 
-void LoggingManager::Terminate() {
+void LoggingManager::Terminate(bool reload) {
   DEBUG_RUNTIME_ASSERT_TRUE(this->isInitialized);
   isInitialized = false;
 }

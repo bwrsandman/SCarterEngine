@@ -15,7 +15,7 @@
 
 namespace sce::engine::private_ {
 
-void EngineManager::Initialize() {
+void EngineManager::Initialize(bool reload) {
   shouldQuit_ = false;
   sce::logging::Initialize();
   sce::game::Initialize();
@@ -29,13 +29,23 @@ void EngineManager::Initialize() {
   lastTimeStamp_ = std::chrono::high_resolution_clock::now();
 }
 
-void EngineManager::Terminate() {
+void EngineManager::Terminate(bool reload) {
   LOG(logging::Level::Debug, "Terminating engine subsystems");
   sce::scripting::Terminate();
   sce::input::Terminate();
   sce::rendering::Terminate();
   sce::game::Terminate();
   sce::logging::Terminate();
+}
+
+void EngineManager::Reload() {
+  LOG(logging::Level::Debug, "Reloading engine subsystems");
+  sce::rendering::Terminate(true);
+  sce::game::Terminate();
+  sce::logging::Terminate();
+  sce::logging::Initialize();
+  sce::game::Initialize();
+  sce::rendering::Initialize(sce::rendering::RenderingApi::Default, true);
 }
 
 bool EngineManager::RunFrame() {

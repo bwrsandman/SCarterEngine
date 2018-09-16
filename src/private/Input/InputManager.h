@@ -10,8 +10,8 @@
 namespace sce::input::private_ {
 class InputManager : sce::private_::Manager {
  public:
-  void Initialize() override;
-  void Terminate() override;
+  void Initialize(bool reload) override;
+  void Terminate(bool reload) override;
   void RunFrame(double dt);
 };
 }  // namespace sce::input::private_

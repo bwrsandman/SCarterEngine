@@ -14,8 +14,9 @@ class EngineManager : sce::private_::Manager {
   std::chrono::high_resolution_clock::time_point lastTimeStamp_;
 
  public:
-  void Initialize() override;
-  void Terminate() override;
+  void Initialize(bool reload) override;
+  void Terminate(bool reload) override;
+  void Reload();
 
   bool RunFrame();
   void ScheduleQuit();

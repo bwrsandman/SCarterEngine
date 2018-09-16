@@ -7,9 +7,9 @@
 #include <Logging.h>
 #include <SDL_events.h>
 
-void sce::input::private_::InputManager::Initialize() {}
+void sce::input::private_::InputManager::Initialize(bool reload) {}
 
-void sce::input::private_::InputManager::Terminate() {}
+void sce::input::private_::InputManager::Terminate(bool reload) {}
 
 void sce::input::private_::InputManager::RunFrame(double dt) {
   SDL_Event e;

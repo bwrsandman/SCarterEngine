@@ -18,8 +18,8 @@ class GameManager : public sce::private_::Manager {
   std::shared_ptr<scene::Scene> currentScene_;
 
  public:
-  void Initialize() override;
-  void Terminate() override;
+  void Initialize(bool reload) override;
+  void Terminate(bool reload) override;
   std::shared_ptr<scene::Scene> AddScene(const std::string & name);
   void RemoveScene(const std::string & name);
   std::shared_ptr<scene::Scene> GetCurrentScene();

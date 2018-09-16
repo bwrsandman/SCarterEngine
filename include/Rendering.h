@@ -14,8 +14,8 @@ namespace sce::rendering {
 
 BETTER_ENUM(RenderingApi, uint8_t, Default, Vulkan, OpenGLES);
 
-void Initialize(RenderingApi api = RenderingApi::Default);
-void Terminate();
+void Initialize(RenderingApi api = RenderingApi::Default, bool reload = false);
+void Terminate(bool reload = false);
 
 void RunFrame(double dt, std::shared_ptr<scene::Scene> currentScene);
 

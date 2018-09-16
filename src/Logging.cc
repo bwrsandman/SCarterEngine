@@ -9,11 +9,11 @@ namespace sce::logging {
 private_::LoggingManager gLoggingManager;
 
 void Initialize() {
-  gLoggingManager.Initialize();
+  gLoggingManager.Initialize(false);
 }
 
 void Terminate() {
-  gLoggingManager.Terminate();
+  gLoggingManager.Terminate(false);
 }
 
 void SetLogLevel(Level level) {

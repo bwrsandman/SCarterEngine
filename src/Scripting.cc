@@ -11,11 +11,11 @@ namespace sce::scripting {
 static private_::ScriptingManager gScriptingManager;
 
 void Initialize() {
-  gScriptingManager.Initialize();
+  gScriptingManager.Initialize(false);
 }
 
 void Terminate() {
-  gScriptingManager.Terminate();
+  gScriptingManager.Terminate(false);
 }
 
 int LoadSource(const std::string & source) {

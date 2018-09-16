@@ -175,6 +175,18 @@ void RenderingManagerGles::InitializeInternal() {
   glDetachShader(scenePipelineProgram_, fragModule);
 }
 
+void RenderingManagerGles::TerminateInternal() {
+  DEBUG_RUNTIME_ASSERT_TRUE(isInitialized);
+  glDeleteProgram(scenePipelineProgram_);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+  glDeleteBuffers(1, &sceneIndexBuffer_);
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glDeleteBuffers(1, &sceneVertexBuffer_);
+  glBindVertexArray(0);
+  glDeleteVertexArrays(1, &sceneVertexArray_);
+  SDL_GL_DeleteContext(context_);
+}
+
 void RenderingManagerGles::GenerateCommands() {
   // TODO: For each existing mesh buffer, reuse or free
   // Merge all vertex and index data into single contiguous array
@@ -219,18 +231,6 @@ void RenderingManagerGles::GenerateCommands() {
     commandQueue_.glPopDebugGroup();
   }
   commandQueue_.glPopDebugGroup();
-}
-
-void RenderingManagerGles::TerminateInternal() {
-  DEBUG_RUNTIME_ASSERT_TRUE(isInitialized);
-  glDeleteProgram(scenePipelineProgram_);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-  glDeleteBuffers(1, &sceneIndexBuffer_);
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glDeleteBuffers(1, &sceneVertexBuffer_);
-  glBindVertexArray(0);
-  glDeleteVertexArrays(1, &sceneVertexArray_);
-  SDL_GL_DeleteContext(context_);
 }
 
 void RenderingManagerGles::Submit() {

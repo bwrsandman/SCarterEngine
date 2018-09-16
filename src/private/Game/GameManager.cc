@@ -10,15 +10,16 @@
 
 namespace sce::game::private_ {
 
-void GameManager::Initialize() {
+void GameManager::Initialize(bool reload) {
   DEBUG_RUNTIME_ASSERT_FALSE(this->isInitialized);
   DEBUG_RUNTIME_ASSERT_TRUE(scenes_.empty());
   isInitialized = true;
 }
 
-void GameManager::Terminate() {
+void GameManager::Terminate(bool reload) {
   DEBUG_RUNTIME_ASSERT_TRUE(this->isInitialized);
   scenes_.clear();
+  DEBUG_RUNTIME_ASSERT_TRUE(scenes_.empty());
   isInitialized = false;
 }
 

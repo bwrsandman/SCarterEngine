@@ -15,12 +15,10 @@ namespace sce::rendering {
 
 static std::unique_ptr<private_::RenderingManager> gRenderingManager;
 
-void Initialize(RenderingApi api) {
-  if (gRenderingManager)
-    gRenderingManager->Terminate();
-
-  switch (api) {
-    case RenderingApi::Default:
+void Initialize(RenderingApi api, bool reload) {
+  if (!reload) {
+    switch (api) {
+      case RenderingApi::Default:
 #ifdef SCE_SUPPORTS_VULKAN
     case RenderingApi::Vulkan:
       gRenderingManager = std::make_unique<private_::RenderingManagerVulkan>();
@@ -33,12 +31,13 @@ void Initialize(RenderingApi api) {
       LOG(logging::Level::Fatal, "Unsupported Rendering API");
       DEBUG_RUNTIME_ASSERT_TRUE(false);
       break;
+    }
   }
-  gRenderingManager->Initialize();
+  gRenderingManager->Initialize(reload);
 }
 
-void Terminate() {
-  gRenderingManager->Terminate();
+void Terminate(bool reload) {
+  gRenderingManager->Terminate(reload);
 }
 
 void RunFrame(double dt, std::shared_ptr<scene::Scene> currentScene) {

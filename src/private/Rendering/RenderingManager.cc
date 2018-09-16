@@ -15,18 +15,20 @@ namespace sce::rendering::private_ {
 RenderingManager::RenderingManager(uint32_t windowFlags)
     : window_(nullptr), windowFlags_(windowFlags) {}
 
-void RenderingManager::Initialize() {
-  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-    LOG(logging::Level::Fatal,
-        std::string("Initializing SDL failed: ") + SDL_GetError());
-    DEBUG_RUNTIME_ASSERT_TRUE(false);
-  }
-  window_ = SDL_CreateWindow("SCarter Engine", SDL_WINDOWPOS_UNDEFINED,
-                             SDL_WINDOWPOS_UNDEFINED, 640, 480, windowFlags_);
-  if (window_ == nullptr) {
-    LOG(logging::Level::Fatal,
-        std::string("Creating SDL window failed: ") + SDL_GetError());
-    DEBUG_RUNTIME_ASSERT_NOT_NULL(window_);
+void RenderingManager::Initialize(bool reload) {
+  if (!reload) {
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+      LOG(logging::Level::Fatal,
+          std::string("Initializing SDL failed: ") + SDL_GetError());
+      DEBUG_RUNTIME_ASSERT_TRUE(false);
+    }
+    window_ = SDL_CreateWindow("SCarter Engine", SDL_WINDOWPOS_UNDEFINED,
+                               SDL_WINDOWPOS_UNDEFINED, 640, 480, windowFlags_);
+    if (window_ == nullptr) {
+      LOG(logging::Level::Fatal,
+          std::string("Creating SDL window failed: ") + SDL_GetError());
+      DEBUG_RUNTIME_ASSERT_NOT_NULL(window_);
+    }
   }
 
   InitializeInternal();
@@ -36,11 +38,13 @@ void RenderingManager::Initialize() {
   isInitialized = true;
 }
 
-void RenderingManager::Terminate() {
+void RenderingManager::Terminate(bool reload) {
   DEBUG_RUNTIME_ASSERT_TRUE(this->isInitialized);
   TerminateInternal();
-  SDL_DestroyWindow(window_);
-  SDL_Quit();
+  if (!reload) {
+    SDL_DestroyWindow(window_);
+    SDL_Quit();
+  }
   isInitialized = false;
 }
 

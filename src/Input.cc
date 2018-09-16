@@ -10,11 +10,11 @@ namespace sce::input {
 private_::InputManager gInputManager;
 
 void Initialize() {
-  gInputManager.Initialize();
+  gInputManager.Initialize(false);
 }
 
 void Terminate() {
-  gInputManager.Terminate();
+  gInputManager.Terminate(false);
 }
 
 void RunFrame(double dt) {

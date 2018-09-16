@@ -47,8 +47,8 @@ class RenderingManager : public sce::private_::Manager {
  public:
   explicit RenderingManager(uint32_t windowFlags);
 
-  void Initialize() final;
-  void Terminate() final;
+  void Initialize(bool reload) final;
+  void Terminate(bool reload) final;
 
   void RunFrame(double dt, std::shared_ptr<scene::Scene> currentScene);
 };

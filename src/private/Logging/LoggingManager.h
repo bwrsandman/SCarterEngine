@@ -14,8 +14,8 @@ class LoggingManager : public sce::private_::Manager {
   Level logLevel_ = Level::Info;
 
  public:
-  void Initialize() override;
-  void Terminate() override;
+  void Initialize(bool reload) override;
+  void Terminate(bool reload) override;
 
   void SetLogLevel(Level level);
   void Log(const std::string & source_file, uint32_t source_line, Level level,

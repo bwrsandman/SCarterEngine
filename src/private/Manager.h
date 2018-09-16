@@ -14,8 +14,8 @@ class Manager {
   Manager() = default;
   virtual ~Manager() = default;
 
-  virtual void Initialize() = 0;
-  virtual void Terminate() = 0;
+  virtual void Initialize(bool reload) = 0;
+  virtual void Terminate(bool reload) = 0;
 };
 }  // namespace sce::private_
 
