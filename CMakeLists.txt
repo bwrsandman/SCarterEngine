@@ -26,6 +26,7 @@ file(GLOB SOURCE_FILES
     include/Debug.h
     include/Engine.h
     include/Game.h
+    include/Input.h
     include/Logging.h
     include/Scene.h
     include/Scripting.h
@@ -33,6 +34,7 @@ file(GLOB SOURCE_FILES
     src/Debug.cc
     src/Engine.cc
     src/Game.cc
+    src/Input.cc
     src/Logging.cc
     src/Scripting.cc
 
@@ -44,6 +46,8 @@ file(GLOB SOURCE_FILES
     src/private/Engine/EngineManager.cc
     src/private/Game/GameManager.h
     src/private/Game/GameManager.cc
+    src/private/Input/InputManager.h
+    src/private/Input/InputManager.cc
     src/private/Logging/LoggingManager.h
     src/private/Logging/LoggingManager.cc
     src/private/Scene/SceneImpl.h

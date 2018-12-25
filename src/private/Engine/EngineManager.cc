@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include <Game.h>
+#include <Input.h>
 #include <Logging.h>
 #include <Scripting.h>
 
@@ -17,6 +18,7 @@ void EngineManager::Initialize() {
   shouldQuit_ = false;
   sce::logging::Initialize();
   sce::game::Initialize();
+  sce::input::Initialize();
   sce::scripting::Initialize();
   LOG(logging::Level::Debug, "Engine subsystems initialized");
 
@@ -28,6 +30,7 @@ void EngineManager::Initialize() {
 void EngineManager::Terminate() {
   LOG(logging::Level::Debug, "Terminating engine subsystems");
   sce::scripting::Terminate();
+  sce::input::Terminate();
   sce::game::Terminate();
   sce::logging::Terminate();
 }
@@ -39,6 +42,9 @@ bool EngineManager::RunFrame() {
   lastTimeStamp_ = now;
   if (!shouldQuit_)
     sce::scripting::RunFrame(dt);
+  if (!shouldQuit_) {
+    sce::input::RunFrame(dt);
+  }
   return shouldQuit_;
 }
 
