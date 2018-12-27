@@ -21,4 +21,9 @@ void RunFrame(double dt) {
   gInputManager.RunFrame(dt);
 }
 
+void SetCallback(CallbackCategory category,
+                 std::function<void(int32_t)> callback) {
+  gInputManager.SetCallback(category, callback);
+}
+
 }  // namespace sce::input

@@ -23,6 +23,7 @@
 #include <lua.hpp>
 
 #include <Debug.h>
+#include <SDL_keycode.h>
 
 // FIXME: Once P0433R2 is implemented in libc++, template args can be removed
 // https://libcxx.llvm.org/cxx1z_status.html
@@ -118,6 +119,427 @@
   }
 
 namespace sce::scripting::private_ {
+
+std::string SDLKeyCodeToString(SDL_Keycode keycode) {
+  char res[2] = {0};
+  switch (keycode) {
+    default:
+    case SDLK_UNKNOWN:
+      return "";
+    case SDLK_RETURN:
+      return "return";
+    case SDLK_ESCAPE:
+      return "escape";
+    case SDLK_BACKSPACE:
+      return "backspace";
+    case SDLK_TAB:
+      return "tab";
+    case SDLK_SPACE:
+      return "space";
+    case SDLK_CAPSLOCK:
+      return "capslock";
+    case SDLK_PRINTSCREEN:
+      return "printscreen";
+    case SDLK_SCROLLLOCK:
+      return "scrolllock";
+    case SDLK_PAUSE:
+      return "pause";
+    case SDLK_INSERT:
+      return "insert";
+    case SDLK_HOME:
+      return "home";
+    case SDLK_PAGEUP:
+      return "pageup";
+    case SDLK_DELETE:
+      return "delete";
+    case SDLK_END:
+      return "end";
+    case SDLK_PAGEDOWN:
+      return "pagedown";
+    case SDLK_RIGHT:
+      return "right";
+    case SDLK_LEFT:
+      return "left";
+    case SDLK_DOWN:
+      return "down";
+    case SDLK_UP:
+      return "up";
+    case SDLK_POWER:
+      return "power";
+    case SDLK_EXECUTE:
+      return "execute";
+    case SDLK_HELP:
+      return "help";
+    case SDLK_MENU:
+      return "menu";
+    case SDLK_SELECT:
+      return "select";
+    case SDLK_STOP:
+      return "stop";
+    case SDLK_AGAIN:
+      return "again";
+    case SDLK_UNDO:
+      return "undo";
+    case SDLK_CUT:
+      return "cut";
+    case SDLK_COPY:
+      return "copy";
+    case SDLK_PASTE:
+      return "paste";
+    case SDLK_FIND:
+      return "find";
+    case SDLK_MUTE:
+      return "mute";
+    case SDLK_VOLUMEUP:
+      return "volumeup";
+    case SDLK_VOLUMEDOWN:
+      return "volumedown";
+    case SDLK_ALTERASE:
+      return "alterase";
+    case SDLK_SYSREQ:
+      return "sysreq";
+    case SDLK_CANCEL:
+      return "cancel";
+    case SDLK_CLEAR:
+      return "clear";
+    case SDLK_PRIOR:
+      return "prior";
+    case SDLK_RETURN2:
+      return "return2";
+    case SDLK_SEPARATOR:
+      return "separator";
+    case SDLK_OUT:
+      return "out";
+    case SDLK_OPER:
+      return "oper";
+    case SDLK_CLEARAGAIN:
+      return "clearagain";
+    case SDLK_CRSEL:
+      return "crsel";
+    case SDLK_EXSEL:
+      return "exsel";
+    case SDLK_THOUSANDSSEPARATOR:
+      return "thousandsseparator";
+    case SDLK_DECIMALSEPARATOR:
+      return "decimalseparator";
+    case SDLK_CURRENCYUNIT:
+      return "currencyunity";
+    case SDLK_CURRENCYSUBUNIT:
+      return "currencysubunit";
+    case SDLK_LCTRL:
+      return "lctrl";
+    case SDLK_LSHIFT:
+      return "lshift";
+    case SDLK_LALT:
+      return "lalt";
+    case SDLK_LGUI:
+      return "lgui";
+    case SDLK_RCTRL:
+      return "rctrl";
+    case SDLK_RSHIFT:
+      return "rshift";
+    case SDLK_RALT:
+      return "ralt";
+    case SDLK_RGUI:
+      return "rgui";
+    case SDLK_MODE:
+      return "mode";
+    case SDLK_AUDIONEXT:
+      return "audionext";
+    case SDLK_AUDIOPREV:
+      return "audioprev";
+    case SDLK_AUDIOSTOP:
+      return "audiostop";
+    case SDLK_AUDIOPLAY:
+      return "audioplay";
+    case SDLK_AUDIOMUTE:
+      return "audiomute";
+    case SDLK_AUDIOREWIND:
+      return "audiorewind";
+    case SDLK_AUDIOFASTFORWARD:
+      return "audiofastforward";
+    case SDLK_MEDIASELECT:
+      return "mediaselect";
+    case SDLK_WWW:
+      return "www";
+    case SDLK_MAIL:
+      return "mail";
+    case SDLK_CALCULATOR:
+      return "calculator";
+    case SDLK_COMPUTER:
+      return "computer";
+    case SDLK_AC_SEARCH:
+      return "appsearch";
+    case SDLK_AC_HOME:
+      return "apphome";
+    case SDLK_AC_BACK:
+      return "appback";
+    case SDLK_AC_FORWARD:
+      return "appforward";
+    case SDLK_AC_STOP:
+      return "appstop";
+    case SDLK_AC_REFRESH:
+      return "apprefresh";
+    case SDLK_AC_BOOKMARKS:
+      return "appbookmarks";
+    case SDLK_BRIGHTNESSDOWN:
+      return "brightnessdown";
+    case SDLK_BRIGHTNESSUP:
+      return "brightnessup";
+    case SDLK_DISPLAYSWITCH:
+      return "displayswitch";
+    case SDLK_KBDILLUMTOGGLE:
+      return "kbillumtoggle";
+    case SDLK_KBDILLUMDOWN:
+      return "kbillumdown";
+    case SDLK_KBDILLUMUP:
+      return "kbillumup";
+    case SDLK_EJECT:
+      return "eject";
+    case SDLK_SLEEP:
+      return "sleep";
+    case SDLK_APP1:
+      return "app1";
+    case SDLK_APP2:
+      return "app2";
+    case SDLK_F1:
+      return "f1";
+    case SDLK_F2:
+      return "f2";
+    case SDLK_F3:
+      return "f3";
+    case SDLK_F4:
+      return "f4";
+    case SDLK_F5:
+      return "f5";
+    case SDLK_F6:
+      return "f6";
+    case SDLK_F7:
+      return "f7";
+    case SDLK_F8:
+      return "f8";
+    case SDLK_F9:
+      return "f9";
+    case SDLK_F10:
+      return "f10";
+    case SDLK_F11:
+      return "f11";
+    case SDLK_F12:
+      return "f12";
+    case SDLK_F13:
+      return "f13";
+    case SDLK_F14:
+      return "f14";
+    case SDLK_F15:
+      return "f15";
+    case SDLK_F16:
+      return "f16";
+    case SDLK_F17:
+      return "f17";
+    case SDLK_F18:
+      return "f18";
+    case SDLK_F19:
+      return "f19";
+    case SDLK_F20:
+      return "f20";
+    case SDLK_F21:
+      return "f21";
+    case SDLK_F22:
+      return "f22";
+    case SDLK_F23:
+      return "f23";
+    case SDLK_F24:
+      return "f24";
+    case SDLK_KP_DIVIDE:
+      return "kp/";
+    case SDLK_KP_MULTIPLY:
+      return "kp*";
+    case SDLK_KP_MINUS:
+      return "kp-";
+    case SDLK_KP_PLUS:
+      return "kp+";
+    case SDLK_KP_ENTER:
+      return "kpenter";
+    case SDLK_KP_1:
+      return "kp1";
+    case SDLK_KP_2:
+      return "kp2";
+    case SDLK_KP_3:
+      return "kp3";
+    case SDLK_KP_4:
+      return "kp4";
+    case SDLK_KP_5:
+      return "kp5";
+    case SDLK_KP_6:
+      return "kp6";
+    case SDLK_KP_7:
+      return "kp7";
+    case SDLK_KP_8:
+      return "kp8";
+    case SDLK_KP_9:
+      return "kp9";
+    case SDLK_KP_0:
+      return "kp0";
+    case SDLK_KP_PERIOD:
+      return "kp.";
+    case SDLK_KP_COMMA:
+      return "kp,";
+    case SDLK_KP_EQUALS:
+      return "kp=";
+    case SDLK_KP_EQUALSAS400:
+      return "kpqualsas400";
+    case SDLK_KP_00:
+      return "kp00";
+    case SDLK_KP_000:
+      return "kp000";
+    case SDLK_KP_LEFTPAREN:
+      return "kp(";
+    case SDLK_KP_RIGHTPAREN:
+      return "kp)";
+    case SDLK_KP_LEFTBRACE:
+      return "kp{";
+    case SDLK_KP_RIGHTBRACE:
+      return "kp}";
+    case SDLK_KP_TAB:
+      return "kptab";
+    case SDLK_KP_BACKSPACE:
+      return "kpbackspace";
+    case SDLK_KP_A:
+      return "kpa";
+    case SDLK_KP_B:
+      return "kpb";
+    case SDLK_KP_C:
+      return "kpc";
+    case SDLK_KP_D:
+      return "kpd";
+    case SDLK_KP_E:
+      return "kpe";
+    case SDLK_KP_F:
+      return "kpf";
+    case SDLK_KP_XOR:
+      return "kpxor";
+    case SDLK_KP_POWER:
+      return "kppower";
+    case SDLK_KP_PERCENT:
+      return "kp%";
+    case SDLK_KP_LESS:
+      return "kpless";
+    case SDLK_KP_GREATER:
+      return "kpgreater";
+    case SDLK_KP_AMPERSAND:
+      return "kp&";
+    case SDLK_KP_DBLAMPERSAND:
+      return "kp&&";
+    case SDLK_KP_VERTICALBAR:
+      return "kp|";
+    case SDLK_KP_DBLVERTICALBAR:
+      return "kp||";
+    case SDLK_KP_COLON:
+      return "kp:";
+    case SDLK_KP_HASH:
+      return "kp#";
+    case SDLK_KP_SPACE:
+      return "kpspace";
+    case SDLK_KP_AT:
+      return "kp@";
+    case SDLK_KP_EXCLAM:
+      return "kp!";
+    case SDLK_KP_MEMSTORE:
+      return "kpmemstore";
+    case SDLK_KP_MEMRECALL:
+      return "kpmemrecall";
+    case SDLK_KP_MEMCLEAR:
+      return "kpmemclear";
+    case SDLK_KP_MEMADD:
+      return "kpmemadd";
+    case SDLK_KP_MEMSUBTRACT:
+      return "kpmemsubtract";
+    case SDLK_KP_MEMMULTIPLY:
+      return "kpmemmultiply";
+    case SDLK_KP_MEMDIVIDE:
+      return "kpmemdivide";
+    case SDLK_KP_PLUSMINUS:
+      return "kpplusminus";
+    case SDLK_KP_CLEAR:
+      return "kpclear";
+    case SDLK_KP_CLEARENTRY:
+      return "kpclearentry";
+    case SDLK_KP_BINARY:
+      return "kpbinary";
+    case SDLK_KP_OCTAL:
+      return "kpoctal";
+    case SDLK_KP_DECIMAL:
+      return "kpdecimal";
+    case SDLK_KP_HEXADECIMAL:
+      return "kphexadecimal";
+    case SDLK_EXCLAIM:
+    case SDLK_QUOTEDBL:
+    case SDLK_HASH:
+    case SDLK_PERCENT:
+    case SDLK_DOLLAR:
+    case SDLK_AMPERSAND:
+    case SDLK_QUOTE:
+    case SDLK_LEFTPAREN:
+    case SDLK_RIGHTPAREN:
+    case SDLK_ASTERISK:
+    case SDLK_PLUS:
+    case SDLK_COMMA:
+    case SDLK_MINUS:
+    case SDLK_PERIOD:
+    case SDLK_SLASH:
+    case SDLK_0:
+    case SDLK_1:
+    case SDLK_2:
+    case SDLK_3:
+    case SDLK_4:
+    case SDLK_5:
+    case SDLK_6:
+    case SDLK_7:
+    case SDLK_8:
+    case SDLK_9:
+    case SDLK_COLON:
+    case SDLK_SEMICOLON:
+    case SDLK_LESS:
+    case SDLK_EQUALS:
+    case SDLK_GREATER:
+    case SDLK_QUESTION:
+    case SDLK_AT:
+    case SDLK_LEFTBRACKET:
+    case SDLK_BACKSLASH:
+    case SDLK_RIGHTBRACKET:
+    case SDLK_CARET:
+    case SDLK_UNDERSCORE:
+    case SDLK_BACKQUOTE:
+    case SDLK_a:
+    case SDLK_b:
+    case SDLK_c:
+    case SDLK_d:
+    case SDLK_e:
+    case SDLK_f:
+    case SDLK_g:
+    case SDLK_h:
+    case SDLK_i:
+    case SDLK_j:
+    case SDLK_k:
+    case SDLK_l:
+    case SDLK_m:
+    case SDLK_n:
+    case SDLK_o:
+    case SDLK_p:
+    case SDLK_q:
+    case SDLK_r:
+    case SDLK_s:
+    case SDLK_t:
+    case SDLK_u:
+    case SDLK_v:
+    case SDLK_w:
+    case SDLK_x:
+    case SDLK_y:
+    case SDLK_z:
+      res[0] = static_cast<char>(keycode);
+      return std::string(res);
+  }
+}
 
 // https://stackoverflow.com/questions/9407367/determine-if-a-type-is-an-stl-container-at-compile-time/31105859
 namespace is_stl_container_impl {
@@ -215,6 +637,11 @@ static T pop_container(lua_State * L, int idx);
 
 // Bool
 template <>
+void push(lua_State * L, bool obj) {
+  lua_pushboolean(L, obj);
+}
+
+template <>
 bool lua_is<bool>(lua_State * L, int idx) {
   return static_cast<bool>(lua_isboolean(L, idx));
 }
@@ -256,7 +683,7 @@ int16_t lua_to<int16_t>(lua_State * L, int idx) {
   return static_cast<int16_t>(lua_tointeger(L, idx));
 }
 
-// 32 Bit Unsigned Int
+// 32 Bit Signed Int
 template <>
 void push(lua_State * L, int32_t obj) {
   lua_pushinteger(L, obj);
@@ -539,10 +966,37 @@ static T pop(lua_State * L, int idx) {
   return pop_container<T, VT>(L, idx);
 }
 
+// Closure
+
+template <>
+bool lua_is<std::function<void(std::string)>>(lua_State * L, int idx) {
+  auto res = static_cast<bool>(lua_isfunction(L, idx));
+  return res;
+}
+
 template <typename... Ts>
 static int push_args(lua_State * L, Ts... args) {
   (push(L, args), ...);
   return sizeof...(args);
+}
+
+template <class... As>
+std::function<void(As...)> pop_void_closure(lua_State * L, std::string name) {
+  int func = lua_getglobal(L, name.c_str());
+  if (func == 0 || !lua_is<std::function<void(As...)>>(L, -1)) {
+    lua_remove(L, -1);
+    return nullptr;
+  }
+  lua_remove(L, -1);
+  return std::function<void(As...)>([L, name](As... args) {
+    int func = lua_getglobal(L, name.c_str());
+    if (func) {
+      push_args(L, args...);
+      lua_call(L, 1, 0);
+    } else {
+      lua_remove(L, -1);
+    }
+  });
 }
 
 // Void returns

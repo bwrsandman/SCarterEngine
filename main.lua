@@ -61,3 +61,10 @@ function Loop(dt)
 
     loops = loops + 1
 end
+
+function KeyDown(key)
+    Engine.Logging.Log("Info", "Pressed key: " .. key)
+    if key == "escape" then
+        Engine.Quit = true
+    end
+end

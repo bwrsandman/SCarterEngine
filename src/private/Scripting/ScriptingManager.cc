@@ -11,6 +11,7 @@
 #include <Debug.h>
 #include <Engine.h>
 #include <Game.h>
+#include <Input.h>
 #include <Logging.h>
 #include <sys/stat.h>
 
@@ -96,18 +97,17 @@ void ScriptingManager::Check(int load_result) {
     return;
   }
 
-  int loop = lua_getglobal(lua_state_, "Loop");
-  if (loop == 0) {
-    LOG(logging::Level::Warning,
-        "Lua Script has no \"Loop()\" function, game will quit.");
-    engine::ScheduleQuit();
-    return;
-  }
-  if (!lua_isfunction(lua_state_, -1)) {
-    LOG(logging::Level::Warning,
-        "Lua Global \"Loop\" is not a function, game will quit.");
-    engine::ScheduleQuit();
-    return;
+  auto closures = std::array{
+      std::make_pair("Loop", true),
+      std::make_pair("KeyDown", false),
+      std::make_pair("KeyUp", false),
+  };
+
+  for (auto & pair : closures) {
+    if (!GetAndCheckFunction(pair.first) && pair.second) {
+      engine::ScheduleQuit();
+      return;
+    }
   }
 
   configured_ = true;
@@ -175,8 +175,23 @@ void ScriptingManager::RunFrame(double dt) {
   DEBUG_RUNTIME_ASSERT_TRUE(initialized_);
   DEBUG_RUNTIME_ASSERT_TRUE(configured_);
 
+  if (GetAndCheckFunction("KeyDown")) {
+    LOG(logging::Level::Debug, "Found \"KeyDown()\" function.");
+    auto func = pop_void_closure<std::string>(lua_state_, "KeyDown");
+    input::SetCallback(input::CallbackCategory::KeyDown, [func](int keycode) {
+      func(SDLKeyCodeToString(keycode));
+    });
+  }
+  if (GetAndCheckFunction("KeyUp")) {
+    LOG(logging::Level::Debug, "Found \"KeyUp()\" function.");
+    auto func = pop_void_closure<std::string>(lua_state_, "KeyUp");
+    input::SetCallback(input::CallbackCategory::KeyUp, [func](int keycode) {
+      func(SDLKeyCodeToString(keycode));
+    });
+  }
+
   if (!GetAndCheckFunction("Loop")) {
-    LOG(logging::Level::Warning, "Game will quit.");
+    LOG(logging::Level::Fatal, "Lua Script has no \"Loop()\" function.");
     engine::ScheduleQuit();
     return;
   }
@@ -226,14 +241,10 @@ void ScriptingManager::RunFrame(double dt) {
 bool ScriptingManager::GetAndCheckFunction(std::string name) {
   int func = lua_getglobal(lua_state_, name.c_str());
   if (func == 0) {
-    LOG(logging::Level::Warning,
-        "Lua Script has no \"" + name + "()\" function.");
     lua_remove(lua_state_, -1);
     return false;
   }
   if (!lua_isfunction(lua_state_, -1)) {
-    LOG(logging::Level::Warning,
-        "Lua Global \"" + name + "\" is not a function.");
     lua_remove(lua_state_, -1);
     return false;
   }
@@ -242,6 +253,8 @@ bool ScriptingManager::GetAndCheckFunction(std::string name) {
 
 void ScriptingManager::RunScriptInit() {
   if (!GetAndCheckFunction("Initialize")) {
+    LOG(logging::Level::Warning,
+        "Lua Script has no \"Initialize()\" function.");
     lua_remove(lua_state_, -1);
     return;
   }
@@ -250,6 +263,7 @@ void ScriptingManager::RunScriptInit() {
 
 void ScriptingManager::RunScriptTerminate() {
   if (!GetAndCheckFunction("Terminate")) {
+    LOG(logging::Level::Warning, "Lua Script has no \"Terminate()\" function.");
     lua_remove(lua_state_, -1);
     return;
   }
