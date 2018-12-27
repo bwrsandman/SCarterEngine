@@ -11,14 +11,16 @@
 
 namespace sce::input {
 
-BETTER_ENUM(CallbackCategory, uint8_t, KeyDown, KeyUp);
+BETTER_ENUM(CallbackCategory, uint8_t, KeyDown, KeyUp, MouseMotion, MouseButtonDown, MouseButtonUp);
 
 void Initialize();
 void Terminate();
 
 void RunFrame(double dt);
-void SetCallback(CallbackCategory category,
-                 std::function<void(int32_t)> callback);
+void SetKeyboardCallback(CallbackCategory category,
+                         std::function<void(int32_t)> callback);
+void SetMouseButtonCallback(CallbackCategory category, std::function<void(int32_t, int32_t, int32_t)> callback);
+void SetMouseMotionCallback(std::function<void(int32_t, int32_t)> callback);
 }  // namespace sce::input
 
 #endif  // SCARTERENGINE_INPUT_H

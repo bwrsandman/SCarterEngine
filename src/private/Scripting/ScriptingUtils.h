@@ -974,6 +974,18 @@ bool lua_is<std::function<void(std::string)>>(lua_State * L, int idx) {
   return res;
 }
 
+template <>
+bool lua_is<std::function<void(int, int)>>(lua_State * L, int idx) {
+  auto res = static_cast<bool>(lua_isfunction(L, idx));
+  return res;
+}
+
+template <>
+bool lua_is<std::function<void(int, int, int)>>(lua_State * L, int idx) {
+  auto res = static_cast<bool>(lua_isfunction(L, idx));
+  return res;
+}
+
 template <typename... Ts>
 static int push_args(lua_State * L, Ts... args) {
   (push(L, args), ...);
@@ -991,8 +1003,8 @@ std::function<void(As...)> pop_void_closure(lua_State * L, std::string name) {
   return std::function<void(As...)>([L, name](As... args) {
     int func = lua_getglobal(L, name.c_str());
     if (func) {
-      push_args(L, args...);
-      lua_call(L, 1, 0);
+      auto level = push_args(L, args...);
+      lua_call(L, level, 0);
     } else {
       lua_remove(L, -1);
     }

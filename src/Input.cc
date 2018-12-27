@@ -1,3 +1,5 @@
+#include <utility>
+
 //
 // Created by sandy on 25/12/18.
 //
@@ -21,9 +23,19 @@ void RunFrame(double dt) {
   gInputManager.RunFrame(dt);
 }
 
-void SetCallback(CallbackCategory category,
-                 std::function<void(int32_t)> callback) {
-  gInputManager.SetCallback(category, callback);
+void SetKeyboardCallback(CallbackCategory category,
+                         std::function<void(int32_t)> callback) {
+  gInputManager.SetKeyboardCallback(category, std::move(callback));
+}
+
+void SetMouseButtonCallback(CallbackCategory category,
+                            std::function<void(int32_t, int32_t, int32_t)> callback) {
+  gInputManager.SetMouseButtonCallback(category, std::move(callback));
+}
+
+void SetMouseMotionCallback(std::function<void(int32_t, int32_t)> callback)
+{
+  gInputManager.SetMouseMotionCallback(std::move(callback));
 }
 
 }  // namespace sce::input

@@ -1,5 +1,5 @@
 function Initialize()
-    -- Engine.Logging.SetLogLevel("Debug")
+    Engine.Logging.SetLogLevel("Warning")
     Engine.Logging.Log("Info", "Start of main script")
 
     -- TODO: Move these calls to GameManager init
@@ -63,8 +63,12 @@ function Loop(dt)
 end
 
 function KeyDown(key)
-    Engine.Logging.Log("Info", "Pressed key: " .. key)
+    Engine.Logging.Log("Warning", "Pressed key: " .. key)
     if key == "escape" then
         Engine.Quit = true
     end
+end
+
+function MouseButtonDown(button, x, y)
+    Engine.Logging.Log("Warning", "Mouse click(" .. button .."): " .. x .. " " .. y)
 end

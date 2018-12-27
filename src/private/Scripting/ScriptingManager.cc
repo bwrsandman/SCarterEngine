@@ -178,16 +178,37 @@ void ScriptingManager::RunFrame(double dt) {
   if (GetAndCheckFunction("KeyDown")) {
     LOG(logging::Level::Debug, "Found \"KeyDown()\" function.");
     auto func = pop_void_closure<std::string>(lua_state_, "KeyDown");
-    input::SetCallback(input::CallbackCategory::KeyDown, [func](int keycode) {
-      func(SDLKeyCodeToString(keycode));
+    input::SetKeyboardCallback(input::CallbackCategory::KeyDown, [func](int keycode) {
+        func(SDLKeyCodeToString(keycode));
     });
   }
   if (GetAndCheckFunction("KeyUp")) {
     LOG(logging::Level::Debug, "Found \"KeyUp()\" function.");
     auto func = pop_void_closure<std::string>(lua_state_, "KeyUp");
-    input::SetCallback(input::CallbackCategory::KeyUp, [func](int keycode) {
-      func(SDLKeyCodeToString(keycode));
+    input::SetKeyboardCallback(input::CallbackCategory::KeyUp, [func](int keycode) {
+        func(SDLKeyCodeToString(keycode));
     });
+  }
+  if (GetAndCheckFunction("MouseMotion")) {
+    LOG(logging::Level::Debug, "Found \"MouseMotion()\" function.");
+    auto func = pop_void_closure<int, int>(lua_state_, "MouseMotion");
+    input::SetMouseMotionCallback([func](int x, int y) {
+            func(x, y);
+        });
+  }
+  if (GetAndCheckFunction("MouseButtonDown")) {
+    LOG(logging::Level::Debug, "Found \"MouseButtonDown()\" function.");
+    auto func = pop_void_closure<int, int, int>(lua_state_, "MouseButtonDown");
+    input::SetMouseButtonCallback(input::CallbackCategory::MouseButtonDown, [func](int button, int x, int y) {
+            func(button, x, y);
+        });
+  }
+  if (GetAndCheckFunction("MouseButtonUp")) {
+    LOG(logging::Level::Debug, "Found \"MouseButtonUp()\" function.");
+    auto func = pop_void_closure<int, int, int>(lua_state_, "MouseButtonUp");
+    input::SetMouseButtonCallback(input::CallbackCategory::MouseButtonUp, [func](int button, int x, int y) {
+            func(button, x, y);
+        });
   }
 
   if (!GetAndCheckFunction("Loop")) {

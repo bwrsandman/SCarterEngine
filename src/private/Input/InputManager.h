@@ -11,15 +11,19 @@
 
 namespace sce::input::private_ {
 class InputManager : sce::private_::Manager {
-  std::array<std::function<void(int32_t)>, CallbackCategory::_size()>
-      callbacks{};
+  std::array<std::function<void(int32_t)>, 2> keyboardCallbacks{};
+  std::array<std::function<void(int32_t, int32_t, int32_t)>, 2> mouseKeyCallbacks{};
+  std::function<void(int32_t, int32_t)> mouseMotionCallback{};
 
  public:
   void Initialize(bool reload) override;
   void Terminate(bool reload) override;
   void RunFrame(double dt);
-  void SetCallback(CallbackCategory category,
-                   std::function<void(int32_t)> callback);
+  void SetKeyboardCallback(CallbackCategory category,
+                           std::function<void(int32_t)> callback);
+  void SetMouseButtonCallback(CallbackCategory category,
+                              std::function<void(int32_t, int32_t, int32_t)> callback);
+  void SetMouseMotionCallback(std::function<void(int32_t, int32_t)> callback);
 };
 }  // namespace sce::input::private_
 
